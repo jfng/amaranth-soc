@@ -113,7 +113,7 @@ class PeripheralBridge(Elaboratable):
 
         triggers = list(target.iter_triggers())
         if len(triggers) > 0:
-            self._int_source = csr.InterruptSource(target.iter_events)
+            self._int_source = csr.InterruptSource(triggers)
             self._int_bridge = WishboneCSRBridge(int_source.csr_bus, data_width=bus_data_width)
             self._wb_decoder.add(self._int_bridge, extend=True)
         else:

@@ -257,19 +257,19 @@ class DecoderSimulationTestCase(unittest.TestCase):
                 return m
 
         dut = Decoder(addr_width=20, data_width=32, granularity=16)
-        loop_1 = AddressLoopback(addr_width=7, data_width=32, granularity=16)
+        loop_1 = AddressLoopback(addr_width=7, data_width=32, granularity=16, name="loop_1")
         loop_1.bus.memory_map = MemoryMap(addr_width=8, data_width=16)
         self.assertEqual(dut.add(loop_1.bus, addr=0x10000),
                          (0x10000, 0x10100, 1))
-        loop_2 = AddressLoopback(addr_width=6, data_width=32, granularity=8)
+        loop_2 = AddressLoopback(addr_width=6, data_width=32, granularity=8, name="loop_2")
         loop_2.bus.memory_map = MemoryMap(addr_width=8, data_width=8)
         self.assertEqual(dut.add(loop_2.bus, addr=0x20000),
                          (0x20000, 0x20080, 2))
-        loop_3 = AddressLoopback(addr_width=8, data_width=16, granularity=16)
+        loop_3 = AddressLoopback(addr_width=8, data_width=16, granularity=16, name="loop_3")
         loop_3.bus.memory_map = MemoryMap(addr_width=8, data_width=16)
         self.assertEqual(dut.add(loop_3.bus, addr=0x30000, sparse=True),
                          (0x30000, 0x30100, 1))
-        loop_4 = AddressLoopback(addr_width=8, data_width=8,  granularity=8)
+        loop_4 = AddressLoopback(addr_width=8, data_width=8,  granularity=8, name="loop_4")
         loop_4.bus.memory_map = MemoryMap(addr_width=8, data_width=8)
         self.assertEqual(dut.add(loop_4.bus, addr=0x40000, sparse=True),
                          (0x40000, 0x40100, 1))
@@ -346,7 +346,11 @@ class DecoderSimulationTestCase(unittest.TestCase):
             self.assertEqual((yield dut.bus.dat_r), 0x09)
 
         m = Module()
-        m.submodules += dut, loop_1, loop_2, loop_3, loop_4
+        m.submodules.dut = dut
+        m.submodules.loop_1 = loop_1
+        m.submodules.loop_2 = loop_2
+        m.submodules.loop_3 = loop_3
+        m.submodules.loop_4 = loop_4
         with Simulator(m, vcd_file=open("test.vcd", "w")) as sim:
             sim.add_process(sim_test())
             sim.run()

@@ -289,7 +289,17 @@ class Decoder(Elaboratable):
                 if hasattr(sub_bus, "bte"):
                     m.d.comb += sub_bus.bte.eq(getattr(self.bus, "bte", BurstTypeExt.LINEAR))
 
-                with m.Case(sub_pat[:-log2_int(self.bus.data_width // self.bus.granularity)]):
+                # ratio_bits = log2_int(self.data_width // sub_bus.data_width)
+                # if ratio_bits > 0:
+                #     sub_pat = sub_pat[ratio_bits:] + "-" * ratio_bits
+
+                granularity_bits = log2_int(self.bus.data_width // self.bus.granularity)
+                if granularity_bits > 0:
+                    sub_pat = sub_pat[:-granularity_bits]
+
+                # print(sub_pat)
+
+                with m.Case(sub_pat):
                     m.d.comb += [
                         sub_bus.cyc.eq(self.bus.cyc),
                         self.bus.dat_r.eq(sub_bus.dat_r),

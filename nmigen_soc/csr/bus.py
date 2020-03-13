@@ -270,6 +270,7 @@ class Multiplexer(Elaboratable):
                 shadow_en = Signal(elem_end - elem_start, name="{}__shadow_en".format(elem.name))
                 m.d.sync += shadow_en.eq(0)
             if elem.access.writable():
+                elem_we   = Signal()
                 m.d.comb += elem.w_data.eq(shadow)
                 m.d.sync += elem.w_stb.eq(0)
 
@@ -292,12 +293,14 @@ class Multiplexer(Elaboratable):
                             m.d.sync += shadow_en.eq(self.bus.r_stb << chunk_offset)
 
                         if elem.access.writable():
+                            with m.If(self.bus.w_stb):
+                                m.d.sync += shadow_slice.eq(self.bus.w_data)
+                                m.d.sync += elem_we.eq(1)
                             if chunk_addr == elem_end - 1:
                                 # Delay by 1 cycle, avoiding combinatorial paths through
                                 # the CSR bus and into CSR registers.
-                                m.d.sync += elem.w_stb.eq(self.bus.w_stb)
-                            with m.If(self.bus.w_stb):
-                                m.d.sync += shadow_slice.eq(self.bus.w_data)
+                                m.d.sync += elem.w_stb.eq(self.bus.w_stb | elem_we)
+                                m.d.sync += elem_we.eq(0)
 
         m.d.comb += self.bus.r_data.eq(r_data_fanin)
 
