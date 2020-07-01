@@ -208,6 +208,9 @@ class Multiplexer(Elaboratable):
 
     Parameters
     ----------
+    name : str
+        Name hint for the memory map. If ``None`` (default) the name is inferred from the variable
+        name this ``Multiplexer`` is assigned to.
     addr_width : int
         Address width. See :class:`Interface`.
     data_width : int
@@ -220,8 +223,9 @@ class Multiplexer(Elaboratable):
     bus : :class:`Interface`
         CSR bus providing access to registers.
     """
-    def __init__(self, *, addr_width, data_width, alignment=0):
-        self._map = MemoryMap(addr_width=addr_width, data_width=data_width, alignment=alignment)
+    def __init__(self, *, addr_width, data_width, alignment=0, name=None, src_loc_at=0):
+        self._map = MemoryMap(addr_width=addr_width, data_width=data_width, alignment=alignment,
+                              name=name, src_loc_at=1 + src_loc_at)
         self._bus = None
 
     @property

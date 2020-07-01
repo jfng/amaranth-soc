@@ -66,6 +66,9 @@ class MemoryMap:
 
     Parameters
     ----------
+    name : str
+        Name hint for this memory map. If ``None`` (default) the name is inferred from the variable
+        name this ``MemoryMap`` is assigned to.
     addr_width : int
         Address width.
     data_width : int
@@ -75,7 +78,11 @@ class MemoryMap:
         a multiple of ``2 ** alignment``, and its size will be rounded up to be a multiple of
         ``2 ** alignment``.
     """
-    def __init__(self, *, addr_width, data_width, alignment=0):
+    def __init__(self, *, addr_width, data_width, alignment=0, name=None, src_loc_at=0):
+        if name is not None and not isinstance(name, str):
+            raise TypeError("Name must be a a string, not {!r}".format(name))
+        self.name = name or tracer.get_var_name(depth=2 + src_loc_at)
+
         if not isinstance(addr_width, int) or addr_width <= 0:
             raise ValueError("Address width must be a positive integer, not {!r}"
                              .format(addr_width))
