@@ -334,6 +334,15 @@ class MemoryMap:
                                  "data width {}"
                                  .format(self.data_width, window.data_width))
 
+        if addr is not None:
+            if not isinstance(addr, int) or addr < 0:
+                raise ValueError("Address must be a non-negative integer, not {!r}"
+                                 .format(addr))
+            if addr % (1 << window.addr_width) != 0:
+                raise ValueError("Explicitly specified address {:#x} must be an integer multiple "
+                                 "of ``2 ** window.addr_width`` ({:#x} bytes)"
+                                 .format(addr, 1 << window.addr_width))
+
         window.freeze()
 
         if not sparse:
