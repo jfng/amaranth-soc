@@ -9,23 +9,7 @@ from ..memory import MemoryMap
 __all__ = ["Element", "Interface", "Decoder", "Multiplexer"]
 
 
-class Element(Record):
-    class Access(enum.Enum):
-        """Register access mode.
-
-        Coarse access mode for the entire register. Individual fields can have more restrictive
-        access mode, e.g. R/O fields can be a part of an R/W register.
-        """
-        R  = "r"
-        W  = "w"
-        RW = "rw"
-
-        def readable(self):
-            return self == self.R or self == self.RW
-
-        def writable(self):
-            return self == self.W or self == self.RW
-
+class Element:
     """Peripheral-side CSR interface.
 
     A low-level interface to a single atomically readable and writable register in a peripheral.
@@ -36,10 +20,6 @@ class Element(Record):
     ----------
     width : int
         Width of the register.
-    access : :class:`Access`
-        Register access mode.
-    name : str
-        Name of the underlying record.
 
     Attributes
     ----------
@@ -54,28 +34,37 @@ class Element(Record):
         Write strobe. Registers should update their value or perform the write side effect when
         this strobe is asserted.
     """
-    def __init__(self, width, access, *, name=None, src_loc_at=0):
+    def __init__(self, width):
         if not isinstance(width, int) or width < 0:
             raise ValueError("Width must be a non-negative integer, not {!r}"
                              .format(width))
-        if not isinstance(access, Element.Access) and access not in ("r", "w", "rw"):
-            raise ValueError("Access mode must be one of \"r\", \"w\", or \"rw\", not {!r}"
-                             .format(access))
         self.width  = width
-        self.access = Element.Access(access)
 
-        layout = []
-        if self.access.readable():
-            layout += [
-                ("r_data", width),
-                ("r_stb",  1),
-            ]
-        if self.access.writable():
-            layout += [
-                ("w_data", width),
-                ("w_stb",  1),
-            ]
-        super().__init__(layout, name=name, src_loc_at=1 + src_loc_at)
+        self.r_data = Signal(unsigned(width))
+        self.r_stb  = Signal()
+        self.w_data = Signal(unsigned(width))
+        self.w_stb  = Signal()
+
+    def readable(self):
+        """Read access mode.
+
+        Returns
+        -------
+        :class:`bool`
+            If `True`, `r_data` and `r_stb` are assumed to be driven by the register and the CSR
+            bus, respectively.
+        """
+        return False
+
+    def writable(self):
+        """Write access mode.
+
+        Returns
+        -------
+        :class:`bool`
+            If `True`, `w_data` and `w_stb` are assumed to be driven by the CSR bus.
+        """
+        return False
 
 
 class Interface(Record):
@@ -422,7 +411,7 @@ class Multiplexer(Elaboratable):
         """
         return self._map.align_to(alignment)
 
-    def add(self, element, *, addr=None, alignment=None, extend=False):
+    def add(self, element, *, name, addr=None, alignment=None, extend=False):
         """Add a register.
 
         See :meth:`MemoryMap.add_resource` for details.
@@ -432,8 +421,8 @@ class Multiplexer(Elaboratable):
                             .format(element))
 
         size = (element.width + self._map.data_width - 1) // self._map.data_width
-        return self._map.add_resource(element, size=size, addr=addr, alignment=alignment,
-                                      extend=extend, name=element.name)
+        return self._map.add_resource(element, name=name, size=size, addr=addr,
+                                      alignment=alignment, extend=extend)
 
     def elaborate(self, platform):
         m = Module()
@@ -461,6 +450,7 @@ class Multiplexer(Elaboratable):
             r_chunk_data_fanin = 0
 
             m.d.sync += r_chunk.r_en.eq(0)
+                m.d.sync += elem.w_stb.eq(0)
 
             with m.Switch(self.bus.addr):
                 for elem_range in r_chunk.elements():
