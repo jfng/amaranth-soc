@@ -1,74 +1,57 @@
-from .reg import GenericField
+from amaranth_soc import csr
 
 
 __all__ = ["R", "W", "RW", "RW1C", "RW1S"]
 
 
-class R(GenericField):
-    def intr_read(self, field):
-        return field
+def _read_field(self, field):
+    return field
 
-    def intr_write(self, field, value):
-        return None
+def _write_field(self, field, value):
+    return value
 
-    def user_read(self, field):
-        return field
+def _clear_field(self, field, value):
+    return field & ~value
 
-    def user_write(self, field, value):
-        return value
-
-
-class W(GenericField):
-    def intr_read(self, field):
-        return None
-
-    def intr_write(self, field, value):
-        return value
-
-    def user_read(self, field):
-        return field
-
-    def user_write(self, field):
-        return None
+def _set_field(self, field, value):
+    return field | value
 
 
-class RW(GenericField):
-    def intr_read(self, field):
-        return field
-
-    def intr_write(self, field, value):
-        return value
-
-    def user_read(self, field):
-        return field
-
-    def user_write(self, field):
-        return None
+class R(csr.GenericField,
+        intr_read  = _read_field,
+        intr_write = None,
+        user_read  = _read_field,
+        user_write = _write_field):
+    pass
 
 
-class RW1C(GenericField):
-    def intr_read(self, field):
-        return field
-
-    def intr_write(self, field, value):
-        return field & ~value
-
-    def user_read(self, field):
-        return field
-
-    def user_write(self, field):
-        return field | value
+class W(csr.GenericField,
+        intr_read  = None,
+        intr_write = _write_field,
+        user_read  = _read_field,
+        user_write = None):
+    pass
 
 
-class RW1S(GenericField):
-    def intr_read(self, field):
-        return field
+class RW(csr.GenericField,
+         intr_read  = _read_field,
+         intr_write = _write_field,
+         user_read  = _read_field,
+         user_write = None):
+    pass
 
-    def intr_write(self, field, value):
-        return field | value
 
-    def user_read(self, field):
-        return field
+class RW1C(csr.GenericField,
+           intr_read  = _read_field,
+           intr_write = _clear_field,
+           user_read  = _read_field,
+           user_write = _set_field):
+    pass
 
-    def user_write(self, field):
-        return field & ~value
+
+class RW1S(csr.GenericField,
+           intr_read  = _read_field,
+           intr_write = _set_field,
+           user_read  = _read_field,
+           user_write = _clear_field):
+    pass

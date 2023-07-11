@@ -17,8 +17,8 @@ class ElementTestCase(unittest.TestCase):
         self.assertEqual(elem.r_stb .shape(), unsigned(1))
         self.assertEqual(elem.w_data.shape(), unsigned(8))
         self.assertEqual(elem.w_stb .shape(), unsigned(1))
-        self.assertEqual(elem.readable(), False)
-        self.assertEqual(elem.writable(), False)
+        self.assertEqual(elem.readable, False)
+        self.assertEqual(elem.writable, False)
 
     def test_width_wrong(self):
         with self.assertRaisesRegex(ValueError,
@@ -86,19 +86,23 @@ class InterfaceTestCase(unittest.TestCase):
 
 
 class _Element_R(Element):
+    @property
     def readable(self):
         return True
 
 
 class _Element_W(Element):
+    @property
     def writable(self):
         return True
 
 
 class _Element_RW(Element):
+    @property
     def readable(self):
         return True
 
+    @property
     def writable(self):
         return True
 

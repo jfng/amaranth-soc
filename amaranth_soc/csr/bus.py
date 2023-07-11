@@ -45,6 +45,7 @@ class Element:
         self.w_data = Signal(unsigned(width))
         self.w_stb  = Signal()
 
+    @property
     def readable(self):
         """Read access mode.
 
@@ -56,6 +57,7 @@ class Element:
         """
         return False
 
+    @property
     def writable(self):
         """Write access mode.
 
