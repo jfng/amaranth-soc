@@ -9,8 +9,8 @@ from amaranth_soc.csr.wishbone import *
 
 
 class MockRegister(Elaboratable):
-    def __init__(self, width, name):
-        self.element = csr.Element(width, "rw", name=name)
+    def __init__(self, width):
+        self.element = csr.RegisterInterface(csr.FieldMap({"data": csr.field.RW(width)}))
         self.r_count = Signal(8)
         self.w_count = Signal(8)
         self.data    = Signal(width)
@@ -42,10 +42,10 @@ class WishboneCSRBridgeTestCase(unittest.TestCase):
 
     def test_narrow(self):
         mux   = csr.Multiplexer(addr_width=10, data_width=8)
-        reg_1 = MockRegister(8, name="reg_1")
-        mux.add(reg_1.element)
-        reg_2 = MockRegister(16, name="reg_2")
-        mux.add(reg_2.element)
+        reg_1 = MockRegister(8)
+        mux.add(reg_1.element, name="reg_1")
+        reg_2 = MockRegister(16)
+        mux.add(reg_2.element, name="reg_2")
         dut   = WishboneCSRBridge(mux.bus)
 
         def sim_test():
@@ -149,8 +149,8 @@ class WishboneCSRBridgeTestCase(unittest.TestCase):
 
     def test_wide(self):
         mux = csr.Multiplexer(addr_width=10, data_width=8)
-        reg = MockRegister(32, name="reg")
-        mux.add(reg.element)
+        reg = MockRegister(32)
+        mux.add(reg.element, name="reg")
         dut = WishboneCSRBridge(mux.bus, data_width=32)
 
         def sim_test():
