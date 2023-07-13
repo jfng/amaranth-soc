@@ -6,7 +6,7 @@ from amaranth.lib import data
 from .bus import Element
 
 
-__all__ = ["GenericField", "FieldMap", "FieldArray", "Register"]
+__all__ = ["GenericField", "FieldMap", "FieldArray", "RegisterInterface", "Register"]
 
 
 class GenericField(metaclass=ABCMeta):
@@ -19,14 +19,6 @@ class GenericField(metaclass=ABCMeta):
     reset : int or integral Enum
         Reset or default value. Defaults to 0.
     """
-
-    def __init_subclass__(cls, *, intr_read, intr_write, user_read, user_write, **kwargs):
-        super().__init_subclass__(**kwargs)
-        cls.intr_read  = intr_read
-        cls.intr_write = intr_write
-        cls.user_read  = user_read
-        cls.user_write = user_write
-
     def __init__(self, shape, *, reset=0):
         try:
             shape = Shape.cast(shape)
@@ -36,7 +28,7 @@ class GenericField(metaclass=ABCMeta):
         self._shape = shape
 
         try:
-            reset = Const.cast(reset)
+            Const.cast(reset)
         except TypeError as e:
             raise TypeError("Reset value must be a constant-castable expression, not {!r}"
                             .format(reset)) from e
@@ -50,13 +42,66 @@ class GenericField(metaclass=ABCMeta):
     def reset(self):
         return self._reset
 
+    @abstractmethod
+    def intr_read(self, storage):
+        """Read from the bus initiator.
+
+        Parameters
+        ----------
+        storage : :class:`Value`
+            The value of this field in the register storage.
+
+        Returns
+        -------
+        The :class:`Value` of this field returned to the bus initiator.
+        """
+
+    @abstractmethod
+    def intr_write(self, storage, w_data):
+        """Write from the bus initiator.
+
+        Parameters
+        ----------
+        storage : :class:`Value`
+            The value of this field in the register storage.
+        w_data : :class:`Value`
+            The value written to this field by the bus initiator.
+
+        Returns
+        -------
+        The :class:`Value` of this field written to the register storage.
+        """
+
+    @abstractmethod
+    def user_write(self, storage, w_data):
+        """Write from user logic.
+
+        Parameters
+        ----------
+        storage : :class:`Value`
+            The value of this field in the register storage.
+        w_data : :class:`Value`
+            The value written to this field by user logic.
+
+        Returns
+        -------
+        The :class:`Value` of this field written to the register storage.
+        """
+
 
 class FieldMap:
     """A mapping of CSR register fields.
 
     Parameters
     ----------
-    fields : dict of :class:`str` to one of :class:`GenericField` or :class:`FieldMap` or :class:`FieldArray`
+    fields : dict of :class:`str` to one of :class:`GenericField` or :class:`FieldMap`.
+
+    Attributes
+    ----------
+    size : int
+        The amount of bits required to store the field map.
+    shape : :class:`StructLayout`
+        Shape of the field map.
     """
     def __init__(self, fields):
         offset = 0
@@ -71,8 +116,7 @@ class FieldMap:
                 raise TypeError("Field name must be a string, not {!r}"
                                 .format(key))
             if not isinstance(field, (GenericField, FieldMap)):
-                raise TypeError("Field must be a GenericField, a FieldMap or a FieldArray, "
-                                "not {!r}"
+                raise TypeError("Field must be a GenericField or a FieldMap, not {!r}"
                                 .format(field))
             self._fields[key] = field
 
@@ -83,29 +127,8 @@ class FieldMap:
 
         self._size = offset
 
-    def __getitem__(self, key):
-        return self._fields[key]
-
-    def __iter__(self):
-        """Iterate over the field map.
-
-        Yields
-        ------
-        key : :class:`str`
-        field : :class:`GenericField` or :class:`FieldMap` or :class:`FieldArray`
-        """
-        for key, field in self._fields.items():
-            yield key, field
-
     @property
     def size(self):
-        """Total size of the field map.
-
-        Returns
-        -------
-        :class:`int`
-            The amount of bits required to store every field of the mapping.
-        """
         return self._size
 
     @property
@@ -114,32 +137,88 @@ class FieldMap:
             name: field.shape for name, field in iter(self)
         })
 
+    def __getitem__(self, key):
+        """Retrieve a field from the field map.
+
+        Returns
+        --------
+        :class:`GenericField` or :class:`FieldMap`
+            The field associated with ``key``.
+
+        Raises
+        ------
+        :exc:`KeyError`
+            If there is not field associated with ``key``.
+        """
+        return self._fields[key]
+
+    def __iter__(self):
+        """Iterate over the field map.
+
+        Yields
+        ------
+        :class:`str`
+            Key (name) for accessing the field.
+        :class:`GenericField` or :class:`FieldMap`
+            Field description.
+        """
+        for key, field in self._fields.items():
+            yield key, field
+
     def all_fields(self):
         """Recursively iterate over the field map.
+
+        Yields
+        ------
+        iter(:class:`str`)
+            Name of the field. It is prefixed by the name of every nested field map.
+        :class:`GenericField`
+            Field description.
         """
         for key, field in iter(self):
             if isinstance(field, GenericField):
-                yield (str(key),), field
+                yield (key,), field
             elif isinstance(field, FieldMap):
                 for sub_name, sub_field in field.all_fields():
-                    yield (str(key), *sub_name), sub_field
+                    yield (key, *sub_name), sub_field
             else:
-                assert False
+                assert False # :nocov:
 
     def resets(self):
+        """Get the reset value associated with the field map.
+
+        Returns
+        -------
+        A nested dict of a :class:`str` as keys to an :class:`int` or integral Enum, depending on
+        the reset value of each :class:`GenericField`.
+        """
         resets = dict()
         for key, field in iter(self):
             if isinstance(field, GenericField):
-                resets[str(key)] = field.reset
+                resets[key] = field.reset
             elif isinstance(field, FieldMap):
                 for sub_name, sub_field in field.all_fields():
-                    resets[str(key)] = field.resets()
+                    resets[key] = field.resets()
             else:
-                assert False
+                assert False # :nocov:
         return resets
 
 
 class FieldArray(FieldMap):
+    """An array of CSR register fields.
+
+    Parameters
+    ----------
+    field : :class:`GenericField`
+    length : :class:`int`
+
+    Attributes
+    ----------
+    size : int
+        The amount of bits required to store the field array.
+    shape : :class:`ArrayLayout`
+        Shape of the field array.
+    """
     def __init__(self, field, length):
         if not isinstance(field, (GenericField, FieldMap)):
             raise TypeError("Field must be a GenericField, a FieldMap or a FieldArray, "
@@ -157,7 +236,25 @@ class FieldArray(FieldMap):
         else:
             self._size = field.size * length
 
+    @property
+    def shape(self):
+        return data.ArrayLayout(self._field.shape, self._length)
+
     def __getitem__(self, key):
+        """Retrieve a field from the field array.
+
+        Returns
+        --------
+        :class:`GenericField` or :class:`FieldMap`
+            The field associated with ``key``.
+
+        Raises
+        ------
+        :exc:`KeyError`
+            If ``key`` is out of bounds.
+        :exc:`TypeError`
+            If ``key`` is not an :class:`int`.
+        """
         if isinstance(key, int):
             if key not in range(-self._length, self._length):
                 raise KeyError(key)
@@ -165,22 +262,28 @@ class FieldArray(FieldMap):
         raise TypeError("Cannot index field array with {!r}".format(key))
 
     def __iter__(self):
-        """Iterate over fields of the array.
+        """Iterate over the field array.
 
         Yields
         ------
         key : :class:`int`
-        field : :class:`GenericField` or :class:`FieldMap` or :class:`FieldArray`
+            Key (index) for accessing the field.
+        field : :class:`GenericField` or :class:`FieldMap`
+            Field description.
         """
         for key in range(self._length):
             yield key, self._field
 
-    @property
-    def shape(self):
-        return data.ArrayLayout(data.Field(self._field.shape))
 
+class RegisterInterface(Element):
+    """CSR register interface.
 
-class Register(Element, Elaboratable):
+    Parameters
+    ----------
+    field_map : :class:`FieldMap`
+        Description of the register fields. If ``None`` (default), a :class:`FieldMap` is created
+        from Python :term:`variable annotations <python:variable annotations>`.
+    """
     def __init__(self, field_map=None):
         if field_map is None:
             if not hasattr(self, "__annotations__"):
@@ -195,29 +298,11 @@ class Register(Element, Elaboratable):
 
         super().__init__(field_map.size)
 
-        class _FieldPort(object):
-            pass
-
         self._field_map = field_map
-        self._fields    = _FieldPort()
         self._readable  = False
         self._writable  = False
 
-        def field_port(field, field_name):
-            obj = _FieldPort()
-            if field.user_write is not None:
-                obj.w_data = Signal(field.shape, name=f"{field_name}__w_data")
-                obj.w_stb  = Signal(name=f"{field_name}__w_stb")
-                obj.w_ack  = Signal(name=f"{field_name}__w_ack")
-            if field.user_read is not None:
-                obj.r_data = Signal(field.shape, name=f"{field_name}__r_data")
-                obj.r_stb  = Signal(name=f"{field_name}__r_stb")
-            return obj
-
         for name, field in self.field_map.all_fields():
-            field_name = "__".join(name)
-            setattr(self._fields, field_name, field_port(field, field_name))
-
             if field.intr_read is not None:
                 self._readable = True
             if field.intr_write is not None:
@@ -240,47 +325,98 @@ class Register(Element, Elaboratable):
     def writable(self):
         return self._writable
 
+
+class Register(RegisterInterface, Elaboratable):
+    """CSR register.
+
+    Attributes
+    ----------
+    field_map : :class:`FieldMap`
+        Description of the register fields. See also :class:`RegisterInterface`.
+    f : :class:`Register.UserPort`
+        Port to user logic.
+    """
+
+    class UserPort:
+        def __init__(self, field_map, name=None):
+            assert isinstance(field_map, FieldMap)
+            assert isinstance(name, str)
+
+            self._fields = {}
+
+            for key, field in field_map:
+                field_name = str(key) if name is None else f"{name}__{key}"
+
+                if isinstance(field, GenericField):
+                    port = Register.FieldPort(field, field_name)
+                elif isinstance(field, FieldMap):
+                    port = Register.UserPort(field, field_name)
+                else:
+                    assert False # :nocov:
+
+                self._fields[key] = port
+
+        def __getitem__(self, key):
+            return self._fields[key]
+
+        def __getattr__(self, name):
+            return self[name]
+
+    class FieldPort:
+        def __init__(self, field, name):
+            assert isinstance(field, GenericField)
+            assert isinstance(name, str)
+
+            if field.user_write is not None:
+                self.w_mask = Signal(field.shape, name=f"{name}__w_mask")
+                self.w_data = Signal(field.shape, name=f"{name}__w_data")
+                self.w_ack  = Signal(name=f"{name}__w_ack")
+
+            self.r_data = Signal(field.shape, name=f"{name}__r_data")
+            self.r_stb  = Signal(name=f"{name}__r_stb")
+
+    def __init__(self, field_map=None):
+        super().__init__(field_map)
+        self._f = Register.UserPort(field_map, name="")
+
     @property
     def f(self):
-        return self._fields
+        return self._f
 
     def elaborate(self, platform):
         m = Module()
 
-        storage = Signal(self.field_map.shape) # FIXME reset=self.field_map.resets()
+        storage = Signal(self.field_map.shape, reset=self.field_map.resets())
 
-        def get_slice(view, field_name):
-            view_slice = view
+        def get_field(root, field_name):
+            node = root
             for key in field_name:
-                view_slice = view_slice[key]
-            return view_slice
+                node = node[key]
+            return node
 
-        def get_user_port(field_name):
-            port_field = self.f
-            for key in field_name:
-                port_field = getattr(port_field, key)
-            return port_field
+        for name, field in self.field_map.all_fields():
+            storage_slice = get_field(storage, name)
+            r_data_slice  = get_field(self.r_data, name)
+            w_data_slice  = get_field(self.w_data, name)
+            user          = get_field(self.f, name)
 
-        for field_name, field in self.field_map.all_fields():
-            storage_field = get_slice(storage,     field_name)
-            r_data_field  = get_slice(self.r_data, field_name)
-            w_data_field  = get_slice(self.w_data, field_name)
-            user_port     = get_user_port(field_name)
+            if self.readable and field.intr_read is not None:
+                m.d.comb += r_data_slice.eq(field.intr_read(storage_slice))
 
-            if field.intr_read is not None:
-                m.d.comb += r_data_field.eq(field.intr_read(storage_field))
-
-            if field.intr_write is not None:
+            if self.writable and field.intr_write is not None:
                 with m.If(self.w_stb):
-                    m.d.sync += storage_field.eq(field.intr_write(storage_field, w_data_field))
-
-            if field.user_read is not None:
-                m.d.sync += user_port.r_stb .eq(self.w_stb)
-                m.d.comb += user_port.r_data.eq(field.user_read(storage_field))
+                    m.d.sync += storage_slice.eq(field.intr_write(storage_slice, w_data_slice))
 
             if field.user_write is not None:
-                m.d.comb += user_port.w_ack.eq(self.r_stb)
-                with m.If(user_port.w_stb):
-                    m.d.sync += storage_field.eq(field.user_write(storage_field, user_port.w_data))
+                m.d.comb += user.w_ack.eq(self.r_stb)
+
+                user_w_data = field.user_write(storage_slice, user.w_data)
+                for i in range(len(user.w_mask)):
+                    with m.If(user.w_mask[i]):
+                        m.d.sync += storage_slice[i].eq(user_w_data[i])
+
+            m.d.comb += user.r_data.eq(storage_slice)
+            if self.writable:
+                m.d.sync += user.r_stb.eq(self.w_stb)
 
         return m

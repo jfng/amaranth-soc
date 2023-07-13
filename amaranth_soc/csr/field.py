@@ -1,57 +1,40 @@
-from amaranth_soc import csr
+from .reg import GenericField
 
 
 __all__ = ["R", "W", "RW", "RW1C", "RW1S"]
 
 
-def _read_field(self, field):
-    return field
+# Capabilities
 
-def _write_field(self, field, value):
-    return value
-
-def _clear_field(self, field, value):
-    return field & ~value
-
-def _set_field(self, field, value):
-    return field | value
+class _InitiatorReadable:
+    def intr_read(self, storage):
+        return storage
 
 
-class R(csr.GenericField,
-        intr_read  = _read_field,
-        intr_write = None,
-        user_read  = _read_field,
-        user_write = _write_field):
-    pass
+class _InitiatorWritable:
+    def intr_write(self, storage, w_data):
+        return w_data
 
 
-class W(csr.GenericField,
-        intr_read  = None,
-        intr_write = _write_field,
-        user_read  = _read_field,
-        user_write = None):
-    pass
+class _InitiatorSettable:
+    def intr_write(self, storage, w_data):
+        return storage | w_data
 
 
-class RW(csr.GenericField,
-         intr_read  = _read_field,
-         intr_write = _write_field,
-         user_read  = _read_field,
-         user_write = None):
-    pass
+class _InitiatorClearable:
+    def intr_write(self, storage, w_data):
+        return storage & ~w_data
 
 
-class RW1C(csr.GenericField,
-           intr_read  = _read_field,
-           intr_write = _clear_field,
-           user_read  = _read_field,
-           user_write = _set_field):
-    pass
+class _UserWritable:
+    def user_write(self, storage, w_data):
+        return w_data
 
 
-class RW1S(csr.GenericField,
-           intr_read  = _read_field,
-           intr_write = _set_field,
-           user_read  = _read_field,
-           user_write = _clear_field):
-    pass
+# Field types
+
+class R   (_InitiatorReadable,                      _UserWritable, GenericField): intr_write = None
+class W   (                    _InitiatorWritable,                 GenericField): intr_read  = None; user_write = None
+class RW  (_InitiatorReadable, _InitiatorWritable,                 GenericField): user_write = None
+class RW1C(_InitiatorReadable, _InitiatorClearable, _UserWritable, GenericField): pass
+class RW1S(_InitiatorReadable, _InitiatorSettable,  _UserWritable, GenericField): pass
