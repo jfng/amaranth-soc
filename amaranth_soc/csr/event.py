@@ -2,7 +2,8 @@
 
 from amaranth import *
 
-from . import Element, Multiplexer
+from . import Multiplexer, field
+from .reg import FieldMap, RegisterInterface, Register
 from .. import event
 
 
@@ -30,6 +31,19 @@ class EventMonitor(Elaboratable):
     trigger : :class:`..event.Source.Trigger`
         Trigger mode. See :class:`..event.Source`.
     """
+
+    class _EventEnable(Register):
+        def __init__(self, width):
+            super().__init__(FieldMap({
+                "src": field.RW1S(width),
+            }))
+
+    class _EventPending(RegisterInterface):
+        def __init__(self, width):
+            super().__init__(FieldMap({
+                "src": field.RW1C(width),
+            }))
+
     def __init__(self, *, data_width, alignment=0, trigger="level"):
         choices = ("level", "rise", "fall")
         if not isinstance(trigger, event.Source.Trigger) and trigger not in choices:
@@ -52,10 +66,10 @@ class EventMonitor(Elaboratable):
         if self._frozen:
             return
         self._monitor = event.Monitor(self._map, trigger=self._trigger)
-        self._enable  = Element(self._map.size, "rw")
-        self._pending = Element(self._map.size, "rw")
-        self._mux.add(self._enable,  extend=True)
-        self._mux.add(self._pending, extend=True)
+        self._enable  = self._EventEnable (self._map.size)
+        self._pending = self._EventPending(self._map.size)
+        self._mux.add(self._enable,  name="enable",  extend=True)
+        self._mux.add(self._pending, name="pending", extend=True)
         self._frozen  = True
 
     @property
@@ -93,14 +107,13 @@ class EventMonitor(Elaboratable):
 
         m = Module()
         m.submodules.monitor = self._monitor
+        m.submodules.enable  = self._enable
         m.submodules.mux     = self._mux
 
-        with m.If(self._enable.w_stb):
-            m.d.sync += self._monitor.enable.eq(self._enable.w_data)
-        m.d.comb += self._enable.r_data.eq(self._monitor.enable)
+        m.d.comb += self._monitor.enable.eq(self._enable.f.src.r_data)
 
         with m.If(self._pending.w_stb):
-            m.d.comb += self._monitor.clear.eq(self._pending.w_data)
-        m.d.comb += self._pending.r_data.eq(self._monitor.pending)
+            m.d.comb += self._monitor.clear.eq(self._pending.w_data.src)
+        m.d.comb += self._pending.r_data.src.eq(self._monitor.pending)
 
         return m

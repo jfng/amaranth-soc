@@ -70,12 +70,12 @@ class EventMonitorTestCase(unittest.TestCase):
         enable,  enable_name,  enable_range  = resources[0]
         pending, pending_name, pending_range = resources[1]
         self.assertEqual(
-            (enable.width, enable.access, enable_range),
-            (2, Element.Access.RW, (0, 1))
+            (enable.width, enable_range),
+            (2, (0, 1))
         )
         self.assertEqual(
-            (pending.width, pending.access, pending_range),
-            (2, Element.Access.RW, (1, 2))
+            (pending.width, pending_range),
+            (2, (1, 2))
         )
 
     def test_freeze_idempotent(self):
