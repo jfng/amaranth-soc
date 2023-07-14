@@ -42,8 +42,18 @@ class GenericField(metaclass=ABCMeta):
     def reset(self):
         return self._reset
 
+    def __eq__(self, other):
+        """Compare register fields.
+
+        Two fields are equal if they have the same type, shape and reset value.
+        """
+        return type(self) == type(other) and \
+                Shape.cast(self._shape) == Shape.cast(other.shape) and \
+                Const.cast(self._reset).value == Const.cast(other.reset).value
+
+    @staticmethod
     @abstractmethod
-    def intr_read(self, storage):
+    def intr_read(storage):
         """Read from the bus initiator.
 
         Parameters
@@ -56,8 +66,9 @@ class GenericField(metaclass=ABCMeta):
         The :class:`Value` of this field returned to the bus initiator.
         """
 
+    @staticmethod
     @abstractmethod
-    def intr_write(self, storage, w_data):
+    def intr_write(storage, w_data):
         """Write from the bus initiator.
 
         Parameters
@@ -72,8 +83,9 @@ class GenericField(metaclass=ABCMeta):
         The :class:`Value` of this field written to the register storage.
         """
 
+    @staticmethod
     @abstractmethod
-    def user_write(self, storage, w_data):
+    def user_write(storage, w_data):
         """Write from user logic.
 
         Parameters
@@ -107,13 +119,13 @@ class FieldMap:
         offset = 0
         self._fields = {}
 
-        if not isinstance(fields, Mapping):
-            raise TypeError("Fields must be provided as a mapping, not {!r}"
+        if not isinstance(fields, Mapping) or len(fields) == 0:
+            raise TypeError("Fields must be provided as a non-empty mapping, not {!r}"
                             .format(fields))
 
         for key, field in fields.items():
-            if not isinstance(key, str):
-                raise TypeError("Field name must be a string, not {!r}"
+            if not isinstance(key, str) or not key:
+                raise TypeError("Field name must be a non-empty string, not {!r}"
                                 .format(key))
             if not isinstance(field, (GenericField, FieldMap)):
                 raise TypeError("Field must be a GenericField or a FieldMap, not {!r}"
@@ -134,8 +146,28 @@ class FieldMap:
     @property
     def shape(self):
         return data.StructLayout({
-            name: field.shape for name, field in iter(self)
+            name: field.shape for name, field in self
         })
+
+    @property
+    def reset(self):
+        """Get the reset value associated with the field map.
+
+        Returns
+        -------
+        A nested dict of a :class:`str` as keys to an :class:`int` or integral Enum, depending on
+        the reset value of each :class:`GenericField`.
+        """
+        reset = dict()
+        for key, field in self:
+            if isinstance(field, GenericField):
+                reset[key] = field.reset
+            elif isinstance(field, FieldMap):
+                for sub_name, sub_field in field.all_fields():
+                    reset[key] = field.reset
+            else:
+                assert False # :nocov:
+        return reset
 
     def __getitem__(self, key):
         """Retrieve a field from the field map.
@@ -175,7 +207,7 @@ class FieldMap:
         :class:`GenericField`
             Field description.
         """
-        for key, field in iter(self):
+        for key, field in self:
             if isinstance(field, GenericField):
                 yield (key,), field
             elif isinstance(field, FieldMap):
@@ -184,24 +216,14 @@ class FieldMap:
             else:
                 assert False # :nocov:
 
-    def resets(self):
-        """Get the reset value associated with the field map.
+    def __eq__(self, other):
+        """Compare field maps.
 
-        Returns
-        -------
-        A nested dict of a :class:`str` as keys to an :class:`int` or integral Enum, depending on
-        the reset value of each :class:`GenericField`.
+        Two field maps are equal if they have the same size and the same fields under the same name
+        in the same order.
         """
-        resets = dict()
-        for key, field in iter(self):
-            if isinstance(field, GenericField):
-                resets[key] = field.reset
-            elif isinstance(field, FieldMap):
-                for sub_name, sub_field in field.all_fields():
-                    resets[key] = field.resets()
-            else:
-                assert False # :nocov:
-        return resets
+        return isinstance(other, FieldMap) and self.size == other.size and \
+                list(self) == list(other)
 
 
 class FieldArray(FieldMap):
@@ -221,11 +243,10 @@ class FieldArray(FieldMap):
     """
     def __init__(self, field, length):
         if not isinstance(field, (GenericField, FieldMap)):
-            raise TypeError("Field must be a GenericField, a FieldMap or a FieldArray, "
-                            "not {!r}"
+            raise TypeError("Field must be a GenericField or a FieldMap, not {!r}"
                             .format(field))
-        if not isinstance(length, int) or length < 0:
-            raise TypeError("Field array length must be a non-negative integer, not {!r} "
+        if not isinstance(length, int) or length <= 0:
+            raise TypeError("Field array length must be a positive integer, not {!r}"
                             .format(length))
 
         self._field  = field
@@ -285,15 +306,16 @@ class RegisterInterface(Element):
         from Python :term:`variable annotations <python:variable annotations>`.
     """
     def __init__(self, field_map=None):
-        if field_map is None:
-            if not hasattr(self, "__annotations__"):
-                raise ValueError("Register {!r} doesn't have any fields"
-                                 .format(self))
-            field_map = FieldMap(self.__annotations__)
+        if field_map is None and hasattr(self, "__annotations__"):
+            fields = {}
+            for key, field in self.__annotations__.items():
+                if isinstance(field, (GenericField, FieldMap)):
+                    fields[key] = field
+
+            field_map = FieldMap(fields)
 
         if not isinstance(field_map, FieldMap):
-            raise TypeError("Register fields must be provided as a FieldMap or a FieldArray, "
-                            "not {!r}"
+            raise TypeError("Field map must be a FieldMap, not {!r}"
                             .format(field_map))
 
         super().__init__(field_map.size)
@@ -327,25 +349,21 @@ class RegisterInterface(Element):
 
 
 class Register(RegisterInterface, Elaboratable):
-    """CSR register.
-
-    Attributes
-    ----------
-    field_map : :class:`FieldMap`
-        Description of the register fields. See also :class:`RegisterInterface`.
-    f : :class:`Register.UserPort`
-        Port to user logic.
-    """
-
     class UserPort:
-        def __init__(self, field_map, name=None):
+        def __init__(self, field_map, name=""):
             assert isinstance(field_map, FieldMap)
             assert isinstance(name, str)
 
             self._fields = {}
 
             for key, field in field_map:
-                field_name = str(key) if name is None else f"{name}__{key}"
+                orig_key = key
+
+                # Indices are prefixed with 'n' to avoid names starting with a digit.
+                if isinstance(key, int):
+                    key = f"n{key}"
+
+                field_name = "{}{}{}".format(name, "__" if name else "", key)
 
                 if isinstance(field, GenericField):
                     port = Register.FieldPort(field, field_name)
@@ -354,7 +372,7 @@ class Register(RegisterInterface, Elaboratable):
                 else:
                     assert False # :nocov:
 
-                self._fields[key] = port
+                self._fields[orig_key] = port
 
         def __getitem__(self, key):
             return self._fields[key]
@@ -367,6 +385,9 @@ class Register(RegisterInterface, Elaboratable):
             assert isinstance(field, GenericField)
             assert isinstance(name, str)
 
+            self.field = field
+            self.name  = name
+
             if field.user_write is not None:
                 self.w_mask = Signal(field.shape, name=f"{name}__w_mask")
                 self.w_data = Signal(field.shape, name=f"{name}__w_data")
@@ -375,6 +396,15 @@ class Register(RegisterInterface, Elaboratable):
             self.r_data = Signal(field.shape, name=f"{name}__r_data")
             self.r_stb  = Signal(name=f"{name}__r_stb")
 
+    """CSR register.
+
+    Attributes
+    ----------
+    field_map : :class:`FieldMap`
+        Description of the register fields. See also :class:`RegisterInterface`.
+    f : :class:`Register.UserPort`
+        Port to user logic.
+    """
     def __init__(self, field_map=None):
         super().__init__(field_map)
         self._f = Register.UserPort(field_map, name="")
@@ -386,7 +416,7 @@ class Register(RegisterInterface, Elaboratable):
     def elaborate(self, platform):
         m = Module()
 
-        storage = Signal(self.field_map.shape, reset=self.field_map.resets())
+        storage = Signal(self.field_map.shape, reset=self.field_map.reset)
 
         def get_field(root, field_name):
             node = root
@@ -400,23 +430,40 @@ class Register(RegisterInterface, Elaboratable):
             w_data_slice  = get_field(self.w_data, name)
             user          = get_field(self.f, name)
 
-            if self.readable and field.intr_read is not None:
+            if field.intr_read is not None:
                 m.d.comb += r_data_slice.eq(field.intr_read(storage_slice))
 
-            if self.writable and field.intr_write is not None:
-                with m.If(self.w_stb):
-                    m.d.sync += storage_slice.eq(field.intr_write(storage_slice, w_data_slice))
+            m.d.comb += user.r_data.eq(storage_slice)
+
+            # We assume no precedence rule between writes from initiator or user logic. Both write
+            # values are masked with their enables then OR-ed together as a single value, which is
+            # only written to storage if a write enable is asserted.
+            #
+            # A field can use this to implement its own precedence rule: one side (e.g. initiator)
+            # can only set a bit, while the other (e.g. user logic) can only clear it. Setting the
+            # bit would always have precedence. See csr.field.RW1C and RW1S for an example.
+
+            if field.intr_write is not None:
+                intr_w_data = field.intr_write(storage_slice, w_data_slice)
+                m.d.sync += user.r_stb.eq(self.w_stb)
 
             if field.user_write is not None:
+                user_w_data = field.user_write(storage_slice, user.w_data)
                 m.d.comb += user.w_ack.eq(self.r_stb)
 
-                user_w_data = field.user_write(storage_slice, user.w_data)
-                for i in range(len(user.w_mask)):
-                    with m.If(user.w_mask[i]):
-                        m.d.sync += storage_slice[i].eq(user_w_data[i])
+            for i, storage_bit in enumerate(storage_slice):
+                storage_bit_en   = 0
+                storage_bit_next = 0
 
-            m.d.comb += user.r_data.eq(storage_slice)
-            if self.writable:
-                m.d.sync += user.r_stb.eq(self.w_stb)
+                if field.intr_write is not None:
+                    storage_bit_en   |= self.w_stb
+                    storage_bit_next |= Mux(self.w_stb, intr_w_data[i], 0)
+
+                if field.user_write is not None:
+                    storage_bit_en   |= user.w_mask[i]
+                    storage_bit_next |= Mux(user.w_mask[i], user_w_data[i], 0)
+
+                with m.If(storage_bit_en):
+                    m.d.sync += storage_bit.eq(storage_bit_next)
 
         return m
