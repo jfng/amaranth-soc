@@ -114,6 +114,8 @@ class FieldMap:
         The amount of bits required to store the field map.
     shape : :class:`StructLayout`
         Shape of the field map.
+    reset : dict
+        The reset value associated with the field map.
     """
     def __init__(self, fields):
         offset = 0
@@ -145,29 +147,11 @@ class FieldMap:
 
     @property
     def shape(self):
-        return data.StructLayout({
-            name: field.shape for name, field in self
-        })
+        return data.StructLayout({name: field.shape for name, field in self})
 
     @property
     def reset(self):
-        """Get the reset value associated with the field map.
-
-        Returns
-        -------
-        A nested dict of a :class:`str` as keys to an :class:`int` or integral Enum, depending on
-        the reset value of each :class:`GenericField`.
-        """
-        reset = dict()
-        for key, field in self:
-            if isinstance(field, GenericField):
-                reset[key] = field.reset
-            elif isinstance(field, FieldMap):
-                for sub_name, sub_field in field.all_fields():
-                    reset[key] = field.reset
-            else:
-                assert False # :nocov:
-        return reset
+        return {key: field.reset for key, field in self}
 
     def __getitem__(self, key):
         """Retrieve a field from the field map.
@@ -260,6 +244,10 @@ class FieldArray(FieldMap):
     @property
     def shape(self):
         return data.ArrayLayout(self._field.shape, self._length)
+
+    @property
+    def reset(self):
+        return [self._field.reset for key in range(self._length)]
 
     def __getitem__(self, key):
         """Retrieve a field from the field array.

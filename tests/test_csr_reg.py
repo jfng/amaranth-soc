@@ -141,7 +141,7 @@ class FieldArrayTestCase(unittest.TestCase):
 
         self.assertEqual(field_array.size, 16)
         self.assertEqual(field_array.shape, data.ArrayLayout(unsigned(2), 8))
-        self.assertEqual(field_array.reset, dict(enumerate(3 for _ in range(8))))
+        self.assertEqual(field_array.reset, [3 for _ in range(8)])
         for i in range(8):
             self.assertEqual(field_array[i], csr.field.R(unsigned(2), reset=3))
 
@@ -152,8 +152,7 @@ class FieldArrayTestCase(unittest.TestCase):
         self.assertEqual(field_array.size, 16)
         self.assertEqual(field_array.shape,
                          data.ArrayLayout(data.ArrayLayout(unsigned(1), length=4), length=4))
-        self.assertEqual(field_array.reset,
-                         dict(enumerate(dict(enumerate(1 for _ in range(4))) for _ in range(4))))
+        self.assertEqual(field_array.reset, [[1 for _ in range(4)] for _ in range(4)])
         for i in range(4):
             self.assertEqual(field_array[i],
                              csr.FieldArray(csr.field.R(1, reset=1), length=4))
@@ -172,8 +171,7 @@ class FieldArrayTestCase(unittest.TestCase):
                              "b": data.ArrayLayout(unsigned(1), length=4),
                          }), length=4))
         self.assertEqual(field_array.reset,
-                         dict(enumerate({"a": 0xa, "b": dict(enumerate(0 for _ in range(4)))}
-                                        for _ in range(4))))
+                         [{"a": 0xa, "b":[0,0,0,0]} for _ in range(4)])
         for i in range(4):
             self.assertEqual(field_array[i], csr.FieldMap({
                 "a": csr.field.R(unsigned(4), reset=0xa),
