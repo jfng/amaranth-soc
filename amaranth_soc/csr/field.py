@@ -1,57 +1,105 @@
-from .reg import GenericField
+from amaranth import *
+
+from .reg import Field
 
 
 __all__ = ["R", "W", "RW", "RW1C", "RW1S"]
 
 
-# Capabilities
+class R(Field):
+    def __init__(self, shape):
+        super().__init__(shape, access="r")
 
-class _IntrRead:
-    @staticmethod
-    def intr_read(storage):
-        return storage
-
-
-class _IntrWrite:
-    @staticmethod
-    def intr_write(storage, w_data):
-        return w_data
+    def elaborate(self, platform):
+        m = Module()
+        m.d.comb += self.port.r_data.eq(self.data)
+        return m
 
 
-class _IntrSet:
-    @staticmethod
-    def intr_write(storage, w_data):
-        return storage | w_data
+class W(Field):
+    def __init__(self, shape):
+        super().__init__(shape, access="w")
+
+    def elaborate(self, platform):
+        m = Module()
+        m.d.comb += self.data.eq(self.port.w_data)
+        return m
 
 
-class _IntrClear:
-    @staticmethod
-    def intr_write(storage, w_data):
-        return storage & ~w_data
+class RW(Field):
+    def __init__(self, shape, *, reset=0):
+        super().__init__(shape, access="rw")
+        self._storage = Signal(shape, reset=reset)
+        self._reset   = reset
+
+    @property
+    def reset(self):
+        return self._reset
+
+    def elaborate(self, platform):
+        m = Module()
+
+        with m.If(self.port.w_stb):
+            m.d.sync += self._storage.eq(self.port.w_data)
+
+        m.d.comb += [
+            self.port.r_data.eq(self._storage),
+            self.data.eq(self._storage),
+        ]
+
+        return m
 
 
-class _UserWrite:
-    @staticmethod
-    def user_write(storage, w_data):
-        return w_data
+class RW1C(Field):
+    def __init__(self, shape, *, reset=0):
+        super().__init__(shape, access="rw")
+        self.set      = Signal(shape)
+        self._storage = Signal(shape, reset=reset)
+        self._reset   = reset
+
+    @property
+    def reset(self):
+        return self._reset
+
+    def elaborate(self, platform):
+        m = Module()
+
+        for i, storage_bit in enumerate(self._storage):
+            with m.If(self.port.w_stb & self.port.w_data[i]):
+                m.d.sync += storage_bit.eq(0)
+            with m.If(self.set[i]):
+                m.d.sync += storage_bit.eq(1)
+
+        m.d.comb += [
+            self.port.r_data.eq(self._storage),
+            self.data.eq(self._storage),
+        ]
+
+        return m
 
 
-class _UserSet:
-    @staticmethod
-    def user_write(storage, w_data):
-        return storage | w_data
+class RW1S(Field):
+    def __init__(self, shape, *, reset=0):
+        super().__init__(shape, access="rw")
+        self.clear    = Signal(shape)
+        self._storage = Signal(shape, reset=reset)
 
+    @property
+    def reset(self):
+        return self._reset
 
-class _UserClear:
-    @staticmethod
-    def user_write(storage, w_data):
-        return storage & ~w_data
+    def elaborate(self, platform):
+        m = Module()
 
+        for i, storage_bit in enumerate(self._storage):
+            with m.If(self.clear[i]):
+                m.d.sync += storage_bit.eq(0)
+            with m.If(self.port.w_stb & self.port.w_data[i]):
+                m.d.sync += storage_bit.eq(1)
 
-# Field types
+        m.d.comb += [
+            self.port.r_data.eq(self._storage),
+            self.data.eq(self._storage),
+        ]
 
-class R   (_IntrRead,             _UserWrite, GenericField): intr_write = None
-class W   (           _IntrWrite,             GenericField): intr_read  = None; user_write = None
-class RW  (_IntrRead, _IntrWrite,             GenericField): user_write = None
-class RW1C(_IntrRead, _IntrClear, _UserSet,   GenericField): pass
-class RW1S(_IntrRead, _IntrSet,   _UserClear, GenericField): pass
+        return m

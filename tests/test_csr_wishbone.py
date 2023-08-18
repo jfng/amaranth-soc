@@ -10,7 +10,7 @@ from amaranth_soc.csr.wishbone import *
 
 class MockRegister(Elaboratable):
     def __init__(self, width):
-        self.element = csr.RegisterInterface(csr.FieldMap({"data": csr.field.RW(width)}))
+        self.element = csr.Element(width, "rw")
         self.r_count = Signal(8)
         self.w_count = Signal(8)
         self.data    = Signal(width)

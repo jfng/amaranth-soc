@@ -3,7 +3,7 @@
 from amaranth import *
 
 from . import Multiplexer, field
-from .reg import FieldMap, RegisterInterface, Register
+from .reg import FieldMap, Register
 from .. import event
 
 
@@ -38,7 +38,7 @@ class EventMonitor(Elaboratable):
                 "src": field.RW1S(width),
             }))
 
-    class _EventPending(RegisterInterface):
+    class _EventPending(Register):
         def __init__(self, width):
             super().__init__(FieldMap({
                 "src": field.RW1C(width),

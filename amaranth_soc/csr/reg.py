@@ -1,124 +1,125 @@
-from abc import ABCMeta, abstractmethod
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
+import enum
 from amaranth import *
-from amaranth.lib import data
 
+from ..memory import MemoryMap
 from .bus import Element
 
 
-__all__ = ["GenericField", "FieldMap", "FieldArray", "RegisterInterface", "Register"]
+__all__ = ["FieldPort", "Field", "FieldMap", "FieldArray", "Register", "Cluster"]
 
 
-class GenericField(metaclass=ABCMeta):
-    """A generic register field.
+class FieldPort:
+    class Access(enum.Enum):
+        """Field access mode."""
+        R  = "r"
+        W  = "w"
+        RW = "rw"
 
-    Attributes
+        def readable(self):
+            return self == self.R or self == self.RW
+
+        def writable(self):
+            return self == self.W or self == self.RW
+
+    """CSR register field port.
+
+    An interface between a CSR register and one of its fields.
+
+    Parameters
     ----------
     shape : :ref:`shape-castable <lang-shapecasting>`
         Shape of the field.
-    reset : int or integral Enum
-        Reset or default value. Defaults to 0.
+    access : :class:`FieldPort.Access`
+        Field access mode.
+
+    Attributes
+    ----------
+    r_data : Signal(shape)
+        Read data. Must always be valid, and is sampled when ``r_stb`` is asserted.
+    r_stb : Signal()
+        Read strobe. Fields with read side effects should perform them when this strobe is
+        asserted.
+    w_data : Signal(shape)
+        Write data. Valid only when ``w_stb`` is asserted.
+    w_stb : Signal()
+        Write strobe. Fields should update their value or perform the write side effect when
+        this strobe is asserted.
+
+    Raises
+    ------
+    :exc:`TypeError`
+        If ``shape`` is not a shape-castable object.
+    :exc:`ValueError`
+        If ``access`` is not a member of :class:`FieldPort.Access`.
     """
-    def __init__(self, shape, *, reset=0):
+    def __init__(self, shape, access):
         try:
             shape = Shape.cast(shape)
         except TypeError as e:
             raise TypeError("Field shape must be a shape-castable object, not {!r}"
                             .format(shape)) from e
-        self._shape = shape
+        if not isinstance(access, FieldPort.Access) and access not in ("r", "w", "rw"):
+            raise ValueError("Access mode must be one of \"r\", \"w\", or \"rw\", not {!r}"
+                             .format(access))
+        self._shape  = shape
+        self._access = FieldPort.Access(access)
 
-        try:
-            Const.cast(reset)
-        except TypeError as e:
-            raise TypeError("Reset value must be a constant-castable expression, not {!r}"
-                            .format(reset)) from e
-        self._reset = reset
+        self.r_data  = Signal(shape)
+        self.r_stb   = Signal()
+        self.w_data  = Signal(shape)
+        self.w_stb   = Signal()
 
     @property
     def shape(self):
         return self._shape
 
     @property
-    def reset(self):
-        return self._reset
+    def access(self):
+        return self._access
 
-    def __eq__(self, other):
-        """Compare register fields.
-
-        Two fields are equal if they have the same type, shape and reset value.
-        """
-        return type(self) == type(other) and \
-                Shape.cast(self._shape) == Shape.cast(other.shape) and \
-                Const.cast(self._reset).value == Const.cast(other.reset).value
-
-    @staticmethod
-    @abstractmethod
-    def intr_read(storage):
-        """Read from the bus initiator.
-
-        Parameters
-        ----------
-        storage : :class:`Value`
-            The value of this field in the register storage.
-
-        Returns
-        -------
-        The :class:`Value` of this field returned to the bus initiator.
-        """
-
-    @staticmethod
-    @abstractmethod
-    def intr_write(storage, w_data):
-        """Write from the bus initiator.
-
-        Parameters
-        ----------
-        storage : :class:`Value`
-            The value of this field in the register storage.
-        w_data : :class:`Value`
-            The value written to this field by the bus initiator.
-
-        Returns
-        -------
-        The :class:`Value` of this field written to the register storage.
-        """
-
-    @staticmethod
-    @abstractmethod
-    def user_write(storage, w_data):
-        """Write from user logic.
-
-        Parameters
-        ----------
-        storage : :class:`Value`
-            The value of this field in the register storage.
-        w_data : :class:`Value`
-            The value written to this field by user logic.
-
-        Returns
-        -------
-        The :class:`Value` of this field written to the register storage.
-        """
+    def __repr__(self):
+        return "FieldPort({}, {})".format(self.shape, self.access)
 
 
-class FieldMap:
+class Field(Elaboratable):
+    """A generic register field.
+
+    Parameters
+    ----------
+    shape : :ref:`shape-castable <lang-shapecasting>`
+        Shape of the field.
+    access : :class:`FieldPort.Access`
+        Field access mode.
+
+    Attributes
+    ----------
+    port : :class:`FieldPort`
+        Field port.
+    data : Signal(shape)
+        Field value.
+    """
+    def __init__(self, shape, access):
+        self.port = FieldPort(shape, access)
+        self.data = Signal(shape)
+
+    @property
+    def shape(self):
+        return self.port.shape
+
+    @property
+    def access(self):
+        return self.port.access
+
+
+class FieldMap(Mapping):
     """A mapping of CSR register fields.
 
     Parameters
     ----------
-    fields : dict of :class:`str` to one of :class:`GenericField` or :class:`FieldMap`.
-
-    Attributes
-    ----------
-    size : int
-        The amount of bits required to store the field map.
-    shape : :class:`StructLayout`
-        Shape of the field map.
-    reset : dict
-        The reset value associated with the field map.
+    fields : dict of :class:`str` to one of :class:`Field` or :class:`FieldMap`.
     """
     def __init__(self, fields):
-        offset = 0
         self._fields = {}
 
         if not isinstance(fields, Mapping) or len(fields) == 0:
@@ -129,44 +130,52 @@ class FieldMap:
             if not isinstance(key, str) or not key:
                 raise TypeError("Field name must be a non-empty string, not {!r}"
                                 .format(key))
-            if not isinstance(field, (GenericField, FieldMap)):
-                raise TypeError("Field must be a GenericField or a FieldMap, not {!r}"
+            if not isinstance(field, (Field, FieldMap, FieldArray)):
+                raise TypeError("Field must be a Field or a FieldMap or a FieldArray, not {!r}"
                                 .format(field))
             self._fields[key] = field
 
-            if isinstance(field, GenericField):
-                offset += Shape.cast(field.shape).width
-            else:
-                offset += field.size
-
-        self._size = offset
-
-    @property
-    def size(self):
-        return self._size
-
-    @property
-    def shape(self):
-        return data.StructLayout({name: field.shape for name, field in self})
-
-    @property
-    def reset(self):
-        return {key: field.reset for key, field in self}
-
     def __getitem__(self, key):
-        """Retrieve a field from the field map.
+        """Access a field by name or index.
 
         Returns
         --------
-        :class:`GenericField` or :class:`FieldMap`
+        :class:`Field` or :class:`FieldMap` or :class:`FieldArray`
             The field associated with ``key``.
 
         Raises
         ------
         :exc:`KeyError`
-            If there is not field associated with ``key``.
+            If there is no field associated with ``key``.
         """
         return self._fields[key]
+
+    def __getattr__(self, name):
+        """Access a field by name.
+
+        Returns
+        -------
+        :class:`Field` or :class:`FieldMap` or :class:`FieldArray`
+            The field associated with ``name``.
+
+        Raises
+        ------
+        :exc:`AttributeError`
+            If the field map does not have a field associated with ``name``.
+        :exc:`AttributeError`
+            If ``name`` is reserved (i.e. starts with an underscore).
+        """
+        try:
+            item = self[name]
+        except KeyError:
+            raise AttributeError("Field map does not have a field {!r}; "
+                                 "did you mean one of: {}?"
+                                 .format(name, ", ".join(repr(name) for name in self.keys())))
+        if name.startswith("_"):
+            raise AttributeError("Field map field {!r} has a reserved name and may only be "
+                                 "accessed by indexing"
+                                 .format(name))
+        return item
 
     def __iter__(self):
         """Iterate over the field map.
@@ -175,47 +184,38 @@ class FieldMap:
         ------
         :class:`str`
             Key (name) for accessing the field.
-        :class:`GenericField` or :class:`FieldMap`
-            Field description.
         """
-        for key, field in self._fields.items():
-            yield key, field
+        yield from self._fields
 
-    def all_fields(self):
+    def __len__(self):
+        return len(self._fields)
+
+    def flatten(self):
         """Recursively iterate over the field map.
 
         Yields
         ------
         iter(:class:`str`)
-            Name of the field. It is prefixed by the name of every nested field map.
-        :class:`GenericField`
-            Field description.
+            Name of the field. It is prefixed by the name of every nested field collection.
+        :class:`Field`
+            Register field.
         """
-        for key, field in self:
-            if isinstance(field, GenericField):
+        for key, field in self.items():
+            if isinstance(field, Field):
                 yield (key,), field
-            elif isinstance(field, FieldMap):
-                for sub_name, sub_field in field.all_fields():
+            elif isinstance(field, (FieldMap, FieldArray)):
+                for sub_name, sub_field in field.flatten():
                     yield (key, *sub_name), sub_field
             else:
                 assert False # :nocov:
 
-    def __eq__(self, other):
-        """Compare field maps.
 
-        Two field maps are equal if they have the same size and the same fields under the same name
-        in the same order.
-        """
-        return isinstance(other, FieldMap) and self.size == other.size and \
-                list(self) == list(other)
-
-
-class FieldArray(FieldMap):
+class FieldArray(Sequence):
     """An array of CSR register fields.
 
     Parameters
     ----------
-    field : :class:`GenericField`
+    field : :class:`Field`
     length : :class:`int`
 
     Attributes
@@ -226,8 +226,8 @@ class FieldArray(FieldMap):
         Shape of the field array.
     """
     def __init__(self, field, length):
-        if not isinstance(field, (GenericField, FieldMap)):
-            raise TypeError("Field must be a GenericField or a FieldMap, not {!r}"
+        if not isinstance(field, (Field, FieldMap, FieldArray)):
+            raise TypeError("Field must be a Field or a FieldMap or a FieldArray, not {!r}"
                             .format(field))
         if not isinstance(length, int) or length <= 0:
             raise TypeError("Field array length must be a positive integer, not {!r}"
@@ -236,222 +236,237 @@ class FieldArray(FieldMap):
         self._field  = field
         self._length = length
 
-        if isinstance(field, GenericField):
-            self._size = Shape.cast(field.shape).width * length
-        else:
-            self._size = field.size * length
-
-    @property
-    def shape(self):
-        return data.ArrayLayout(self._field.shape, self._length)
-
-    @property
-    def reset(self):
-        return [self._field.reset for key in range(self._length)]
-
     def __getitem__(self, key):
-        """Retrieve a field from the field array.
+        """Access a field by index.
 
         Returns
         --------
-        :class:`GenericField` or :class:`FieldMap`
+        :class:`Field` or :class:`FieldMap` or :class:`FieldArray`
             The field associated with ``key``.
 
         Raises
         ------
-        :exc:`KeyError`
+        :exc:`IndexError`
             If ``key`` is out of bounds.
         :exc:`TypeError`
             If ``key`` is not an :class:`int`.
         """
         if isinstance(key, int):
             if key not in range(-self._length, self._length):
-                raise KeyError(key)
+                raise IndexError(key)
             return self._field
         raise TypeError("Cannot index field array with {!r}".format(key))
 
-    def __iter__(self):
-        """Iterate over the field array.
+    def __len__(self):
+        return self._length
+
+    def flatten(self):
+        """Recursively iterate over the field array.
 
         Yields
         ------
-        key : :class:`int`
-            Key (index) for accessing the field.
-        field : :class:`GenericField` or :class:`FieldMap`
-            Field description.
+        iter(:class:`str`)
+            Name of the field. It is prefixed by the name of every nested field collection.
+        :class:`Field`
+            Register field.
         """
         for key in range(self._length):
-            yield key, self._field
+            if isinstance(self._field, Field):
+                yield (key,), self._field
+            elif isinstance(self._field, (FieldMap, FieldArray)):
+                for sub_name, sub_field in self._field.flatten():
+                    yield (key, *sub_name), sub_field
+            else:
+                assert False # :nocov:
+
+    def __eq__(self, other):
+        return isinstance(other, FieldArray) and list(self) == list(other)
 
 
-class RegisterInterface(Element):
-    """CSR register interface.
+class Register(Elaboratable):
+    """CSR register.
 
     Parameters
     ----------
-    field_map : :class:`FieldMap`
-        Description of the register fields. If ``None`` (default), a :class:`FieldMap` is created
+    access : :class:`Element.Access`
+        Register access mode.
+    fields : :class:`FieldMap` or :class:`FieldArray`
+        Collection of register fields. If ``None`` (default), a :class:`FieldMap` is created
         from Python :term:`variable annotations <python:variable annotations>`.
-    """
-    def __init__(self, field_map=None):
-        if field_map is None and hasattr(self, "__annotations__"):
-            fields = {}
-            for key, field in self.__annotations__.items():
-                if isinstance(field, (GenericField, FieldMap)):
-                    fields[key] = field
-
-            field_map = FieldMap(fields)
-
-        if not isinstance(field_map, FieldMap):
-            raise TypeError("Field map must be a FieldMap, not {!r}"
-                            .format(field_map))
-
-        super().__init__(field_map.size)
-
-        self._field_map = field_map
-        self._readable  = False
-        self._writable  = False
-
-        for name, field in self.field_map.all_fields():
-            if field.intr_read is not None:
-                self._readable = True
-            if field.intr_write is not None:
-                self._writable = True
-
-        self.w_data = Signal(self.field_map.shape)
-        self.w_stb  = Signal()
-        self.r_data = Signal(self.field_map.shape)
-        self.r_stb  = Signal()
-
-    @property
-    def field_map(self):
-        return self._field_map
-
-    @property
-    def readable(self):
-        return self._readable
-
-    @property
-    def writable(self):
-        return self._writable
-
-
-class Register(RegisterInterface, Elaboratable):
-    class UserPort:
-        def __init__(self, field_map, name=""):
-            assert isinstance(field_map, FieldMap)
-            assert isinstance(name, str)
-
-            self._fields = {}
-
-            for key, field in field_map:
-                orig_key = key
-
-                # Indices are prefixed with 'n' to avoid names starting with a digit.
-                if isinstance(key, int):
-                    key = f"n{key}"
-
-                field_name = "{}{}{}".format(name, "__" if name else "", key)
-
-                if isinstance(field, GenericField):
-                    port = Register.FieldPort(field, field_name)
-                elif isinstance(field, FieldMap):
-                    port = Register.UserPort(field, field_name)
-                else:
-                    assert False # :nocov:
-
-                self._fields[orig_key] = port
-
-        def __getitem__(self, key):
-            return self._fields[key]
-
-        def __getattr__(self, name):
-            return self[name]
-
-    class FieldPort:
-        def __init__(self, field, name):
-            assert isinstance(field, GenericField)
-            assert isinstance(name, str)
-
-            self.field = field
-            self.name  = name
-
-            if field.user_write is not None:
-                self.w_mask = Signal(field.shape, name=f"{name}__w_mask")
-                self.w_data = Signal(field.shape, name=f"{name}__w_data")
-                self.w_ack  = Signal(name=f"{name}__w_ack")
-
-            self.r_data = Signal(field.shape, name=f"{name}__r_data")
-            self.r_stb  = Signal(name=f"{name}__r_stb")
-
-    """CSR register.
 
     Attributes
     ----------
-    field_map : :class:`FieldMap`
-        Description of the register fields. See also :class:`RegisterInterface`.
-    f : :class:`Register.UserPort`
-        Port to user logic.
+    element : :class:`Element`
+        Interface between this register and a CSR bus primitive.
+    f : :class:`FieldMap` or :class:`FieldArray`
+        Collection of register fields.
+
+    Raises
+    ------
+    :exc:`ValueError`
+        If ``access`` is not a member of :class:`Element.Access`.
+    :exc:`TypeError`
+        If ``fields`` is not ``None`` or a :class:`FieldMap` or a :class:`FieldArray`.
+    :exc:`ValueError`
+        If ``access`` is not readable and at least one field is readable.
+    :exc:`ValueError`
+        If ``access`` is not writable and at least one field is writable.
     """
-    def __init__(self, field_map=None):
-        super().__init__(field_map)
-        self._f = Register.UserPort(field_map, name="")
+    def __init__(self, access, fields=None):
+        if not isinstance(access, Element.Access) and access not in ("r", "w", "rw"):
+            raise ValueError("Access mode must be one of \"r\", \"w\", or \"rw\", not {!r}"
+                             .format(access))
+        access = Element.Access(access)
+
+        if fields is None and hasattr(self, "__annotations__"):
+            fields = {}
+            for key, field in self.__annotations__.items():
+                if isinstance(field, (Field, FieldMap, FieldArray)):
+                    fields[key] = field
+            fields = FieldMap(fields)
+
+        if not isinstance(fields, (FieldMap, FieldArray)):
+            raise TypeError("Field collection must be a FieldMap or a FieldArray, not {!r}"
+                            .format(fields))
+
+        width = 0
+        for field_name, field in fields.flatten():
+            width += Shape.cast(field.shape).width
+            if field.access.readable() and not access.readable():
+                raise ValueError("Field {} is readable, but register access mode is '{}'"
+                                 .format("__".join(field_name), access))
+            if field.access.writable() and not access.writable():
+                raise ValueError("Field {} is writable, but register access mode is '{}'"
+                                 .format("__".join(field_name), access))
+
+        self.element = Element(width, access)
+        self._fields = fields
 
     @property
     def f(self):
-        return self._f
+        return self._fields
+
+    def __iter__(self):
+        """Recursively iterate over the field collection.
+
+        Yields
+        ------
+        iter(:class:`str`)
+            Name of the field. It is prefixed by the name of every nested field collection.
+        :class:`Field`
+            Register field.
+        """
+        yield from self._fields.flatten()
 
     def elaborate(self, platform):
         m = Module()
 
-        storage = Signal(self.field_map.shape, reset=self.field_map.reset)
+        field_start = 0
 
-        def get_field(root, field_name):
-            node = root
-            for key in field_name:
-                node = node[key]
-            return node
+        for field_name, field in self:
+            m.submodules["__".join(str(key) for key in field_name)] = field
 
-        for name, field in self.field_map.all_fields():
-            storage_slice = get_field(storage, name)
-            r_data_slice  = get_field(self.r_data, name)
-            w_data_slice  = get_field(self.w_data, name)
-            user          = get_field(self.f, name)
+            field_slice = slice(field_start, field_start + Shape.cast(field.shape).width)
 
-            if field.intr_read is not None:
-                m.d.comb += r_data_slice.eq(field.intr_read(storage_slice))
+            if field.access.readable():
+                m.d.comb += [
+                    self.element.r_data[field_slice].eq(field.port.r_data),
+                    field.port.r_stb.eq(self.element.r_stb),
+                ]
+            if field.access.writable():
+                m.d.comb += [
+                    field.port.w_data.eq(self.element.w_data[field_slice]),
+                    field.port.w_stb .eq(self.element.w_stb),
+                ]
 
-            m.d.comb += user.r_data.eq(storage_slice)
-
-            # We assume no precedence rule between writes from initiator or user logic. Both write
-            # values are masked with their enables then OR-ed together as a single value, which is
-            # only written to storage if a write enable is asserted.
-            #
-            # A field can use this to implement its own precedence rule: one side (e.g. initiator)
-            # can only set a bit, while the other (e.g. user logic) can only clear it. Setting the
-            # bit would always have precedence. See csr.field.RW1C and RW1S for an example.
-
-            if field.intr_write is not None:
-                intr_w_data = field.intr_write(storage_slice, w_data_slice)
-                m.d.sync += user.r_stb.eq(self.w_stb)
-
-            if field.user_write is not None:
-                user_w_data = field.user_write(storage_slice, user.w_data)
-                m.d.comb += user.w_ack.eq(self.r_stb)
-
-            for i, storage_bit in enumerate(storage_slice):
-                storage_bit_en   = 0
-                storage_bit_next = 0
-
-                if field.intr_write is not None:
-                    storage_bit_en   |= self.w_stb
-                    storage_bit_next |= Mux(self.w_stb, intr_w_data[i], 0)
-
-                if field.user_write is not None:
-                    storage_bit_en   |= user.w_mask[i]
-                    storage_bit_next |= Mux(user.w_mask[i], user_w_data[i], 0)
-
-                with m.If(storage_bit_en):
-                    m.d.sync += storage_bit.eq(storage_bit_next)
+            field_start = field_slice.stop
 
         return m
+
+
+class Cluster:
+    """A group of neighboring CSR registers.
+
+    Parameters
+    ----------
+    name : :class:`str
+        Name of the cluster.
+    addr_width : :class:`int`
+        Address width.
+    data_width : :class:`int`
+        Data width.
+    alignment : :class:`int`
+        Range alignment. Each added register will be placed at an address that is a multiple of
+        ``2 ** alignment``, and its size will be rounded up to be a multiple of ``2 ** alignment``.
+        Optional, defaults to 0.
+    access : :class:`Element.Access`
+        Cluster access mode. Individual registers can have more restrictive access modes, e.g.
+        R/O registers can be a part of an R/W cluster. Optional, defaults to R/W.
+
+    Attributes
+    ----------
+    memory_map : :class:`MemoryMap`
+        Map of the cluster address space. The memory map is frozen as a side-effect of referencing
+        this attribute.
+
+    Raises
+    ------
+    :exc:`ValueError`
+        If ``access`` is not a member of :class:`Element.Access`.
+    """
+    def __init__(self, *, name, addr_width, data_width, alignment=0, access="rw"):
+        if not isinstance(access, Element.Access) and access not in ("r", "w", "rw"):
+            raise ValueError("Access mode must be one of \"r\", \"w\", or \"rw\", not {!r}"
+                             .format(access))
+        self._access = Element.Access(access)
+        self._map    = MemoryMap(addr_width=addr_width, data_width=data_width, alignment=alignment,
+                                 name=name)
+
+    @property
+    def access(self):
+        return self._access
+
+    @property
+    def memory_map(self):
+        self._map.freeze()
+        return self._map
+
+    def freeze(self):
+        """Freeze the cluster.
+
+        Once the cluster is frozen, registers cannot be added anymore.
+        """
+        self._map.freeze()
+
+    def add(self, reg, *, name, addr, alignment=None, extend=False):
+        """Add a register.
+
+        See :meth:`MemoryMap.add_resource for details.
+
+        Returns
+        -------
+        The register ``reg``, which is added to the cluster.
+
+        Raises
+        ------
+        :exc:`TypeError`
+            If ``reg` is not an instance of :class:`Register`.
+        :exc:`ValueError`
+            If the cluster is not readable and ``reg.element`` is readable.
+        :exc:`ValueError`
+            If the cluster is not writable and ``reg.element`` is writable.
+        """
+        if not isinstance(reg, Register):
+            raise TypeError("Register must be an instance of csr.Register, not {!r}"
+                            .format(reg))
+        if reg.element.access.readable() and not self.access.readable():
+            raise ValueError("Register {} is readable, but cluster access mode is {}"
+                             .format(name, self.access))
+        if reg.element.access.writable() and not self.access.writable():
+            raise ValueError("Register {} is writable, but cluster access mode is {}"
+                             .format(name, self.access))
+
+        size = (reg.element.width + self._map.data_width - 1) // self._map.data_width
+        self._map.add_resource(reg.element, name=name, size=size, addr=addr, alignment=alignment,
+                               extend=extend)
+        return reg

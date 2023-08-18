@@ -10,6 +10,22 @@ __all__ = ["Element", "Interface", "Decoder", "Multiplexer"]
 
 
 class Element:
+    class Access(enum.Enum):
+        """Register access mode.
+
+        Coarse access mode for the entire register. Individual fields can have more restrictive
+        access mode, e.g. R/O fields can be a part of an R/W register.
+        """
+        R  = "r"
+        W  = "w"
+        RW = "rw"
+
+        def readable(self):
+            return self == self.R or self == self.RW
+
+        def writable(self):
+            return self == self.W or self == self.RW
+
     """Peripheral-side CSR interface.
 
     A low-level interface to a single atomically readable and writable register in a peripheral.
@@ -20,6 +36,8 @@ class Element:
     ----------
     width : int
         Width of the register.
+    access : :class:`Access`
+        Register access mode.
 
     Attributes
     ----------
@@ -34,39 +52,23 @@ class Element:
         Write strobe. Registers should update their value or perform the write side effect when
         this strobe is asserted.
     """
-    def __init__(self, width):
+    def __init__(self, width, access):
         if not isinstance(width, int) or width < 0:
             raise ValueError("Width must be a non-negative integer, not {!r}"
                              .format(width))
+        if not isinstance(access, Element.Access) and access not in ("r", "w", "rw"):
+            raise ValueError("Access mode must be one of \"r\", \"w\", or \"rw\", not {!r}"
+                             .format(access))
         self.width  = width
+        self.access = Element.Access(access)
 
         self.r_data = Signal(unsigned(width))
         self.r_stb  = Signal()
         self.w_data = Signal(unsigned(width))
         self.w_stb  = Signal()
 
-    @property
-    def readable(self):
-        """Read access mode.
-
-        Returns
-        -------
-        :class:`bool`
-            If `True`, `r_data` and `r_stb` are assumed to be driven by the register and the CSR
-            bus, respectively.
-        """
-        return False
-
-    @property
-    def writable(self):
-        """Write access mode.
-
-        Returns
-        -------
-        :class:`bool`
-            If `True`, `w_data` and `w_stb` are assumed to be driven by the CSR bus.
-        """
-        return False
+    def __repr__(self):
+        return "Element({}, {})".format(self.width, self.access)
 
 
 class Interface(Record):
@@ -426,11 +428,23 @@ class Multiplexer(Elaboratable):
         return self._map.add_resource(element, name=name, size=size, addr=addr,
                                       alignment=alignment, extend=extend)
 
+    def add_cluster(self, cluster, *, addr=None, extend=False):
+        from amaranth_soc.csr.reg import Cluster # to avoid a circular import
+        if not isinstance(cluster, Cluster):
+            raise TypeError("Cluster must be an instance of csr.Cluster, not {!r}"
+                            .format(cluster))
+        if cluster.memory_map.data_width != self._map.data_width:
+            raise ValueError("Cluster has data width {}, which is not the same as multiplexer "
+                             "data width {}"
+                             .format(cluster.memory_map.data_width, self._map.data_width))
+        return self._map.add_window(cluster.memory_map, addr=addr, extend=extend)
+
     def elaborate(self, platform):
         m = Module()
 
-        for elem, _, (elem_start, elem_end) in self._map.resources():
-            elem_range = range(elem_start, elem_end)
+        for elem_info in self._map.all_resources():
+            elem = elem_info.resource
+            elem_range = range(elem_info.start, elem_info.end)
             if elem.access.readable():
                 self._r_shadow.add(elem_range)
             if elem.access.writable():
@@ -452,7 +466,6 @@ class Multiplexer(Elaboratable):
             r_chunk_data_fanin = 0
 
             m.d.sync += r_chunk.r_en.eq(0)
-                m.d.sync += elem.w_stb.eq(0)
 
             with m.Switch(self.bus.addr):
                 for elem_range in r_chunk.elements():

@@ -6,24 +6,57 @@ from amaranth.hdl.rec import Layout
 from amaranth.sim import *
 
 from amaranth_soc.csr.bus import *
+from amaranth_soc.csr.reg import *
+from amaranth_soc.csr import field
 from amaranth_soc.memory import MemoryMap
 
 
 class ElementTestCase(unittest.TestCase):
-    def test_simple(self):
-        elem = Element(8)
+    def test_shape_1_ro(self):
+        elem = Element(1, "r")
+        self.assertEqual(elem.width, 1)
+        self.assertEqual(elem.access, Element.Access.R)
+        self.assertEqual(elem.r_data.shape(), unsigned(1))
+        self.assertEqual(elem.r_stb .shape(), unsigned(1))
+        self.assertEqual(elem.w_data.shape(), unsigned(1))
+        self.assertEqual(elem.w_stb .shape(), unsigned(1))
+
+    def test_shape_8_rw(self):
+        elem = Element(8, access="rw")
         self.assertEqual(elem.width, 8)
+        self.assertEqual(elem.access, Element.Access.RW)
         self.assertEqual(elem.r_data.shape(), unsigned(8))
         self.assertEqual(elem.r_stb .shape(), unsigned(1))
         self.assertEqual(elem.w_data.shape(), unsigned(8))
         self.assertEqual(elem.w_stb .shape(), unsigned(1))
-        self.assertEqual(elem.readable, False)
-        self.assertEqual(elem.writable, False)
+
+    def test_shape_10_wo(self):
+        elem = Element(10, "w")
+        self.assertEqual(elem.width, 10)
+        self.assertEqual(elem.access, Element.Access.W)
+        self.assertEqual(elem.r_data.shape(), unsigned(10))
+        self.assertEqual(elem.r_stb .shape(), unsigned(1))
+        self.assertEqual(elem.w_data.shape(), unsigned(10))
+        self.assertEqual(elem.w_stb .shape(), unsigned(1))
+
+    def test_shape_0_rw(self): # degenerate but legal case
+        elem = Element(0, access=Element.Access.RW)
+        self.assertEqual(elem.width, 0)
+        self.assertEqual(elem.access, Element.Access.RW)
+        self.assertEqual(elem.r_data.shape(), unsigned(0))
+        self.assertEqual(elem.r_stb .shape(), unsigned(1))
+        self.assertEqual(elem.w_data.shape(), unsigned(0))
+        self.assertEqual(elem.w_stb .shape(), unsigned(1))
 
     def test_width_wrong(self):
         with self.assertRaisesRegex(ValueError,
                 r"Width must be a non-negative integer, not -1"):
-            Element(-1)
+            Element(-1, "rw")
+
+    def test_access_wrong(self):
+        with self.assertRaisesRegex(ValueError,
+                r"Access mode must be one of \"r\", \"w\", or \"rw\", not 'wo'"):
+            Element(width=1, access="wo")
 
 
 class InterfaceTestCase(unittest.TestCase):
@@ -85,56 +118,34 @@ class InterfaceTestCase(unittest.TestCase):
             iface.memory_map = MemoryMap(addr_width=16, data_width=16)
 
 
-class _Element_R(Element):
-    @property
-    def readable(self):
-        return True
-
-
-class _Element_W(Element):
-    @property
-    def writable(self):
-        return True
-
-
-class _Element_RW(Element):
-    @property
-    def readable(self):
-        return True
-
-    @property
-    def writable(self):
-        return True
-
-
 class MultiplexerTestCase(unittest.TestCase):
     def setUp(self):
         self.dut = Multiplexer(addr_width=16, data_width=8)
 
     def test_add_4b(self):
-        elem_4b = Element(4)
+        elem_4b = Element(4, "rw")
         self.assertEqual(self.dut.add(elem_4b, name="elem_4b"), (0, 1))
 
     def test_add_8b(self):
-        elem_8b = Element(8)
+        elem_8b = Element(8, "rw")
         self.assertEqual(self.dut.add(elem_8b, name="elem_8b"), (0, 1))
 
     def test_add_12b(self):
-        elem_12b = Element(12)
+        elem_12b = Element(12, "rw")
         self.assertEqual(self.dut.add(elem_12b, name="elem_12b"), (0, 2))
 
     def test_add_16b(self):
-        elem_16b = Element(16)
+        elem_16b = Element(16, "rw")
         self.assertEqual(self.dut.add(elem_16b, name="elem_16b"), (0, 2))
 
     def test_add_two(self):
-        elem_8b  = Element( 8)
-        elem_16b = Element(16)
+        elem_8b  = Element( 8, "rw")
+        elem_16b = Element(16, "rw")
         self.assertEqual(self.dut.add(elem_16b, name="elem_16b"), (0, 2))
         self.assertEqual(self.dut.add(elem_8b, name="elem_8b"),  (2, 3))
 
     def test_add_extend(self):
-        elem_8b = Element(8)
+        elem_8b = Element(8, "rw")
         self.assertEqual(self.dut.add(elem_8b, name="elem_8b", addr=0x10000, extend=True),
                          (0x10000, 0x10001))
         self.assertEqual(self.dut.bus.addr_width, 17)
@@ -145,18 +156,44 @@ class MultiplexerTestCase(unittest.TestCase):
             self.dut.add(element="foo", name="foo")
 
     def test_align_to(self):
-        elem_0 = Element(8)
-        elem_1 = Element(8)
+        elem_0 = Element(8, "rw")
+        elem_1 = Element(8, "rw")
         self.assertEqual(self.dut.add(elem_0, name="elem_0"), (0, 1))
         self.assertEqual(self.dut.align_to(2), 4)
         self.assertEqual(self.dut.add(elem_1, name="elem_1"), (4, 5))
 
     def test_add_wrong_out_of_bounds(self):
-        elem = Element(8)
+        elem = Element(8, "rw")
         with self.assertRaisesRegex(ValueError,
                 r"Address range 0x10000\.\.0x10001 out of bounds for memory map spanning "
                 r"range 0x0\.\.0x10000 \(16 address bits\)"):
             self.dut.add(elem, name="elem", addr=0x10000)
+
+    def test_add_cluster(self):
+        cluster = Cluster(addr_width=1, data_width=8, name="cluster")
+        reg_0   = Register("rw", FieldMap({"a": field.RW(8)}))
+        reg_1   = Register("r",  FieldMap({"b": field.R (8)}))
+        self.assertEqual(self.dut.add_cluster(cluster, addr=0), (0, 2, 1))
+
+    def test_add_cluster_extend(self):
+        cluster = Cluster(addr_width=17, data_width=8, name="cluster")
+        self.assertEqual(self.dut.add_cluster(cluster, addr=0, extend=True), (0, 131072, 1))
+
+    def test_add_cluster_wrong_type(self):
+        with self.assertRaisesRegex(TypeError,
+                r"Cluster must be an instance of csr\.Cluster, not 'foo'"):
+            self.dut.add_cluster("foo", addr=0)
+
+    def test_add_cluster_wrong_data_width(self):
+        with self.assertRaisesRegex(ValueError,
+                r"Cluster has data width 7, which is not the same as multiplexer data width 8"):
+            self.dut.add_cluster(Cluster(addr_width=1, data_width=7, name="cluster"))
+
+    def test_add_cluster_out_of_bounds(self):
+        with self.assertRaisesRegex(ValueError,
+                r"Address range 0x10000\.\.0x10002 out of bounds for memory map spanning "
+                r"range 0x0\.\.0x10000 \(16 address bits\)"):
+            self.dut.add_cluster(Cluster(addr_width=1, data_width=8, name="cluster"), addr=0x10000)
 
     def test_sim(self):
         for shadow_overlaps in [None, 0, 1]:
@@ -164,11 +201,11 @@ class MultiplexerTestCase(unittest.TestCase):
                 dut = Multiplexer(addr_width=16, data_width=8, shadow_overlaps=shadow_overlaps)
 
                 elem_4_r = Element(4, "r")
-                dut.add(elem_4_r)
+                dut.add(elem_4_r, name="elem_4_r")
                 elem_8_w = Element(8, "w")
-                dut.add(elem_8_w)
+                dut.add(elem_8_w, name="elem_8_w")
                 elem_16_rw = Element(16, "rw")
-                dut.add(elem_16_rw)
+                dut.add(elem_16_rw, name="elem_16_rw")
 
                 bus = dut.bus
 
@@ -263,21 +300,21 @@ class MultiplexerAlignedTestCase(unittest.TestCase):
         self.dut = Multiplexer(addr_width=16, data_width=8, alignment=2)
 
     def test_add_two(self):
-        elem_0 = Element( 8)
-        elem_1 = Element(16)
+        elem_0 = Element( 8, "rw")
+        elem_1 = Element(16, "rw")
         self.assertEqual(self.dut.add(elem_0, name="elem_0"), (0, 4))
         self.assertEqual(self.dut.add(elem_1, name="elem_1"), (4, 8))
 
     def test_over_align_to(self):
-        elem_0 = Element(8)
-        elem_1 = Element(8)
+        elem_0 = Element(8, "rw")
+        elem_1 = Element(8, "rw")
         self.assertEqual(self.dut.add(elem_0, name="elem_0"), (0, 4))
         self.assertEqual(self.dut.align_to(3), 8)
         self.assertEqual(self.dut.add(elem_1, name="elem_1"), (8, 12))
 
     def test_under_align_to(self):
-        elem_0 = Element(8)
-        elem_1 = Element(8)
+        elem_0 = Element(8, "rw")
+        elem_1 = Element(8, "rw")
         self.assertEqual(self.dut.add(elem_0, name="elem_0"), (0, 4))
         self.assertEqual(self.dut.align_to(alignment=1), 4)
         self.assertEqual(self.dut.add(elem_1, name="elem_1"), (4, 8))
@@ -289,7 +326,7 @@ class MultiplexerAlignedTestCase(unittest.TestCase):
                                   shadow_overlaps=shadow_overlaps)
 
                 elem_20_rw = Element(20, "rw")
-                dut.add(elem_20_rw)
+                dut.add(elem_20_rw, name="elem_20_rw")
 
                 bus = dut.bus
 
@@ -369,12 +406,12 @@ class DecoderTestCase(unittest.TestCase):
 
     def test_sim(self):
         mux_1  = Multiplexer(addr_width=10, data_width=8)
-        elem_1 = _Element_RW(8)
+        elem_1 = Element(8, "rw")
         mux_1.add(elem_1, name="elem_1")
         self.dut.add(mux_1.bus)
 
         mux_2  = Multiplexer(addr_width=10, data_width=8)
-        elem_2 = _Element_RW(8)
+        elem_2 = Element(8, "rw")
         mux_2.add(elem_2, name="elem_2", addr=2)
         self.dut.add(mux_2.bus)
 

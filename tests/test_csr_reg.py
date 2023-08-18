@@ -5,397 +5,307 @@ from amaranth import *
 from amaranth.lib import data
 from amaranth.sim import *
 
-from amaranth_soc import csr
+from amaranth_soc.csr.reg import *
+from amaranth_soc.csr import field
 
 
-class GenericFieldTestCase(unittest.TestCase):
-    class MockField(csr.GenericField):
-        def intr_read(self, storage):
-            return storage
+class FieldPortTestCase(unittest.TestCase):
+    def test_shape_1_ro(self):
+        port = FieldPort(1, "r")
+        self.assertEqual(port.shape, unsigned(1))
+        self.assertEqual(port.access, FieldPort.Access.R)
+        self.assertEqual(port.r_data.shape(), unsigned(1))
+        self.assertEqual(port.r_stb .shape(), unsigned(1))
+        self.assertEqual(port.w_data.shape(), unsigned(1))
+        self.assertEqual(port.w_stb .shape(), unsigned(1))
+        self.assertEqual(repr(port), "FieldPort(unsigned(1), Access.R)")
 
-        def intr_write(self, storage, w_data):
-            return storage ^ w_data
+    def test_shape_8_rw(self):
+        port = FieldPort(8, "rw")
+        self.assertEqual(port.shape, unsigned(8))
+        self.assertEqual(port.access, FieldPort.Access.RW)
+        self.assertEqual(port.r_data.shape(), unsigned(8))
+        self.assertEqual(port.r_stb .shape(), unsigned(1))
+        self.assertEqual(port.w_data.shape(), unsigned(8))
+        self.assertEqual(port.w_stb .shape(), unsigned(1))
+        self.assertEqual(repr(port), "FieldPort(unsigned(8), Access.RW)")
 
-        def user_write(self, storage, w_data):
-            return storage ^ w_data
+    def test_shape_10_wo(self):
+        port = FieldPort(10, "w")
+        self.assertEqual(port.shape, unsigned(10))
+        self.assertEqual(port.access, FieldPort.Access.W)
+        self.assertEqual(port.r_data.shape(), unsigned(10))
+        self.assertEqual(port.r_stb .shape(), unsigned(1))
+        self.assertEqual(port.w_data.shape(), unsigned(10))
+        self.assertEqual(port.w_stb .shape(), unsigned(1))
+        self.assertEqual(repr(port), "FieldPort(unsigned(10), Access.W)")
 
+    def test_shape_0_rw(self):
+        port = FieldPort(0, "rw")
+        self.assertEqual(port.shape, unsigned(0))
+        self.assertEqual(port.access, FieldPort.Access.RW)
+        self.assertEqual(port.r_data.shape(), unsigned(0))
+        self.assertEqual(port.r_stb .shape(), unsigned(1))
+        self.assertEqual(port.w_data.shape(), unsigned(0))
+        self.assertEqual(port.w_stb .shape(), unsigned(1))
+        self.assertEqual(repr(port), "FieldPort(unsigned(0), Access.RW)")
+
+    def test_shape_wrong(self):
+        with self.assertRaisesRegex(TypeError,
+                r"Field shape must be a shape-castable object, not 'foo'"):
+            port = FieldPort("foo", "rw")
+
+    def test_access_wrong(self):
+        with self.assertRaisesRegex(ValueError,
+                r"Access mode must be one of \"r\", \"w\", or \"rw\", not 'wo'"):
+            port = FieldPort(8, "wo")
+
+
+def _compatible_fields(a, b):
+    return isinstance(a, Field) and type(a) == type(b) and \
+           a.shape == b.shape and a.access == b.access
+
+
+class FieldTestCase(unittest.TestCase):
     def test_simple(self):
-        field = self.MockField(unsigned(4), reset=0xa)
+        field = Field(unsigned(4), "rw")
         self.assertEqual(field.shape, unsigned(4))
-        self.assertEqual(field.reset, 0xa)
-        self.assertEqual(field.intr_read(0x5), 0x5)
-        self.assertEqual(field.intr_write(0x5, 0xa), 0xf)
-        self.assertEqual(field.user_write(0x5, 0xa), 0xf)
+        self.assertEqual(field.access, FieldPort.Access.RW)
+        self.assertEqual(repr(field.port), "FieldPort(unsigned(4), Access.RW)")
+        self.assertEqual(field.data.shape(), unsigned(4))
 
-    def test_reset_default(self):
-        field = self.MockField(1)
-        self.assertEqual(field.reset, 0)
-
-    def test_eq(self):
-        self.assertEqual(self.MockField(4, reset=0xa), self.MockField(unsigned(4), reset=0xa))
-        self.assertEqual(self.MockField(4, reset=0xa),
-                         self.MockField(4, reset=Const(2, 2).replicate(2)))
-        self.assertNotEqual(self.MockField(4, reset=0xa), csr.field.RW1C(4, reset=0xa))
-        self.assertNotEqual(self.MockField(4, reset=0xa), self.MockField(8, reset=0xa))
-        self.assertNotEqual(self.MockField(4, reset=0xa), self.MockField(4, reset=0x5))
+    def test_compatible(self):
+        self.assertTrue(_compatible_fields(Field(unsigned(4), "rw"),
+                                           Field(unsigned(4), FieldPort.Access.RW)))
+        self.assertFalse(_compatible_fields(Field(unsigned(3), "r" ), Field(unsigned(4), "r")))
+        self.assertFalse(_compatible_fields(Field(unsigned(4), "rw"), Field(unsigned(4), "w")))
+        self.assertFalse(_compatible_fields(Field(unsigned(4), "rw"), Field(unsigned(4), "r")))
+        self.assertFalse(_compatible_fields(Field(unsigned(4), "r" ), Field(unsigned(4), "w")))
 
     def test_wrong_shape(self):
         with self.assertRaisesRegex(TypeError,
                 r"Field shape must be a shape-castable object, not 'foo'"):
-            self.MockField("foo")
+            Field("foo", "rw")
 
-    def test_wrong_reset(self):
-        with self.assertRaisesRegex(TypeError,
-                r"Reset value must be a constant-castable expression, not 'foo'"):
-            self.MockField(unsigned(1), reset="foo")
+    def test_wrong_access(self):
+        with self.assertRaisesRegex(ValueError,
+                r"Access mode must be one of \"r\", \"w\", or \"rw\", not 'wo'"):
+            Field(8, "wo")
 
 
 class FieldMapTestCase(unittest.TestCase):
     def test_simple(self):
-        field_map = csr.FieldMap({
-            "a": csr.field.R(unsigned(1)),
-            "b": csr.field.RW(signed(3), reset=-1),
-            "c": csr.FieldMap({
-                "d": csr.field.RW1C(unsigned(4)),
+        field_map = FieldMap({
+            "a": Field(unsigned(1), "r"),
+            "b": Field(signed(3), "rw"),
+            "c": FieldMap({
+                "d": Field(unsigned(4), "rw"),
             }),
         })
-        self.assertEqual(field_map.size, 8)
-        self.assertEqual(field_map.shape, data.StructLayout({
-            "a": unsigned(1),
-            "b": signed(3),
-            "c": data.StructLayout({
-                "d": unsigned(4),
-            }),
-        }))
-        self.assertEqual(field_map.reset, {
-            "a": 0,
-            "b": -1,
-            "c": {
-                "d": 0,
-            },
-        })
-        self.assertEqual(field_map["a"], csr.field.R(unsigned(1)))
-        self.assertEqual(field_map["b"], csr.field.RW(signed(3), reset=-1))
-        self.assertEqual(field_map["c"], csr.FieldMap({"d": csr.field.RW1C(unsigned(4))}))
+        self.assertTrue(_compatible_fields(field_map["a"], Field(unsigned(1), "r")))
+        self.assertTrue(_compatible_fields(field_map["b"], Field(signed(3), "rw")))
+        self.assertTrue(_compatible_fields(field_map["c"]["d"], Field(unsigned(4), "rw")))
+
+        self.assertTrue(_compatible_fields(field_map.a, Field(unsigned(1), "r")))
+        self.assertTrue(_compatible_fields(field_map.b, Field(signed(3), "rw")))
+        self.assertTrue(_compatible_fields(field_map.c.d, Field(unsigned(4), "rw")))
+
+        self.assertEqual(len(field_map), 3)
 
     def test_iter(self):
-        field_map = csr.FieldMap({
-            "a": csr.field.R(unsigned(1)),
-            "b": csr.field.RW(signed(3), reset=-1),
+        field_map = FieldMap({
+            "a": Field(unsigned(1), "r"),
+            "b": Field(signed(3), "rw")
         })
-        self.assertEqual(list(field_map), [
-            ("a", csr.field.R(unsigned(1))),
-            ("b", csr.field.RW(signed(3), reset=-1)),
+        self.assertEqual(list(field_map.items()), [
+            ("a", field_map["a"]),
+            ("b", field_map["b"]),
         ])
 
-    def test_eq(self):
-        self.assertEqual(csr.FieldMap({"a": csr.field.R(1), "b": csr.field.W(2)}),
-                         csr.FieldMap({"a": csr.field.R(1), "b": csr.field.W(2)}))
-        self.assertNotEqual(csr.FieldMap({"a": csr.field.R(1), "b": csr.field.W(2)}),
-                            csr.FieldMap({"a": csr.field.R(1)}))
-        self.assertNotEqual(csr.FieldMap({"a": csr.field.R(1), "b": csr.field.W(2)}),
-                            csr.FieldMap({"a": csr.field.W(2), "b": csr.field.R(1)}))
-        self.assertNotEqual(csr.FieldMap({"a": csr.field.R(1), "b": csr.field.W(2)}),
-                            csr.FieldMap({"b": csr.field.W(2), "a": csr.field.R(1)}))
-
-    def test_iter_all_fields(self):
-        field_map = csr.FieldMap({
-            "a": csr.field.R(unsigned(1)),
-            "b": csr.field.RW(signed(3), reset=-1),
-            "c": csr.FieldMap({
-                "d": csr.field.RW1C(unsigned(4)),
+    def test_flatten(self):
+        field_map = FieldMap({
+            "a": Field(unsigned(1), "r"),
+            "b": Field(signed(3), "rw"),
+            "c": FieldMap({
+                "d": Field(unsigned(4), "rw"),
             }),
         })
-        self.assertEqual(list(field_map.all_fields()), [
-            (("a",), csr.field.R(unsigned(1))),
-            (("b",), csr.field.RW(signed(3), reset=-1)),
-            (("c", "d"), csr.field.RW1C(unsigned(4))),
+        self.assertEqual(list(field_map.flatten()), [
+            (("a",), field_map["a"]),
+            (("b",), field_map["b"]),
+            (("c", "d"), field_map["c"]["d"]),
         ])
 
     def test_wrong_mapping(self):
         with self.assertRaisesRegex(TypeError,
                 r"Fields must be provided as a non-empty mapping, not 'foo'"):
-            csr.FieldMap("foo")
+            FieldMap("foo")
 
     def test_wrong_field_key(self):
         with self.assertRaisesRegex(TypeError,
                 r"Field name must be a non-empty string, not 1"):
-            csr.FieldMap({1: csr.field.R(1)})
+            FieldMap({1: Field(unsigned(1), "rw")})
         with self.assertRaisesRegex(TypeError,
                 r"Field name must be a non-empty string, not ''"):
-            csr.FieldMap({"": csr.field.R(1)})
+            FieldMap({"": Field(unsigned(1), "rw")})
 
     def test_wrong_field_value(self):
         with self.assertRaisesRegex(TypeError,
-                r"Field must be a GenericField or a FieldMap, not unsigned\(1\)"):
-            csr.FieldMap({"a": unsigned(1)})
+                r"Field must be a Field or a FieldMap or a FieldArray, not unsigned\(1\)"):
+            FieldMap({"a": unsigned(1)})
 
     def test_getitem_wrong_key(self):
         with self.assertRaises(KeyError):
-            csr.FieldMap({"a": csr.field.R(1)})["b"]
+            FieldMap({"a": Field(unsigned(1), "rw")})["b"]
 
 
 class FieldArrayTestCase(unittest.TestCase):
     def test_simple(self):
-        field_array = csr.FieldArray(csr.field.R(unsigned(2), reset=3), length=8)
-
-        self.assertEqual(field_array.size, 16)
-        self.assertEqual(field_array.shape, data.ArrayLayout(unsigned(2), 8))
-        self.assertEqual(field_array.reset, [3 for _ in range(8)])
+        field_array = FieldArray(Field(unsigned(2), "rw"), length=8)
+        self.assertEqual(len(field_array), 8)
         for i in range(8):
-            self.assertEqual(field_array[i], csr.field.R(unsigned(2), reset=3))
+            self.assertTrue(_compatible_fields(field_array[i], Field(unsigned(2), "rw")))
 
     def test_dim_2(self):
-        field_array = csr.FieldArray(csr.FieldArray(csr.field.R(unsigned(1), reset=1), length=4),
-                                     length=4)
+        field_array = FieldArray(FieldArray(Field(unsigned(1), "rw"), length=4), length=4)
 
-        self.assertEqual(field_array.size, 16)
-        self.assertEqual(field_array.shape,
-                         data.ArrayLayout(data.ArrayLayout(unsigned(1), length=4), length=4))
-        self.assertEqual(field_array.reset, [[1 for _ in range(4)] for _ in range(4)])
+        self.assertEqual(len(field_array), 4)
         for i in range(4):
-            self.assertEqual(field_array[i],
-                             csr.FieldArray(csr.field.R(1, reset=1), length=4))
+            for j in range(4):
+                self.assertTrue(_compatible_fields(field_array[i][j], Field(1, "rw")))
 
     def test_nested(self):
-        field_array = csr.FieldArray(
-                csr.FieldMap({
-                    "a": csr.field.R(unsigned(4), reset=0xa),
-                    "b": csr.FieldArray(csr.field.R(unsigned(1)), length=4),
+        field_array = FieldArray(
+                FieldMap({
+                    "a": Field(unsigned(4), "rw"),
+                    "b": FieldArray(Field(unsigned(1), "rw"), length=4),
                 }), length=4)
 
-        self.assertEqual(field_array.size, 32)
-        self.assertEqual(field_array.shape,
-                         data.ArrayLayout(data.StructLayout({
-                             "a": unsigned(4),
-                             "b": data.ArrayLayout(unsigned(1), length=4),
-                         }), length=4))
-        self.assertEqual(field_array.reset,
-                         [{"a": 0xa, "b":[0,0,0,0]} for _ in range(4)])
+        self.assertEqual(len(field_array), 4)
+
         for i in range(4):
-            self.assertEqual(field_array[i], csr.FieldMap({
-                "a": csr.field.R(unsigned(4), reset=0xa),
-                "b": csr.FieldArray(csr.field.R(unsigned(1)), length=4),
-            }))
+            self.assertTrue(_compatible_fields(field_array[i]["a"], Field(unsigned(4), "rw")))
             for j in range(4):
-                self.assertEqual(field_array[i]["b"][j], csr.field.R(unsigned(1)))
+                self.assertTrue(_compatible_fields(field_array[i]["b"][j],
+                                                   Field(unsigned(1), "rw")))
 
     def test_iter(self):
-        field_array = csr.FieldArray(csr.field.R(1), length=3)
+        field_array = FieldArray(Field(1, "rw"), length=3)
         self.assertEqual(list(field_array), [
-            (i, csr.field.R(1)) for i in range(3)
+            field_array[i] for i in range(3)
         ])
 
-    def test_eq(self):
-        self.assertEqual(csr.FieldArray(csr.field.R(1), length=4),
-                         csr.FieldArray(csr.field.R(1), length=4))
-        self.assertNotEqual(csr.FieldArray(csr.field.R(1), length=4),
-                            csr.FieldArray(csr.field.W(1), length=4))
-        self.assertNotEqual(csr.FieldArray(csr.field.R(1), length=4),
-                            csr.FieldArray(csr.field.R(1), length=5))
-        self.assertNotEqual(csr.FieldArray(csr.field.R(1), length=4),
-                            csr.FieldArray(csr.field.R(4), length=1))
-
-    def test_iter_all_fields(self):
-        field_array = csr.FieldArray(
-                csr.FieldMap({
-                    "a": csr.field.R(4, reset=0xa),
-                    "b": csr.FieldArray(csr.field.R(1), length=2),
+    def test_flatten(self):
+        field_array = FieldArray(
+                FieldMap({
+                    "a": Field(4, "rw"),
+                    "b": FieldArray(Field(1, "rw"), length=2),
                 }), length=2)
-        self.assertEqual(list(field_array.all_fields()), [
-            ((0, "a"), csr.field.R(4, reset=0xa)),
-            ((0, "b", 0), csr.field.R(1)),
-            ((0, "b", 1), csr.field.R(1)),
-            ((1, "a"), csr.field.R(4, reset=0xa)),
-            ((1, "b", 0), csr.field.R(1)),
-            ((1, "b", 1), csr.field.R(1)),
+        self.assertEqual(list(field_array.flatten()), [
+            ((0, "a"), field_array[0]["a"]),
+            ((0, "b", 0), field_array[0]["b"][0]),
+            ((0, "b", 1), field_array[0]["b"][1]),
+            ((1, "a"), field_array[1]["a"]),
+            ((1, "b", 0), field_array[1]["b"][0]),
+            ((1, "b", 1), field_array[1]["b"][1]),
         ])
 
     def test_wrong_field(self):
         with self.assertRaisesRegex(TypeError,
-                r"Field must be a GenericField or a FieldMap, not 'foo'"):
-            csr.FieldArray("foo", 4)
+                r"Field must be a Field or a FieldMap or a FieldArray, not 'foo'"):
+            FieldArray("foo", 4)
 
     def test_wrong_length(self):
         with self.assertRaisesRegex(TypeError,
                 r"Field array length must be a positive integer, not 'foo'"):
-            csr.FieldArray(csr.field.R(1), "foo")
+            FieldArray(Field(1, "rw"), "foo")
         with self.assertRaisesRegex(TypeError,
                 r"Field array length must be a positive integer, not 0"):
-            csr.FieldArray(csr.field.R(1), 0)
+            FieldArray(Field(1, "rw"), 0)
 
     def test_getitem_wrong_key(self):
         with self.assertRaisesRegex(TypeError,
                 r"Cannot index field array with 'a'"):
-            csr.FieldArray(csr.field.R(1), 1)["a"]
-        with self.assertRaises(KeyError):
-            csr.FieldArray(csr.field.R(1), 1)[1]
-        with self.assertRaises(KeyError):
-            csr.FieldArray(csr.field.R(1), 1)[-2]
-
-
-class RegisterInterfaceTestCase(unittest.TestCase):
-    class MockRegisterInterface(csr.RegisterInterface):
-        a: csr.field.R(unsigned(1))
-        b: csr.field.RW1C(unsigned(3))
-        c: csr.FieldMap({"d": csr.field.RW(signed(2))})
-        e: csr.FieldArray(csr.field.W(unsigned(1)), length=2)
-
-        foo: unsigned(42)
-
-    def test_simple(self):
-        iface = csr.RegisterInterface(csr.FieldMap({
-            "a": csr.field.R(unsigned(1)),
-            "b": csr.field.RW1C(unsigned(3)),
-        }))
-        self.assertEqual(iface.field_map, csr.FieldMap({
-            "a": csr.field.R(unsigned(1)),
-            "b": csr.field.RW1C(unsigned(3)),
-        }))
-        self.assertEqual(iface.readable, True)
-        self.assertEqual(iface.writable, True)
-        self.assertEqual(Value.cast(iface.w_data).width, iface.field_map.size)
-        self.assertEqual(Value.cast(iface.w_stb) .width, 1)
-        self.assertEqual(Value.cast(iface.r_data).width, iface.field_map.size)
-        self.assertEqual(Value.cast(iface.r_stb) .width, 1)
-
-    def test_annotations(self):
-        iface = self.MockRegisterInterface()
-        self.assertEqual(iface.field_map, csr.FieldMap({
-            "a": csr.field.R(unsigned(1)),
-            "b": csr.field.RW1C(unsigned(3)),
-            "c": csr.FieldMap({"d": csr.field.RW(signed(2))}),
-            "e": csr.FieldArray(csr.field.W(unsigned(1)), length=2),
-        }))
-        self.assertEqual(iface.readable, True)
-        self.assertEqual(iface.writable, True)
-        self.assertEqual(Value.cast(iface.w_data).width, iface.field_map.size)
-        self.assertEqual(Value.cast(iface.w_stb) .width, 1)
-        self.assertEqual(Value.cast(iface.r_data).width, iface.field_map.size)
-        self.assertEqual(Value.cast(iface.r_stb) .width, 1)
-
-    def test_readonly(self):
-        iface = csr.RegisterInterface(csr.FieldMap({"a": csr.field.R(1)}))
-        self.assertEqual(iface.readable, True)
-        self.assertEqual(iface.writable, False)
-
-    def test_writeonly(self):
-        iface = csr.RegisterInterface(csr.FieldMap({"a": csr.field.W(1)}))
-        self.assertEqual(iface.readable, False)
-        self.assertEqual(iface.writable, True)
-
-    def test_field_map_over_annotations(self):
-        iface = self.MockRegisterInterface(csr.FieldMap({
-            "a": csr.field.R(1),
-        }))
-        self.assertEqual(iface.field_map, csr.FieldMap({
-            "a": csr.field.R(1),
-        }))
-        self.assertEqual(iface.readable, True)
-        self.assertEqual(iface.writable, False)
-        self.assertEqual(Value.cast(iface.w_data).width, iface.field_map.size)
-        self.assertEqual(Value.cast(iface.w_stb) .width, 1)
-        self.assertEqual(Value.cast(iface.r_data).width, iface.field_map.size)
-        self.assertEqual(Value.cast(iface.r_stb) .width, 1)
-
-    def test_wrong_field_map(self):
-        with self.assertRaisesRegex(TypeError,
-                r"Field map must be a FieldMap, not 'foo'"):
-            csr.RegisterInterface("foo")
-
-
-class RegisterFieldPortTestCase(unittest.TestCase):
-    def test_user_ro(self):
-        field = csr.field.W(unsigned(8))
-        port  = csr.Register.FieldPort(field, name="foo")
-        self.assertEqual(port.field, field)
-        self.assertEqual(port.name, "foo")
-        self.assertEqual(Value.cast(port.r_data).width, 8)
-        self.assertEqual(Value.cast(port.r_stb) .width, 1)
-        self.assertEqual(port.r_data.name, "foo__r_data")
-        self.assertEqual(port.r_stb .name, "foo__r_stb")
-        self.assertFalse(hasattr(port, "w_mask"))
-        self.assertFalse(hasattr(port, "w_data"))
-        self.assertFalse(hasattr(port, "w_ack"))
-
-    def test_user_rw(self):
-        field = csr.field.R(unsigned(8))
-        port  = csr.Register.FieldPort(field, name="bar")
-        self.assertEqual(port.field, field)
-        self.assertEqual(port.name, "bar")
-        self.assertEqual(Value.cast(port.r_data).width, 8)
-        self.assertEqual(Value.cast(port.r_stb ).width, 1)
-        self.assertEqual(Value.cast(port.w_mask).width, 8)
-        self.assertEqual(Value.cast(port.w_data).width, 8)
-        self.assertEqual(Value.cast(port.w_ack ).width, 1)
-        self.assertEqual(port.r_data.name, "bar__r_data")
-        self.assertEqual(port.r_stb .name, "bar__r_stb")
-        self.assertEqual(port.w_mask.name, "bar__w_mask")
-        self.assertEqual(port.w_data.name, "bar__w_data")
-        self.assertEqual(port.w_ack .name, "bar__w_ack")
-
-
-class RegisterUserPortTestCase(unittest.TestCase):
-    def test_simple(self):
-        field_map = csr.FieldMap({
-            "a": csr.field.R(1),
-            "b": csr.FieldArray(csr.FieldMap({"c": csr.field.W(1)}), length=2),
-        })
-        port = csr.Register.UserPort(field_map)
-
-        self.assertTrue(isinstance(port.a,      csr.Register.FieldPort))
-        self.assertTrue(isinstance(port.b,      csr.Register.UserPort))
-        self.assertTrue(isinstance(port.b[0],   csr.Register.UserPort))
-        self.assertTrue(isinstance(port.b[1],   csr.Register.UserPort))
-        self.assertTrue(isinstance(port.b[0].c, csr.Register.FieldPort))
-        self.assertTrue(isinstance(port.b[1].c, csr.Register.FieldPort))
-
-        self.assertIs(port["a"],         port.a)
-        self.assertIs(port["b"],         port.b)
-        self.assertIs(port["b"][0]["c"], port.b[0].c)
-        self.assertIs(port["b"][1]["c"], port.b[1].c)
-
-        self.assertEqual(port.a     .field, csr.field.R(1))
-        self.assertEqual(port.b[0].c.field, csr.field.W(1))
-        self.assertEqual(port.b[1].c.field, csr.field.W(1))
-
-        self.assertEqual(port.a     .name, "a")
-        self.assertEqual(port.b[0].c.name, "b__n0__c")
-        self.assertEqual(port.b[1].c.name, "b__n1__c")
+            FieldArray(Field(1, "rw"), 1)["a"]
+        # with self.assertRaises(IndexError):
+            # FieldArray(Field(1, "rw"), 1)[1]
+        # with self.assertRaises(IndexError):
+            # FieldArray(Field(1, "rw"), 1)[-2]
 
 
 class RegisterTestCase(unittest.TestCase):
     def test_simple(self):
-        reg = csr.Register(csr.FieldMap({
-            "a": csr.field.R(unsigned(1)),
-            "b": csr.field.RW1C(unsigned(3)),
-            "c": csr.FieldMap({"d": csr.field.RW(signed(2))}),
-            "e": csr.FieldArray(csr.field.W(unsigned(1)), length=2),
+        reg = Register("rw", FieldMap({
+            "a": field.R(unsigned(1)),
+            "b": field.RW1C(unsigned(3)),
+            "c": FieldMap({"d": field.RW(signed(2))}),
+            "e": FieldArray(field.W(unsigned(1)), length=2),
         }))
 
-        self.assertEqual(reg.f.a   .field, csr.field.R(unsigned(1)))
-        self.assertEqual(reg.f.b   .field, csr.field.RW1C(unsigned(3)))
-        self.assertEqual(reg.f.c.d .field, csr.field.RW(signed(2)))
-        self.assertEqual(reg.f.e[0].field, csr.field.W(unsigned(1)))
-        self.assertEqual(reg.f.e[1].field, csr.field.W(unsigned(1)))
+        self.assertTrue(_compatible_fields(reg.f.a, field.R(unsigned(1))))
+        self.assertTrue(_compatible_fields(reg.f.b, field.RW1C(unsigned(3))))
+        self.assertTrue(_compatible_fields(reg.f.c.d, field.RW(signed(2))))
+        self.assertTrue(_compatible_fields(reg.f.e[0], field.W(unsigned(1))))
+        self.assertTrue(_compatible_fields(reg.f.e[1], field.W(unsigned(1))))
+
+        self.assertEqual(reg.element.width, 8)
+        self.assertEqual(reg.element.access.readable(), True)
+        self.assertEqual(reg.element.access.writable(), True)
+
+    def test_annotations(self):
+        class MockRegister(Register):
+            a: field.R(unsigned(1))
+            b: field.RW1C(unsigned(3))
+            c: FieldMap({"d": field.RW(signed(2))})
+            e: FieldArray(field.W(unsigned(1)), length=2)
+
+            foo: unsigned(42)
+
+        reg = MockRegister("rw")
+
+        self.assertTrue(_compatible_fields(reg.f.a, field.R(unsigned(1))))
+        self.assertTrue(_compatible_fields(reg.f.b, field.RW1C(unsigned(3))))
+        self.assertTrue(_compatible_fields(reg.f.c.d, field.RW(signed(2))))
+        self.assertTrue(_compatible_fields(reg.f.e[0], field.W(unsigned(1))))
+        self.assertTrue(_compatible_fields(reg.f.e[1], field.W(unsigned(1))))
+
+        self.assertEqual(reg.element.width, 8)
+        self.assertEqual(reg.element.access.readable(), True)
+        self.assertEqual(reg.element.access.writable(), True)
+
+    def test_iter(self):
+        reg = Register("rw", FieldMap({
+            "a": field.R(unsigned(1)),
+            "b": field.RW1C(unsigned(3)),
+            "c": FieldMap({"d": field.RW(signed(2))}),
+            "e": FieldArray(field.W(unsigned(1)), length=2),
+        }))
+        self.assertEqual(list(reg), [
+            (("a",), reg.f.a),
+            (("b",), reg.f.b),
+            (("c", "d"), reg.f.c.d),
+            (("e", 0), reg.f.e[0]),
+            (("e", 1), reg.f.e[1]),
+        ])
 
     def test_sim(self):
-        dut = csr.Register(csr.FieldMap({
-            "a": csr.field.R(unsigned(1)),
-            "b": csr.field.RW1C(unsigned(3), reset=0b111),
-            "c": csr.FieldMap({"d": csr.field.RW(signed(2), reset=-1)}),
-            "e": csr.FieldArray(csr.field.W(unsigned(1), reset=1), length=2),
-            "f": csr.field.RW1S(unsigned(3)),
+        dut = Register("rw", FieldMap({
+            "a": field.R(unsigned(1)),
+            "b": field.RW1C(unsigned(3), reset=0b111),
+            "c": FieldMap({"d": field.RW(signed(2), reset=-1)}),
+            "e": FieldArray(field.W(unsigned(1)), length=2),
+            "f": field.RW1S(unsigned(3)),
         }))
 
         def process():
             # Check reset values:
 
-            self.assertEqual((yield dut.r_data.a),    0)
-            self.assertEqual((yield dut.r_data.b),    0b111)
-            self.assertEqual((yield dut.r_data.c.d), -1)
-            self.assertEqual((yield dut.r_data.f),    0b000)
+            self.assertEqual((yield dut.f.a.data),    0)
+            self.assertEqual((yield dut.f.b.data),    0b111)
+            self.assertEqual((yield dut.f.c.d.data), -1)
+            self.assertEqual((yield dut.f.f.data),    0b000)
 
+            """
             self.assertEqual((yield dut.f.a   .r_data),  0)
             self.assertEqual((yield dut.f.b   .r_data),  0b111)
             self.assertEqual((yield dut.f.c.d .r_data), -1)
@@ -484,9 +394,57 @@ class RegisterTestCase(unittest.TestCase):
             yield dut.w_stb.eq(1)
             yield dut.f.b.w_mask.eq(0)
             yield dut.f.f.w_mask.eq(0)
+            """
 
         sim = Simulator(dut)
         sim.add_clock(1e-6)
         sim.add_sync_process(process)
         with sim.write_vcd(vcd_file=open("test.vcd", "w")):
             sim.run()
+
+
+class ClusterTestCase(unittest.TestCase):
+    def test_memory_map(self):
+        cluster = Cluster(addr_width=1, data_width=8, name="cluster")
+        self.assertEqual(cluster.memory_map.addr_width, 1)
+        self.assertEqual(cluster.memory_map.data_width, 8)
+        self.assertEqual(cluster.memory_map.name, "cluster")
+
+    def test_add(self):
+        cluster = Cluster(addr_width=1, data_width=8, name="cluster")
+        reg_0   = Register("rw", FieldMap({"a": field.RW(8)}))
+        reg_1   = Register("r",  FieldMap({"b": field.R (8)}))
+        self.assertEqual(cluster.add(reg_0, name="reg_0", addr=0), reg_0)
+        self.assertEqual(cluster.add(reg_1, name="reg_1", addr=1), reg_1)
+        self.assertEqual(list(cluster.memory_map.resources()), [
+            (reg_0.element, "reg_0", (0, 1)),
+            (reg_1.element, "reg_1", (1, 2)),
+        ])
+
+    def test_add_frozen(self):
+        cluster = Cluster(addr_width=1, data_width=8, name="cluster")
+        reg_0   = Register("rw", FieldMap({"a": field.RW(8)}))
+        cluster.freeze()
+        with self.assertRaisesRegex(ValueError,
+                r"Memory map has been frozen\. Cannot add resource Element\(8, Access\.RW\)"):
+            cluster.add(reg_0, name="reg_0", addr=0)
+
+    def test_add_wrong_type(self):
+        cluster = Cluster(addr_width=1, data_width=8, name="cluster")
+        with self.assertRaisesRegex(TypeError,
+                r"Register must be an instance of csr\.Register, not 'foo'"):
+            cluster.add("foo", name="reg", addr=0)
+
+    def test_add_access_ro(self):
+        cluster = Cluster(addr_width=1, data_width=8, name="cluster", access="r")
+        reg_0   = Register("rw", FieldMap({"a": field.RW(8)}))
+        with self.assertRaisesRegex(ValueError,
+                r"Register reg_0 is writable, but cluster access mode is Access.R"):
+            cluster.add(reg_0, name="reg_0", addr=0)
+
+    def test_add_access_wo(self):
+        cluster = Cluster(addr_width=1, data_width=8, name="cluster", access="w")
+        reg_0   = Register("rw", FieldMap({"a": field.RW(8)}))
+        with self.assertRaisesRegex(ValueError,
+                r"Register reg_0 is readable, but cluster access mode is Access.W"):
+            cluster.add(reg_0, name="reg_0", addr=0)
