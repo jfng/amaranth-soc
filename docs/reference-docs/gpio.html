@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GPIO &mdash; System on Chip toolkit for Amaranth HDL 0.1a1.dev14 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=1b47c3fb"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="CSR field actions" href="csr/action.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="cover.html" class="icon icon-home">
+            System on Chip toolkit for Amaranth HDL
+              <img src="_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                0.1a1.dev14+ge8af949
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference external" href="https://amaranth-lang.org/docs/amaranth/latest/">Language &amp; toolchain</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://amaranth-lang.org/docs/amaranth-stdio/latest/">Standard I/O components</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">System on Chip toolkit</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="memory.html">Memory maps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="wishbone.html">Wishbone</a></li>
+<li class="toctree-l2"><a class="reference internal" href="csr.html">CSR</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">GPIO</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#amaranth_soc.gpio.PinMode"><code class="docutils literal notranslate"><span class="pre">PinMode</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#amaranth_soc.gpio.PinMode.INPUT_ONLY"><code class="docutils literal notranslate"><span class="pre">PinMode.INPUT_ONLY</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#amaranth_soc.gpio.PinMode.PUSH_PULL"><code class="docutils literal notranslate"><span class="pre">PinMode.PUSH_PULL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#amaranth_soc.gpio.PinMode.OPEN_DRAIN"><code class="docutils literal notranslate"><span class="pre">PinMode.OPEN_DRAIN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#amaranth_soc.gpio.PinMode.ALTERNATE"><code class="docutils literal notranslate"><span class="pre">PinMode.ALTERNATE</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#amaranth_soc.gpio.PinSignature"><code class="docutils literal notranslate"><span class="pre">PinSignature</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#amaranth_soc.gpio.Peripheral"><code class="docutils literal notranslate"><span class="pre">Peripheral</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#amaranth_soc.gpio.Peripheral.Mode"><code class="docutils literal notranslate"><span class="pre">Peripheral.Mode</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#amaranth_soc.gpio.Peripheral.Input"><code class="docutils literal notranslate"><span class="pre">Peripheral.Input</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#amaranth_soc.gpio.Peripheral.Output"><code class="docutils literal notranslate"><span class="pre">Peripheral.Output</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#amaranth_soc.gpio.Peripheral.SetClr"><code class="docutils literal notranslate"><span class="pre">Peripheral.SetClr</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#amaranth_soc.gpio.Peripheral.pin_count"><code class="docutils literal notranslate"><span class="pre">Peripheral.pin_count</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#amaranth_soc.gpio.Peripheral.input_stages"><code class="docutils literal notranslate"><span class="pre">Peripheral.input_stages</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="cover.html">System on Chip toolkit for Amaranth HDL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="cover.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">System on Chip toolkit</a></li>
+      <li class="breadcrumb-item active">GPIO</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/gpio.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="gpio">
+<h1>GPIO<a class="headerlink" href="#gpio" title="Permalink to this heading"></a></h1>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This manual is a work in progress and is seriously incomplete!</p>
+</div>
+<span class="target" id="module-amaranth_soc.gpio"></span><p>The <a class="reference internal" href="#module-amaranth_soc.gpio" title="amaranth_soc.gpio"><code class="xref py py-mod docutils literal notranslate"><span class="pre">amaranth_soc.gpio</span></code></a> module provides a basic GPIO peripheral.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="amaranth_soc.gpio.PinMode">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">amaranth_soc.gpio.</span></span><span class="sig-name descname"><span class="pre">PinMode</span></span><a class="headerlink" href="#amaranth_soc.gpio.PinMode" title="Permalink to this definition"></a></dt>
+<dd><p>GPIO pin mode.</p>
+<p>The 2-bit values of this enumeration can be written to a <a class="reference internal" href="#amaranth_soc.gpio.Peripheral.Mode" title="amaranth_soc.gpio.Peripheral.Mode"><code class="xref py py-class docutils literal notranslate"><span class="pre">Peripheral.Mode</span></code></a> field to
+configure the pins of a <a class="reference internal" href="#amaranth_soc.gpio.Peripheral" title="amaranth_soc.gpio.Peripheral"><code class="xref py py-class docutils literal notranslate"><span class="pre">Peripheral</span></code></a>.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="amaranth_soc.gpio.PinMode.INPUT_ONLY">
+<span class="sig-name descname"><span class="pre">INPUT_ONLY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#amaranth_soc.gpio.PinMode.INPUT_ONLY" title="Permalink to this definition"></a></dt>
+<dd><p><cite>Input-only</cite> mode.</p>
+<p>The pin output is disabled but remains connected to its <a class="reference internal" href="#amaranth_soc.gpio.Peripheral.Output" title="amaranth_soc.gpio.Peripheral.Output"><code class="xref py py-class docutils literal notranslate"><span class="pre">Peripheral.Output</span></code></a> field.
+Its <code class="xref py py-attr docutils literal notranslate"><span class="pre">Peripheral.alt_mode</span></code> bit is wired to 0.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="amaranth_soc.gpio.PinMode.PUSH_PULL">
+<span class="sig-name descname"><span class="pre">PUSH_PULL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#amaranth_soc.gpio.PinMode.PUSH_PULL" title="Permalink to this definition"></a></dt>
+<dd><p><cite>Push-pull</cite> mode.</p>
+<p>The pin output is enabled and connected to its <a class="reference internal" href="#amaranth_soc.gpio.Peripheral.Output" title="amaranth_soc.gpio.Peripheral.Output"><code class="xref py py-class docutils literal notranslate"><span class="pre">Peripheral.Output</span></code></a> field. Its
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">Peripheral.alt_mode</span></code> bit is wired to 0.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="amaranth_soc.gpio.PinMode.OPEN_DRAIN">
+<span class="sig-name descname"><span class="pre">OPEN_DRAIN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#amaranth_soc.gpio.PinMode.OPEN_DRAIN" title="Permalink to this definition"></a></dt>
+<dd><p><cite>Open-drain</cite> mode.</p>
+<p>The pin output is enabled when the value of its <a class="reference internal" href="#amaranth_soc.gpio.Peripheral.Output" title="amaranth_soc.gpio.Peripheral.Output"><code class="xref py py-class docutils literal notranslate"><span class="pre">Peripheral.Output</span></code></a> field is 0, and
+is itself wired to 0. Its <code class="xref py py-attr docutils literal notranslate"><span class="pre">Peripheral.alt_mode</span></code> bit is wired to 0.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="amaranth_soc.gpio.PinMode.ALTERNATE">
+<span class="sig-name descname"><span class="pre">ALTERNATE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#amaranth_soc.gpio.PinMode.ALTERNATE" title="Permalink to this definition"></a></dt>
+<dd><p><cite>Alternate</cite> mode.</p>
+<p>The pin output is disabled but remains connected to its <a class="reference internal" href="#amaranth_soc.gpio.Peripheral.Output" title="amaranth_soc.gpio.Peripheral.Output"><code class="xref py py-class docutils literal notranslate"><span class="pre">Peripheral.Output</span></code></a> field.
+Its <code class="xref py py-attr docutils literal notranslate"><span class="pre">Peripheral.alt_mode</span></code> bit is wired to 1.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="amaranth_soc.gpio.PinSignature">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">amaranth_soc.gpio.</span></span><span class="sig-name descname"><span class="pre">PinSignature</span></span><a class="headerlink" href="#amaranth_soc.gpio.PinSignature" title="Permalink to this definition"></a></dt>
+<dd><p>GPIO pin signature.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>i</strong> (<code class="code highlight pc python docutils literal highlight-python"><span class="n">unsigned</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></code>) – Input.</p></li>
+<li><p><strong>o</strong> (<code class="code highlight pc python docutils literal highlight-python"><span class="n">unsigned</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></code>) – Output.</p></li>
+<li><p><strong>oe</strong> (<code class="code highlight pc python docutils literal highlight-python"><span class="n">unsigned</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></code>) – Output enable.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="amaranth_soc.gpio.Peripheral">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">amaranth_soc.gpio.</span></span><span class="sig-name descname"><span class="pre">Peripheral</span></span><a class="headerlink" href="#amaranth_soc.gpio.Peripheral" title="Permalink to this definition"></a></dt>
+<dd><p>GPIO peripheral.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pin_count</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) – Number of GPIO pins.</p></li>
+<li><p><strong>addr_width</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) – CSR bus address width.</p></li>
+<li><p><strong>data_width</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) – CSR bus data width.</p></li>
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – CSR bus window name. Optional.</p></li>
+<li><p><strong>input_stages</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) – Number of synchronization stages between pin inputs and the <a class="reference internal" href="#amaranth_soc.gpio.Peripheral.Input" title="amaranth_soc.gpio.Peripheral.Input"><code class="xref py py-class docutils literal notranslate"><span class="pre">Input</span></code></a>
+register. Optional. Defaults to <code class="docutils literal notranslate"><span class="pre">2</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Variables<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>bus</strong> (<a class="reference internal" href="csr/bus.html#amaranth_soc.csr.bus.Interface" title="amaranth_soc.csr.bus.Interface"><code class="xref py py-class docutils literal notranslate"><span class="pre">csr.bus.Interface</span></code></a>) – CSR bus interface providing access to registers.</p></li>
+<li><p><strong>pins</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> of <code class="xref py py-class docutils literal notranslate"><span class="pre">wiring.PureInterface</span></code> of <a class="reference internal" href="#amaranth_soc.gpio.PinSignature" title="amaranth_soc.gpio.PinSignature"><code class="xref py py-class docutils literal notranslate"><span class="pre">PinSignature</span></code></a>) – GPIO pin interfaces.</p></li>
+<li><p><strong>alt_mode</strong> (<code class="code highlight pc python docutils literal highlight-python"><span class="n">unsigned</span><span class="p">(</span><span class="n">pin_count</span><span class="p">)</span></code>) – Indicates which members of the <code class="xref py py-attr docutils literal notranslate"><span class="pre">Peripheral.pins</span></code> array are in alternate mode.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.12)"><strong>TypeError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">pin_count</span></code> is not a positive integer.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.12)"><strong>TypeError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">input_stages</span></code> is not a non-negative integer.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="amaranth_soc.gpio.Peripheral.Mode">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Mode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">src_loc_at</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#amaranth_soc.gpio.Peripheral.Mode" title="Permalink to this definition"></a></dt>
+<dd><p>Mode register.</p>
+<p>This <a class="reference internal" href="csr/reg.html#amaranth_soc.csr.reg.Register" title="amaranth_soc.csr.reg.Register"><code class="xref py py-class docutils literal notranslate"><span class="pre">Register</span></code></a> contains an array of <code class="docutils literal notranslate"><span class="pre">pin_count</span></code> read/write fields.
+Each field is 2-bit wide and its possible values are defined by the <a class="reference internal" href="#amaranth_soc.gpio.PinMode" title="amaranth_soc.gpio.PinMode"><code class="xref py py-class docutils literal notranslate"><span class="pre">PinMode</span></code></a>
+enumeration.</p>
+<hr class="docutils" />
+<p>If <code class="docutils literal notranslate"><span class="pre">pin_count</span></code> is 8, then the <a class="reference internal" href="csr/reg.html#amaranth_soc.csr.reg.Register" title="amaranth_soc.csr.reg.Register"><code class="xref py py-class docutils literal notranslate"><span class="pre">Register</span></code></a> has the following fields:</p>
+<img src="_images/gpio_mode.svg" alt="{'reg': [{'name': 'pin[0]', 'bits': 2, 'attr': 'RW'}, {'name': 'pin[1]', 'bits': 2, 'attr': 'RW'}, {'name': 'pin[2]', 'bits': 2, 'attr': 'RW'}, {'name': 'pin[3]', 'bits': 2, 'attr': 'RW'}, {'name': 'pin[4]', 'bits': 2, 'attr': 'RW'}, {'name': 'pin[5]', 'bits': 2, 'attr': 'RW'}, {'name': 'pin[6]', 'bits': 2, 'attr': 'RW'}, {'name': 'pin[7]', 'bits': 2, 'attr': 'RW'}], 'config': {'bits': 16}}"><hr class="docutils" />
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pin_count</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) – Number of GPIO pins.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="amaranth_soc.gpio.Peripheral.Input">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">src_loc_at</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#amaranth_soc.gpio.Peripheral.Input" title="Permalink to this definition"></a></dt>
+<dd><p>Input register.</p>
+<p>This <a class="reference internal" href="csr/reg.html#amaranth_soc.csr.reg.Register" title="amaranth_soc.csr.reg.Register"><code class="xref py py-class docutils literal notranslate"><span class="pre">Register</span></code></a> contains an array of <code class="docutils literal notranslate"><span class="pre">pin_count</span></code> read-only fields. Each
+field is 1-bit wide and driven by the input of its associated pin in the
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">Peripheral.pins</span></code> array.</p>
+<p>Values sampled from pin inputs go through <a class="reference internal" href="#amaranth_soc.gpio.Peripheral.input_stages" title="amaranth_soc.gpio.Peripheral.input_stages"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Peripheral.input_stages</span></code></a> synchronization
+stages (on a rising edge of <code class="docutils literal notranslate"><span class="pre">ClockSignal(&quot;sync&quot;)</span></code>) before reaching the register.</p>
+<hr class="docutils" />
+<p>If <code class="docutils literal notranslate"><span class="pre">pin_count</span></code> is 8, then the <a class="reference internal" href="csr/reg.html#amaranth_soc.csr.reg.Register" title="amaranth_soc.csr.reg.Register"><code class="xref py py-class docutils literal notranslate"><span class="pre">Register</span></code></a> has the following fields:</p>
+<img src="_images/gpio_input.svg" alt="{'reg': [{'name': 'pin[0]', 'bits': 1, 'attr': 'R'}, {'name': 'pin[1]', 'bits': 1, 'attr': 'R'}, {'name': 'pin[2]', 'bits': 1, 'attr': 'R'}, {'name': 'pin[3]', 'bits': 1, 'attr': 'R'}, {'name': 'pin[4]', 'bits': 1, 'attr': 'R'}, {'name': 'pin[5]', 'bits': 1, 'attr': 'R'}, {'name': 'pin[6]', 'bits': 1, 'attr': 'R'}, {'name': 'pin[7]', 'bits': 1, 'attr': 'R'}], 'config': {'bits': 8}}"><hr class="docutils" />
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pin_count</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) – Number of GPIO pins.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="amaranth_soc.gpio.Peripheral.Output">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">src_loc_at</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#amaranth_soc.gpio.Peripheral.Output" title="Permalink to this definition"></a></dt>
+<dd><p>Output register.</p>
+<p>This <a class="reference internal" href="csr/reg.html#amaranth_soc.csr.reg.Register" title="amaranth_soc.csr.reg.Register"><code class="xref py py-class docutils literal notranslate"><span class="pre">Register</span></code></a> contains an array of <code class="docutils literal notranslate"><span class="pre">pin_count</span></code> read/write fields. Each
+field is 1-bit wide and drives the output of its associated pin in the
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">Peripheral.pins</span></code> array, depending on its associated <a class="reference internal" href="#amaranth_soc.gpio.Peripheral.Mode" title="amaranth_soc.gpio.Peripheral.Mode"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mode</span></code></a> field.</p>
+<hr class="docutils" />
+<p>If <code class="docutils literal notranslate"><span class="pre">pin_count</span></code> is 8, then the <a class="reference internal" href="csr/reg.html#amaranth_soc.csr.reg.Register" title="amaranth_soc.csr.reg.Register"><code class="xref py py-class docutils literal notranslate"><span class="pre">Register</span></code></a> has the following fields:</p>
+<img src="_images/gpio_output.svg" alt="{'reg': [{'name': 'pin[0]', 'bits': 1, 'attr': 'RW'}, {'name': 'pin[1]', 'bits': 1, 'attr': 'RW'}, {'name': 'pin[2]', 'bits': 1, 'attr': 'RW'}, {'name': 'pin[3]', 'bits': 1, 'attr': 'RW'}, {'name': 'pin[4]', 'bits': 1, 'attr': 'RW'}, {'name': 'pin[5]', 'bits': 1, 'attr': 'RW'}, {'name': 'pin[6]', 'bits': 1, 'attr': 'RW'}, {'name': 'pin[7]', 'bits': 1, 'attr': 'RW'}], 'config': {'bits': 8}}"><hr class="docutils" />
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pin_count</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) – Number of GPIO pins.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="amaranth_soc.gpio.Peripheral.SetClr">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SetClr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">src_loc_at</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#amaranth_soc.gpio.Peripheral.SetClr" title="Permalink to this definition"></a></dt>
+<dd><p>Output set/clear register.</p>
+<p>This <a class="reference internal" href="csr/reg.html#amaranth_soc.csr.reg.Register" title="amaranth_soc.csr.reg.Register"><code class="xref py py-class docutils literal notranslate"><span class="pre">Register</span></code></a> contains an array of <code class="docutils literal notranslate"><span class="pre">pin_count</span></code> write-only fields. Each
+field is 2-bit wide; writing it can modify its associated <a class="reference internal" href="#amaranth_soc.gpio.Peripheral.Output" title="amaranth_soc.gpio.Peripheral.Output"><code class="xref py py-class docutils literal notranslate"><span class="pre">Output</span></code></a> field
+as a side-effect.</p>
+<hr class="docutils" />
+<p>If <code class="docutils literal notranslate"><span class="pre">pin_count</span></code> is 8, then the <a class="reference internal" href="csr/reg.html#amaranth_soc.csr.reg.Register" title="amaranth_soc.csr.reg.Register"><code class="xref py py-class docutils literal notranslate"><span class="pre">Register</span></code></a> has the following fields:</p>
+<img src="_images/gpio_setclr.svg" alt="{'reg': [{'name': 'pin[0]', 'bits': 2, 'attr': 'W'}, {'name': 'pin[1]', 'bits': 2, 'attr': 'W'}, {'name': 'pin[2]', 'bits': 2, 'attr': 'W'}, {'name': 'pin[3]', 'bits': 2, 'attr': 'W'}, {'name': 'pin[4]', 'bits': 2, 'attr': 'W'}, {'name': 'pin[5]', 'bits': 2, 'attr': 'W'}, {'name': 'pin[6]', 'bits': 2, 'attr': 'W'}, {'name': 'pin[7]', 'bits': 2, 'attr': 'W'}], 'config': {'bits': 16}}"><ul class="simple">
+<li><p>Writing <cite>0b01</cite> to a field sets its associated <a class="reference internal" href="#amaranth_soc.gpio.Peripheral.Output" title="amaranth_soc.gpio.Peripheral.Output"><code class="xref py py-class docutils literal notranslate"><span class="pre">Output</span></code></a> field.</p></li>
+<li><p>Writing <cite>0b10</cite> to a field clears its associated <a class="reference internal" href="#amaranth_soc.gpio.Peripheral.Output" title="amaranth_soc.gpio.Peripheral.Output"><code class="xref py py-class docutils literal notranslate"><span class="pre">Output</span></code></a> field.</p></li>
+<li><p>Writing <cite>0b00</cite> or <cite>0b11</cite> to a field has no side-effect.</p></li>
+</ul>
+<hr class="docutils" />
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pin_count</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) – Number of GPIO pins.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="amaranth_soc.gpio.Peripheral.pin_count">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pin_count</span></span><a class="headerlink" href="#amaranth_soc.gpio.Peripheral.pin_count" title="Permalink to this definition"></a></dt>
+<dd><p>Number of GPIO pins.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="amaranth_soc.gpio.Peripheral.input_stages">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">input_stages</span></span><a class="headerlink" href="#amaranth_soc.gpio.Peripheral.input_stages" title="Permalink to this definition"></a></dt>
+<dd><p>Number of synchronization stages between pin inputs and the <a class="reference internal" href="#amaranth_soc.gpio.Peripheral.Input" title="amaranth_soc.gpio.Peripheral.Input"><code class="xref py py-class docutils literal notranslate"><span class="pre">Input</span></code></a>
+register.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="csr/action.html" class="btn btn-neutral float-left" title="CSR field actions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020—2024, Amaranth project contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

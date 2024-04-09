@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CSR bus primitives &mdash; System on Chip toolkit for Amaranth HDL 0.1a1.dev14 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=1b47c3fb"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="CSR registers" href="reg.html" />
+    <link rel="prev" title="CSR" href="../csr.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../cover.html" class="icon icon-home">
+            System on Chip toolkit for Amaranth HDL
+              <img src="../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                0.1a1.dev14+ge8af949
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference external" href="https://amaranth-lang.org/docs/amaranth/latest/">Language &amp; toolchain</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://amaranth-lang.org/docs/amaranth-stdio/latest/">Standard I/O components</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">System on Chip toolkit</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../memory.html">Memory maps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../wishbone.html">Wishbone</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../csr.html">CSR</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">CSR bus primitives</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#amaranth_soc.csr.bus.Element.Access"><code class="docutils literal notranslate"><span class="pre">Element.Access</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#amaranth_soc.csr.bus.Element.Signature"><code class="docutils literal notranslate"><span class="pre">Element.Signature</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#amaranth_soc.csr.bus.Element"><code class="docutils literal notranslate"><span class="pre">Element</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#amaranth_soc.csr.bus.Signature"><code class="docutils literal notranslate"><span class="pre">Signature</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#amaranth_soc.csr.bus.Interface"><code class="docutils literal notranslate"><span class="pre">Interface</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#amaranth_soc.csr.bus.Multiplexer"><code class="docutils literal notranslate"><span class="pre">Multiplexer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#amaranth_soc.csr.bus.Decoder"><code class="docutils literal notranslate"><span class="pre">Decoder</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="reg.html">CSR registers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="action.html">CSR field actions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../gpio.html">GPIO</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../cover.html">System on Chip toolkit for Amaranth HDL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../cover.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">System on Chip toolkit</a></li>
+          <li class="breadcrumb-item"><a href="../csr.html">CSR</a></li>
+      <li class="breadcrumb-item active">CSR bus primitives</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/csr/bus.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="csr-bus-primitives">
+<h1>CSR bus primitives<a class="headerlink" href="#csr-bus-primitives" title="Permalink to this heading"></a></h1>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This manual is a work in progress and is seriously incomplete!</p>
+</div>
+<span class="target" id="module-amaranth_soc.csr.bus"></span><p>The <a class="reference internal" href="#module-amaranth_soc.csr.bus" title="amaranth_soc.csr.bus"><code class="xref py py-mod docutils literal notranslate"><span class="pre">amaranth_soc.csr.bus</span></code></a> module provides CSR bus primitives.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="amaranth_soc.csr.bus.Element.Access">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Element.</span></span><span class="sig-name descname"><span class="pre">Access</span></span><a class="headerlink" href="#amaranth_soc.csr.bus.Element.Access" title="Permalink to this definition"></a></dt>
+<dd><p>Register access mode.</p>
+<p>Coarse access mode for the entire register. Individual fields can have more restrictive
+access mode, e.g. R/O fields can be a part of an R/W register.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="amaranth_soc.csr.bus.Element.Access.R">
+<span class="sig-name descname"><span class="pre">R</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'r'</span></em><a class="headerlink" href="#amaranth_soc.csr.bus.Element.Access.R" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="amaranth_soc.csr.bus.Element.Access.W">
+<span class="sig-name descname"><span class="pre">W</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'w'</span></em><a class="headerlink" href="#amaranth_soc.csr.bus.Element.Access.W" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="amaranth_soc.csr.bus.Element.Access.RW">
+<span class="sig-name descname"><span class="pre">RW</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'rw'</span></em><a class="headerlink" href="#amaranth_soc.csr.bus.Element.Access.RW" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="amaranth_soc.csr.bus.Element.Access.readable">
+<span class="sig-name descname"><span class="pre">readable</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#amaranth_soc.csr.bus.Element.Access.readable" title="Permalink to this definition"></a></dt>
+<dd><p>Readable access mode.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if <cite>self</cite> is equal to <a class="reference internal" href="#amaranth_soc.csr.bus.Element.Access.R" title="amaranth_soc.csr.bus.Element.Access.R"><code class="xref py py-attr docutils literal notranslate"><span class="pre">R</span></code></a> or <a class="reference internal" href="#amaranth_soc.csr.bus.Element.Access.RW" title="amaranth_soc.csr.bus.Element.Access.RW"><code class="xref py py-attr docutils literal notranslate"><span class="pre">RW</span></code></a>.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="amaranth_soc.csr.bus.Element.Access.writable">
+<span class="sig-name descname"><span class="pre">writable</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#amaranth_soc.csr.bus.Element.Access.writable" title="Permalink to this definition"></a></dt>
+<dd><p>Writable access mode.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if <cite>self</cite> is equal to <a class="reference internal" href="#amaranth_soc.csr.bus.Element.Access.W" title="amaranth_soc.csr.bus.Element.Access.W"><code class="xref py py-attr docutils literal notranslate"><span class="pre">W</span></code></a> or <a class="reference internal" href="#amaranth_soc.csr.bus.Element.Access.RW" title="amaranth_soc.csr.bus.Element.Access.RW"><code class="xref py py-attr docutils literal notranslate"><span class="pre">RW</span></code></a>.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="amaranth_soc.csr.bus.Element.Signature">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Element.</span></span><span class="sig-name descname"><span class="pre">Signature</span></span><a class="headerlink" href="#amaranth_soc.csr.bus.Element.Signature" title="Permalink to this definition"></a></dt>
+<dd><p>Peripheral-side CSR signature.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>width</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) – Width of the register.</p></li>
+<li><p><strong>access</strong> (<a class="reference internal" href="#amaranth_soc.csr.bus.Element.Access" title="amaranth_soc.csr.bus.Element.Access"><code class="xref py py-class docutils literal notranslate"><span class="pre">Element.Access</span></code></a>) – Register access mode.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Variables<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>r_data</strong> (<code class="code highlight pc python docutils literal highlight-python"><span class="n">unsigned</span><span class="p">(</span><span class="n">width</span><span class="p">)</span></code>) – Read data. Must be always valid, and is sampled when <code class="docutils literal notranslate"><span class="pre">r_stb</span></code> is asserted.</p></li>
+<li><p><strong>r_stb</strong> (<code class="code highlight pc python docutils literal highlight-python"><span class="n">unsigned</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></code>) – Read strobe. Registers with read side effects should perform the read side effect when
+this strobe is asserted.</p></li>
+<li><p><strong>w_data</strong> (<code class="code highlight pc python docutils literal highlight-python"><span class="n">unsigned</span><span class="p">(</span><span class="n">width</span><span class="p">)</span></code>) – Write data. Valid only when <code class="docutils literal notranslate"><span class="pre">w_stb</span></code> is asserted.</p></li>
+<li><p><strong>w_stb</strong> (<code class="code highlight pc python docutils literal highlight-python"><span class="n">unsigned</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></code>) – Write strobe. Registers should update their value or perform the write side effect when
+this strobe is asserted.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.12)"><strong>TypeError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">width</span></code> is not an integer greater than or equal to 0.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.12)"><strong>ValueError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">access</span></code> is not a member of <a class="reference internal" href="#amaranth_soc.csr.bus.Element.Access" title="amaranth_soc.csr.bus.Element.Access"><code class="xref py py-class docutils literal notranslate"><span class="pre">Element.Access</span></code></a>.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="amaranth_soc.csr.bus.Element.Signature.width">
+<span class="sig-name descname"><span class="pre">width</span></span><a class="headerlink" href="#amaranth_soc.csr.bus.Element.Signature.width" title="Permalink to this definition"></a></dt>
+<dd><p>Width of the register.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="amaranth_soc.csr.bus.Element.Signature.access">
+<span class="sig-name descname"><span class="pre">access</span></span><a class="headerlink" href="#amaranth_soc.csr.bus.Element.Signature.access" title="Permalink to this definition"></a></dt>
+<dd><p>Register access mode.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#amaranth_soc.csr.bus.Element.Access" title="amaranth_soc.csr.bus.Element.Access"><code class="xref py py-class docutils literal notranslate"><span class="pre">Element.Access</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="amaranth_soc.csr.bus.Element.Signature.create">
+<span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">src_loc_at</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#amaranth_soc.csr.bus.Element.Signature.create" title="Permalink to this definition"></a></dt>
+<dd><p>Create a compatible interface.</p>
+<p>See <code class="xref py py-meth docutils literal notranslate"><span class="pre">wiring.Signature.create()</span></code> for details.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#amaranth_soc.csr.bus.Element" title="amaranth_soc.csr.bus.Element"><code class="xref py py-class docutils literal notranslate"><span class="pre">Element</span></code></a>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="amaranth_soc.csr.bus.Element.Signature.__eq__">
+<span class="sig-name descname"><span class="pre">__eq__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#amaranth_soc.csr.bus.Element.Signature.__eq__" title="Permalink to this definition"></a></dt>
+<dd><p>Compare signatures.</p>
+<p>Two signatures are equal if they have the same width and register access mode.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="amaranth_soc.csr.bus.Element">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">amaranth_soc.csr.bus.</span></span><span class="sig-name descname"><span class="pre">Element</span></span><a class="headerlink" href="#amaranth_soc.csr.bus.Element" title="Permalink to this definition"></a></dt>
+<dd><p>Peripheral-side CSR interface.</p>
+<p>A low-level interface to a single atomically readable and writable register in a peripheral.
+This interface supports any register width and semantics, provided that both reads and writes
+always succeed and complete in one cycle.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>width</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) – Width of the register.</p></li>
+<li><p><strong>access</strong> (<a class="reference internal" href="#amaranth_soc.csr.bus.Element.Access" title="amaranth_soc.csr.bus.Element.Access"><code class="xref py py-class docutils literal notranslate"><span class="pre">Element.Access</span></code></a>) – Register access mode.</p></li>
+<li><p><strong>path</strong> (iterable of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – Path to this CSR interface. Optional. See <code class="xref py py-class docutils literal notranslate"><span class="pre">wiring.PureInterface</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.12)"><strong>TypeError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">width</span></code> is not an integer greater than or equal to 0.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.12)"><strong>ValueError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">access</span></code> is not a member of <a class="reference internal" href="#amaranth_soc.csr.bus.Element.Access" title="amaranth_soc.csr.bus.Element.Access"><code class="xref py py-class docutils literal notranslate"><span class="pre">Element.Access</span></code></a>.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="amaranth_soc.csr.bus.Element.width">
+<span class="sig-name descname"><span class="pre">width</span></span><a class="headerlink" href="#amaranth_soc.csr.bus.Element.width" title="Permalink to this definition"></a></dt>
+<dd><p>Width of the register.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="amaranth_soc.csr.bus.Element.access">
+<span class="sig-name descname"><span class="pre">access</span></span><a class="headerlink" href="#amaranth_soc.csr.bus.Element.access" title="Permalink to this definition"></a></dt>
+<dd><p>Register access mode.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#amaranth_soc.csr.bus.Element.Access" title="amaranth_soc.csr.bus.Element.Access"><code class="xref py py-class docutils literal notranslate"><span class="pre">Element.Access</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="amaranth_soc.csr.bus.Signature">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">amaranth_soc.csr.bus.</span></span><span class="sig-name descname"><span class="pre">Signature</span></span><a class="headerlink" href="#amaranth_soc.csr.bus.Signature" title="Permalink to this definition"></a></dt>
+<dd><p>CPU-side CSR signature.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>addr_width</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) – Address width. At most <code class="docutils literal notranslate"><span class="pre">(2</span> <span class="pre">**</span> <span class="pre">addr_width)</span> <span class="pre">*</span> <span class="pre">data_width</span></code> register bits will be available.</p></li>
+<li><p><strong>data_width</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) – Data width. Registers are accessed in <code class="docutils literal notranslate"><span class="pre">data_width</span></code> sized chunks.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Variables<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>addr</strong> (<code class="code highlight pc python docutils literal highlight-python"><span class="n">unsigned</span><span class="p">(</span><span class="n">addr_width</span><span class="p">)</span></code>) – Address for reads and writes.</p></li>
+<li><p><strong>r_data</strong> (<code class="code highlight pc python docutils literal highlight-python"><span class="n">unsigned</span><span class="p">(</span><span class="n">data_width</span><span class="p">)</span></code>) – Read data. Valid on the next cycle after <code class="docutils literal notranslate"><span class="pre">r_stb</span></code> is asserted. Otherwise, zero. (Keeping
+read data of an unused interface at zero simplifies multiplexers.)</p></li>
+<li><p><strong>r_stb</strong> (<code class="code highlight pc python docutils literal highlight-python"><span class="n">unsigned</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></code>) – Read strobe. If <code class="docutils literal notranslate"><span class="pre">addr</span></code> points to the first chunk of a register, captures register value
+and causes read side effects to be performed (if any). If <code class="docutils literal notranslate"><span class="pre">addr</span></code> points to any chunk
+of a register, latches the captured value to <code class="docutils literal notranslate"><span class="pre">r_data</span></code>. Otherwise, latches zero
+to <code class="docutils literal notranslate"><span class="pre">r_data</span></code>.</p></li>
+<li><p><strong>w_data</strong> (<code class="code highlight pc python docutils literal highlight-python"><span class="n">unsigned</span><span class="p">(</span><span class="n">data_width</span><span class="p">)</span></code>) – Write data. Must be valid when <code class="docutils literal notranslate"><span class="pre">w_stb</span></code> is asserted.</p></li>
+<li><p><strong>w_stb</strong> (<code class="code highlight pc python docutils literal highlight-python"><span class="n">unsigned</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></code>) – Write strobe. If <code class="docutils literal notranslate"><span class="pre">addr</span></code> points to the last chunk of a register, writes captured value
+to the register and causes write side effects to be performed (if any). If <code class="docutils literal notranslate"><span class="pre">addr</span></code> points
+to any chunk of a register, latches <code class="docutils literal notranslate"><span class="pre">w_data</span></code> to the captured value. Otherwise, does
+nothing.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.12)"><strong>TypeError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">addr_width</span></code> is not an integer greater than 0.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.12)"><strong>TypeError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">data_width</span></code> is not an integer greater than 0.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="amaranth_soc.csr.bus.Signature.addr_width">
+<span class="sig-name descname"><span class="pre">addr_width</span></span><a class="headerlink" href="#amaranth_soc.csr.bus.Signature.addr_width" title="Permalink to this definition"></a></dt>
+<dd><p>Address width.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="amaranth_soc.csr.bus.Signature.data_width">
+<span class="sig-name descname"><span class="pre">data_width</span></span><a class="headerlink" href="#amaranth_soc.csr.bus.Signature.data_width" title="Permalink to this definition"></a></dt>
+<dd><p>Data width.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="amaranth_soc.csr.bus.Signature.create">
+<span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">src_loc_at</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#amaranth_soc.csr.bus.Signature.create" title="Permalink to this definition"></a></dt>
+<dd><p>Create a compatible interface.</p>
+<p>See <code class="xref py py-meth docutils literal notranslate"><span class="pre">wiring.Signature.create()</span></code> for details.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#amaranth_soc.csr.bus.Interface" title="amaranth_soc.csr.bus.Interface"><code class="xref py py-class docutils literal notranslate"><span class="pre">Interface</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="amaranth_soc.csr.bus.Signature.__eq__">
+<span class="sig-name descname"><span class="pre">__eq__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#amaranth_soc.csr.bus.Signature.__eq__" title="Permalink to this definition"></a></dt>
+<dd><p>Compare signatures.</p>
+<p>Two signatures are equal if they have the same address width and data width.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="amaranth_soc.csr.bus.Interface">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">amaranth_soc.csr.bus.</span></span><span class="sig-name descname"><span class="pre">Interface</span></span><a class="headerlink" href="#amaranth_soc.csr.bus.Interface" title="Permalink to this definition"></a></dt>
+<dd><p>CPU-side CSR interface.</p>
+<p>A low-level interface to a set of atomically readable and writable peripheral CSR registers.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>CSR registers mapped to the CSR bus are split into chunks according to the bus data width.
+Each chunk is assigned a consecutive address on the bus. This allows accessing CSRs of any
+size using any datapath width.</p>
+<p>When the first chunk of a register is read, the value of a register is captured, and reads
+from subsequent chunks of the same register return the captured values. When any chunk
+except the last chunk of a register is written, the written value is captured; a write to
+the last chunk writes the captured value to the register. This allows atomically accessing
+CSRs larger than datapath width.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>addr_width</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) – Address width. See <a class="reference internal" href="#amaranth_soc.csr.bus.Signature" title="amaranth_soc.csr.bus.Signature"><code class="xref py py-class docutils literal notranslate"><span class="pre">Signature</span></code></a>.</p></li>
+<li><p><strong>data_width</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) – Data width. See <a class="reference internal" href="#amaranth_soc.csr.bus.Signature" title="amaranth_soc.csr.bus.Signature"><code class="xref py py-class docutils literal notranslate"><span class="pre">Signature</span></code></a>.</p></li>
+<li><p><strong>path</strong> (iterable of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – Path to this CSR interface. Optional. See <code class="xref py py-class docutils literal notranslate"><span class="pre">wiring.PureInterface</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.12)"><strong>TypeError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">addr_width</span></code> is not an integer greater than 0.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.12)"><strong>TypeError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">data_width</span></code> is not an integer greater than 0.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="amaranth_soc.csr.bus.Interface.addr_width">
+<span class="sig-name descname"><span class="pre">addr_width</span></span><a class="headerlink" href="#amaranth_soc.csr.bus.Interface.addr_width" title="Permalink to this definition"></a></dt>
+<dd><p>Address width.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="amaranth_soc.csr.bus.Interface.data_width">
+<span class="sig-name descname"><span class="pre">data_width</span></span><a class="headerlink" href="#amaranth_soc.csr.bus.Interface.data_width" title="Permalink to this definition"></a></dt>
+<dd><p>Data width.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="amaranth_soc.csr.bus.Interface.memory_map">
+<span class="sig-name descname"><span class="pre">memory_map</span></span><a class="headerlink" href="#amaranth_soc.csr.bus.Interface.memory_map" title="Permalink to this definition"></a></dt>
+<dd><p>Memory map of the bus.</p>
+<div class="admonition-todo admonition" id="id1">
+<p class="admonition-title">Todo</p>
+<p>setter</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../memory.html#amaranth_soc.memory.MemoryMap" title="amaranth_soc.memory.MemoryMap"><code class="xref py py-class docutils literal notranslate"><span class="pre">MemoryMap</span></code></a> or <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="amaranth_soc.csr.bus.Multiplexer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">amaranth_soc.csr.bus.</span></span><span class="sig-name descname"><span class="pre">Multiplexer</span></span><a class="headerlink" href="#amaranth_soc.csr.bus.Multiplexer" title="Permalink to this definition"></a></dt>
+<dd><p>CSR register multiplexer.</p>
+<p>An address-based multiplexer for CSR registers implementing atomic updates.</p>
+<p>This implementation assumes the following from the CSR bus:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>an initiator must have exclusive ownership over the multiplexer for the full duration of
+a register transaction;</p></li>
+<li><p>an initiator must access a register in ascending order of addresses, but it may abort a
+transaction after any bus cycle.</p></li>
+</ul>
+</div></blockquote>
+<p>Writes are registered, and are performed 1 cycle after <code class="docutils literal notranslate"><span class="pre">w_stb</span></code> is asserted.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Because the CSR bus conserves logic and routing resources, it is common to e.g. access
+a CSR bus with an <em>n</em>-bit data path from a CPU with a <em>k</em>-bit datapath (<em>k&gt;n</em>) in cases
+where CSR access latency is less important than resource usage.</p>
+<p>In this case, two strategies are possible for connecting the CSR bus to the CPU:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>The CPU could access the CSR bus directly (with no intervening logic other than
+simple translation of control signals). In this case, the register alignment should
+be set to 1 (i.e. <code class="docutils literal notranslate"><span class="pre">memory_map.alignment</span></code> should be set to 0), and each <em>w</em>-bit
+register would occupy <em>ceil(w/n)</em> addresses from the CPU perspective, requiring the
+same amount of memory instructions to access.</p></li>
+<li><p>The CPU could also access the CSR bus through a width down-converter, which would
+issue <em>k/n</em> CSR accesses for each CPU access. In this case, the register alignment
+should be set to <em>k/n</em>, and each <em>w</em>-bit register would occupy <em>ceil(w/k)</em> addresses
+from the CPU perspective, requiring the same amount of memory instructions to access.</p></li>
+</ul>
+</div></blockquote>
+<p>If the register alignment (i.e. <code class="docutils literal notranslate"><span class="pre">2</span> <span class="pre">**</span> <span class="pre">memory_map.alignment</span></code>) is greater than 1, it affects
+which CSR bus write is considered a write to the last register chunk. For example, if a 24-bit
+register is used with a 8-bit CSR bus and a CPU with a 32-bit datapath, a write to this
+register requires 4 CSR bus writes to complete, and the 4th write is the one that actually
+writes the value to the register. This allows determining write latency solely from the amount
+of addresses the register occupies in the CPU address space, and the width of the CSR bus.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>memory_map</strong> (<a class="reference internal" href="../memory.html#amaranth_soc.memory.MemoryMap" title="amaranth_soc.memory.MemoryMap"><code class="xref py py-class docutils literal notranslate"><span class="pre">MemoryMap</span></code></a>) – Memory map of CSR registers.</p></li>
+<li><p><strong>shadow_overlaps</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) – Maximum number of CSR registers that can share a chunk of a shadow register.
+Optional. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, any number of CSR registers can share a shadow chunk.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Variables<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>bus</strong> (<a class="reference internal" href="#amaranth_soc.csr.bus.Interface" title="amaranth_soc.csr.bus.Interface"><code class="xref py py-class docutils literal notranslate"><span class="pre">Interface</span></code></a>) – CSR bus providing access to registers.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="amaranth_soc.csr.bus.Decoder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">amaranth_soc.csr.bus.</span></span><span class="sig-name descname"><span class="pre">Decoder</span></span><a class="headerlink" href="#amaranth_soc.csr.bus.Decoder" title="Permalink to this definition"></a></dt>
+<dd><p>CSR bus decoder.</p>
+<p>An address decoder for subordinate CSR buses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although there is no functional difference between adding a set of registers directly to
+a <a class="reference internal" href="#amaranth_soc.csr.bus.Multiplexer" title="amaranth_soc.csr.bus.Multiplexer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Multiplexer</span></code></a> and adding a set of registers to multiple <a class="reference internal" href="#amaranth_soc.csr.bus.Multiplexer" title="amaranth_soc.csr.bus.Multiplexer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Multiplexer</span></code></a>-s
+that are aggregated with a <a class="reference internal" href="#amaranth_soc.csr.bus.Decoder" title="amaranth_soc.csr.bus.Decoder"><code class="xref py py-class docutils literal notranslate"><span class="pre">Decoder</span></code></a>, hierarchical CSR buses are useful for
+organizing a hierarchical design.</p>
+<p>If many peripherals are directly served by a single <a class="reference internal" href="#amaranth_soc.csr.bus.Multiplexer" title="amaranth_soc.csr.bus.Multiplexer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Multiplexer</span></code></a>, a very large
+amount of ports will connect the peripheral registers with the <a class="reference internal" href="#amaranth_soc.csr.bus.Decoder" title="amaranth_soc.csr.bus.Decoder"><code class="xref py py-class docutils literal notranslate"><span class="pre">Decoder</span></code></a>, and the
+cost of decoding logic would not be attributed to specific peripherals. With a
+<a class="reference internal" href="#amaranth_soc.csr.bus.Decoder" title="amaranth_soc.csr.bus.Decoder"><code class="xref py py-class docutils literal notranslate"><span class="pre">Decoder</span></code></a>, only five signals per peripheral will be used, and the logic could be
+kept together with the peripheral.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>addr_width</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) – Address width. See <a class="reference internal" href="#amaranth_soc.csr.bus.Interface" title="amaranth_soc.csr.bus.Interface"><code class="xref py py-class docutils literal notranslate"><span class="pre">Interface</span></code></a>.</p></li>
+<li><p><strong>data_width</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) – Data width. See <a class="reference internal" href="#amaranth_soc.csr.bus.Interface" title="amaranth_soc.csr.bus.Interface"><code class="xref py py-class docutils literal notranslate"><span class="pre">Interface</span></code></a>.</p></li>
+<li><p><strong>alignment</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>, power-of-2 exponent) – Window alignment. See <a class="reference internal" href="../memory.html#amaranth_soc.memory.MemoryMap" title="amaranth_soc.memory.MemoryMap"><code class="xref py py-class docutils literal notranslate"><span class="pre">MemoryMap</span></code></a>.</p></li>
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – Window name. Optional. See <a class="reference internal" href="../memory.html#amaranth_soc.memory.MemoryMap" title="amaranth_soc.memory.MemoryMap"><code class="xref py py-class docutils literal notranslate"><span class="pre">MemoryMap</span></code></a>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Variables<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>bus</strong> (<a class="reference internal" href="#amaranth_soc.csr.bus.Interface" title="amaranth_soc.csr.bus.Interface"><code class="xref py py-class docutils literal notranslate"><span class="pre">Interface</span></code></a>) – CSR bus providing access to subordinate buses.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="amaranth_soc.csr.bus.Decoder.align_to">
+<span class="sig-name descname"><span class="pre">align_to</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alignment</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#amaranth_soc.csr.bus.Decoder.align_to" title="Permalink to this definition"></a></dt>
+<dd><p>Align the implicit address of the next window.</p>
+<p>See <a class="reference internal" href="../memory.html#amaranth_soc.memory.MemoryMap.align_to" title="amaranth_soc.memory.MemoryMap.align_to"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MemoryMap.align_to()</span></code></a> for details.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Implicit next address.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="amaranth_soc.csr.bus.Decoder.add">
+<span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sub_bus</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">addr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#amaranth_soc.csr.bus.Decoder.add" title="Permalink to this definition"></a></dt>
+<dd><p>Add a window to a subordinate bus.</p>
+<p>See <a class="reference internal" href="../memory.html#amaranth_soc.memory.MemoryMap.add_window" title="amaranth_soc.memory.MemoryMap.add_window"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MemoryMap.add_window()</span></code></a> for details.</p>
+<div class="admonition-todo admonition" id="id2">
+<p class="admonition-title">Todo</p>
+<p>include exceptions raised in <a class="reference internal" href="../memory.html#amaranth_soc.memory.MemoryMap.add_window" title="amaranth_soc.memory.MemoryMap.add_window"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MemoryMap.add_window()</span></code></a></p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A tuple <code class="docutils literal notranslate"><span class="pre">(start,</span> <span class="pre">end,</span> <span class="pre">ratio)</span></code> describing the address range assigned to the window.
+<code class="docutils literal notranslate"><span class="pre">ratio</span></code> is always 1.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a> of (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>)</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.12)"><strong>TypeError</strong></a> – If the subordinate bus is not an instance of <a class="reference internal" href="#amaranth_soc.csr.bus.Interface" title="amaranth_soc.csr.bus.Interface"><code class="xref py py-class docutils literal notranslate"><span class="pre">Interface</span></code></a>.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.12)"><strong>ValueError</strong></a> – If the subordinate bus data width is not equal to the <a class="reference internal" href="#amaranth_soc.csr.bus.Decoder" title="amaranth_soc.csr.bus.Decoder"><code class="xref py py-class docutils literal notranslate"><span class="pre">Decoder</span></code></a> data width.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../csr.html" class="btn btn-neutral float-left" title="CSR" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="reg.html" class="btn btn-neutral float-right" title="CSR registers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020—2024, Amaranth project contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
