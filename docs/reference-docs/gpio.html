@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GPIO &mdash; System on Chip toolkit for Amaranth HDL 0.1a1.dev14 documentation</title>
+  <title>GPIO &mdash; System on Chip toolkit for Amaranth HDL 0.1a1.dev16 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/custom.css" type="text/css" />
@@ -14,7 +14,7 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=1b47c3fb"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=88c7cd88"></script>
         <script src="_static/doctools.js?v=888ff710"></script>
         <script src="_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="_static/js/theme.js"></script>
@@ -36,7 +36,7 @@
               <img src="_static/logo.png" class="logo" alt="Logo"/>
           </a>
               <div class="version">
-                0.1a1.dev14+ge8af949
+                0.1a1.dev16+gc2ed5bf
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -154,11 +154,11 @@ Its <code class="xref py py-attr docutils literal notranslate"><span class="pre"
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">amaranth_soc.gpio.</span></span><span class="sig-name descname"><span class="pre">PinSignature</span></span><a class="headerlink" href="#amaranth_soc.gpio.PinSignature" title="Permalink to this definition"></a></dt>
 <dd><p>GPIO pin signature.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dt class="field-odd">Members<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>i</strong> (<code class="code highlight pc python docutils literal highlight-python"><span class="n">unsigned</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></code>) – Input.</p></li>
-<li><p><strong>o</strong> (<code class="code highlight pc python docutils literal highlight-python"><span class="n">unsigned</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></code>) – Output.</p></li>
-<li><p><strong>oe</strong> (<code class="code highlight pc python docutils literal highlight-python"><span class="n">unsigned</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></code>) – Output enable.</p></li>
+<li><p><strong>i</strong> (<code class="code highlight py python docutils literal highlight-python"><span class="n">unsigned</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></code>) – Input.</p></li>
+<li><p><strong>o</strong> (<code class="code highlight py python docutils literal highlight-python"><span class="n">unsigned</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></code>) – Output.</p></li>
+<li><p><strong>oe</strong> (<code class="code highlight py python docutils literal highlight-python"><span class="n">unsigned</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></code>) – Output enable.</p></li>
 </ul>
 </dd>
 </dl>
@@ -179,11 +179,11 @@ Its <code class="xref py py-attr docutils literal notranslate"><span class="pre"
 register. Optional. Defaults to <code class="docutils literal notranslate"><span class="pre">2</span></code>.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Variables<span class="colon">:</span></dt>
+<dt class="field-even">Members<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>bus</strong> (<a class="reference internal" href="csr/bus.html#amaranth_soc.csr.bus.Interface" title="amaranth_soc.csr.bus.Interface"><code class="xref py py-class docutils literal notranslate"><span class="pre">csr.bus.Interface</span></code></a>) – CSR bus interface providing access to registers.</p></li>
-<li><p><strong>pins</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> of <code class="xref py py-class docutils literal notranslate"><span class="pre">wiring.PureInterface</span></code> of <a class="reference internal" href="#amaranth_soc.gpio.PinSignature" title="amaranth_soc.gpio.PinSignature"><code class="xref py py-class docutils literal notranslate"><span class="pre">PinSignature</span></code></a>) – GPIO pin interfaces.</p></li>
-<li><p><strong>alt_mode</strong> (<code class="code highlight pc python docutils literal highlight-python"><span class="n">unsigned</span><span class="p">(</span><span class="n">pin_count</span><span class="p">)</span></code>) – Indicates which members of the <code class="xref py py-attr docutils literal notranslate"><span class="pre">Peripheral.pins</span></code> array are in alternate mode.</p></li>
+<li><p><strong>bus</strong> (<a class="reference internal" href="csr/bus.html#amaranth_soc.csr.bus.Signature" title="amaranth_soc.csr.bus.Signature"><code class="xref py py-class docutils literal notranslate"><span class="pre">csr.bus.Signature</span></code></a>) – CSR bus interface providing access to registers.</p></li>
+<li><p><strong>pins</strong> (<a class="reference internal" href="#amaranth_soc.gpio.PinSignature" title="amaranth_soc.gpio.PinSignature"><code class="xref py py-class docutils literal notranslate"><span class="pre">PinSignature</span></code></a> array of size <code class="docutils literal notranslate"><span class="pre">pin_count</span></code>) – GPIO pin interfaces.</p></li>
+<li><p><strong>alt_mode</strong> (<code class="code highlight py python docutils literal highlight-python"><span class="n">unsigned</span><span class="p">(</span><span class="n">pin_count</span><span class="p">)</span></code>) – Indicates which members of the <code class="xref py py-attr docutils literal notranslate"><span class="pre">Peripheral.pins</span></code> array are in alternate mode.</p></li>
 </ul>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
@@ -202,7 +202,7 @@ Each field is 2-bit wide and its possible values are defined by the <a class="re
 enumeration.</p>
 <hr class="docutils" />
 <p>If <code class="docutils literal notranslate"><span class="pre">pin_count</span></code> is 8, then the <a class="reference internal" href="csr/reg.html#amaranth_soc.csr.reg.Register" title="amaranth_soc.csr.reg.Register"><code class="xref py py-class docutils literal notranslate"><span class="pre">Register</span></code></a> has the following fields:</p>
-<img src="_images/gpio_mode.svg" alt="{'reg': [{'name': 'pin[0]', 'bits': 2, 'attr': 'RW'}, {'name': 'pin[1]', 'bits': 2, 'attr': 'RW'}, {'name': 'pin[2]', 'bits': 2, 'attr': 'RW'}, {'name': 'pin[3]', 'bits': 2, 'attr': 'RW'}, {'name': 'pin[4]', 'bits': 2, 'attr': 'RW'}, {'name': 'pin[5]', 'bits': 2, 'attr': 'RW'}, {'name': 'pin[6]', 'bits': 2, 'attr': 'RW'}, {'name': 'pin[7]', 'bits': 2, 'attr': 'RW'}], 'config': {'bits': 16}}"><hr class="docutils" />
+<img src="_images/gpio_mode.svg" class="wavedrom wavedrom-reg" alt="{'reg': [{'name': 'pin[0]', 'bits': 2, 'attr': 'RW'}, {'name': 'pin[1]', 'bits': 2, 'attr': 'RW'}, {'name': 'pin[2]', 'bits': 2, 'attr': 'RW'}, {'name': 'pin[3]', 'bits': 2, 'attr': 'RW'}, {'name': 'pin[4]', 'bits': 2, 'attr': 'RW'}, {'name': 'pin[5]', 'bits': 2, 'attr': 'RW'}, {'name': 'pin[6]', 'bits': 2, 'attr': 'RW'}, {'name': 'pin[7]', 'bits': 2, 'attr': 'RW'}], 'config': {'bits': 16}}"><hr class="docutils" />
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>pin_count</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) – Number of GPIO pins.</p>
@@ -221,7 +221,7 @@ field is 1-bit wide and driven by the input of its associated pin in the
 stages (on a rising edge of <code class="docutils literal notranslate"><span class="pre">ClockSignal(&quot;sync&quot;)</span></code>) before reaching the register.</p>
 <hr class="docutils" />
 <p>If <code class="docutils literal notranslate"><span class="pre">pin_count</span></code> is 8, then the <a class="reference internal" href="csr/reg.html#amaranth_soc.csr.reg.Register" title="amaranth_soc.csr.reg.Register"><code class="xref py py-class docutils literal notranslate"><span class="pre">Register</span></code></a> has the following fields:</p>
-<img src="_images/gpio_input.svg" alt="{'reg': [{'name': 'pin[0]', 'bits': 1, 'attr': 'R'}, {'name': 'pin[1]', 'bits': 1, 'attr': 'R'}, {'name': 'pin[2]', 'bits': 1, 'attr': 'R'}, {'name': 'pin[3]', 'bits': 1, 'attr': 'R'}, {'name': 'pin[4]', 'bits': 1, 'attr': 'R'}, {'name': 'pin[5]', 'bits': 1, 'attr': 'R'}, {'name': 'pin[6]', 'bits': 1, 'attr': 'R'}, {'name': 'pin[7]', 'bits': 1, 'attr': 'R'}], 'config': {'bits': 8}}"><hr class="docutils" />
+<img src="_images/gpio_input.svg" class="wavedrom wavedrom-reg" alt="{'reg': [{'name': 'pin[0]', 'bits': 1, 'attr': 'R'}, {'name': 'pin[1]', 'bits': 1, 'attr': 'R'}, {'name': 'pin[2]', 'bits': 1, 'attr': 'R'}, {'name': 'pin[3]', 'bits': 1, 'attr': 'R'}, {'name': 'pin[4]', 'bits': 1, 'attr': 'R'}, {'name': 'pin[5]', 'bits': 1, 'attr': 'R'}, {'name': 'pin[6]', 'bits': 1, 'attr': 'R'}, {'name': 'pin[7]', 'bits': 1, 'attr': 'R'}], 'config': {'bits': 8}}"><hr class="docutils" />
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>pin_count</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) – Number of GPIO pins.</p>
@@ -238,7 +238,7 @@ field is 1-bit wide and drives the output of its associated pin in the
 <code class="xref py py-attr docutils literal notranslate"><span class="pre">Peripheral.pins</span></code> array, depending on its associated <a class="reference internal" href="#amaranth_soc.gpio.Peripheral.Mode" title="amaranth_soc.gpio.Peripheral.Mode"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mode</span></code></a> field.</p>
 <hr class="docutils" />
 <p>If <code class="docutils literal notranslate"><span class="pre">pin_count</span></code> is 8, then the <a class="reference internal" href="csr/reg.html#amaranth_soc.csr.reg.Register" title="amaranth_soc.csr.reg.Register"><code class="xref py py-class docutils literal notranslate"><span class="pre">Register</span></code></a> has the following fields:</p>
-<img src="_images/gpio_output.svg" alt="{'reg': [{'name': 'pin[0]', 'bits': 1, 'attr': 'RW'}, {'name': 'pin[1]', 'bits': 1, 'attr': 'RW'}, {'name': 'pin[2]', 'bits': 1, 'attr': 'RW'}, {'name': 'pin[3]', 'bits': 1, 'attr': 'RW'}, {'name': 'pin[4]', 'bits': 1, 'attr': 'RW'}, {'name': 'pin[5]', 'bits': 1, 'attr': 'RW'}, {'name': 'pin[6]', 'bits': 1, 'attr': 'RW'}, {'name': 'pin[7]', 'bits': 1, 'attr': 'RW'}], 'config': {'bits': 8}}"><hr class="docutils" />
+<img src="_images/gpio_output.svg" class="wavedrom wavedrom-reg" alt="{'reg': [{'name': 'pin[0]', 'bits': 1, 'attr': 'RW'}, {'name': 'pin[1]', 'bits': 1, 'attr': 'RW'}, {'name': 'pin[2]', 'bits': 1, 'attr': 'RW'}, {'name': 'pin[3]', 'bits': 1, 'attr': 'RW'}, {'name': 'pin[4]', 'bits': 1, 'attr': 'RW'}, {'name': 'pin[5]', 'bits': 1, 'attr': 'RW'}, {'name': 'pin[6]', 'bits': 1, 'attr': 'RW'}, {'name': 'pin[7]', 'bits': 1, 'attr': 'RW'}], 'config': {'bits': 8}}"><hr class="docutils" />
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>pin_count</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) – Number of GPIO pins.</p>
@@ -255,7 +255,7 @@ field is 2-bit wide; writing it can modify its associated <a class="reference in
 as a side-effect.</p>
 <hr class="docutils" />
 <p>If <code class="docutils literal notranslate"><span class="pre">pin_count</span></code> is 8, then the <a class="reference internal" href="csr/reg.html#amaranth_soc.csr.reg.Register" title="amaranth_soc.csr.reg.Register"><code class="xref py py-class docutils literal notranslate"><span class="pre">Register</span></code></a> has the following fields:</p>
-<img src="_images/gpio_setclr.svg" alt="{'reg': [{'name': 'pin[0]', 'bits': 2, 'attr': 'W'}, {'name': 'pin[1]', 'bits': 2, 'attr': 'W'}, {'name': 'pin[2]', 'bits': 2, 'attr': 'W'}, {'name': 'pin[3]', 'bits': 2, 'attr': 'W'}, {'name': 'pin[4]', 'bits': 2, 'attr': 'W'}, {'name': 'pin[5]', 'bits': 2, 'attr': 'W'}, {'name': 'pin[6]', 'bits': 2, 'attr': 'W'}, {'name': 'pin[7]', 'bits': 2, 'attr': 'W'}], 'config': {'bits': 16}}"><ul class="simple">
+<img src="_images/gpio_setclr.svg" class="wavedrom wavedrom-reg" alt="{'reg': [{'name': 'pin[0]', 'bits': 2, 'attr': 'W'}, {'name': 'pin[1]', 'bits': 2, 'attr': 'W'}, {'name': 'pin[2]', 'bits': 2, 'attr': 'W'}, {'name': 'pin[3]', 'bits': 2, 'attr': 'W'}, {'name': 'pin[4]', 'bits': 2, 'attr': 'W'}, {'name': 'pin[5]', 'bits': 2, 'attr': 'W'}, {'name': 'pin[6]', 'bits': 2, 'attr': 'W'}, {'name': 'pin[7]', 'bits': 2, 'attr': 'W'}], 'config': {'bits': 16}}"><ul class="simple">
 <li><p>Writing <cite>0b01</cite> to a field sets its associated <a class="reference internal" href="#amaranth_soc.gpio.Peripheral.Output" title="amaranth_soc.gpio.Peripheral.Output"><code class="xref py py-class docutils literal notranslate"><span class="pre">Output</span></code></a> field.</p></li>
 <li><p>Writing <cite>0b10</cite> to a field clears its associated <a class="reference internal" href="#amaranth_soc.gpio.Peripheral.Output" title="amaranth_soc.gpio.Peripheral.Output"><code class="xref py py-class docutils literal notranslate"><span class="pre">Output</span></code></a> field.</p></li>
 <li><p>Writing <cite>0b00</cite> or <cite>0b11</cite> to a field has no side-effect.</p></li>

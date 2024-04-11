@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CSR field actions &mdash; System on Chip toolkit for Amaranth HDL 0.1a1.dev14 documentation</title>
+  <title>CSR field actions &mdash; System on Chip toolkit for Amaranth HDL 0.1a1.dev16 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
@@ -14,7 +14,7 @@
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=1b47c3fb"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=88c7cd88"></script>
         <script src="../_static/doctools.js?v=888ff710"></script>
         <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../_static/js/theme.js"></script>
@@ -37,7 +37,7 @@
               <img src="../_static/logo.png" class="logo" alt="Logo"/>
           </a>
               <div class="version">
-                0.1a1.dev14+ge8af949
+                0.1a1.dev16+gc2ed5bf
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -116,11 +116,11 @@
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>shape</strong> (<span class="xref std std-ref">shape-castable</span>) – Shape of the field.</p>
 </dd>
-<dt class="field-even">Variables<span class="colon">:</span></dt>
+<dt class="field-even">Attributes<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>port</strong> (<a class="reference internal" href="reg.html#amaranth_soc.csr.reg.FieldPort" title="amaranth_soc.csr.reg.FieldPort"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldPort</span></code></a>) – Field port.</p></li>
-<li><p><strong>r_data</strong> (<code class="code highlight pc python docutils literal highlight-python"><span class="n">unsigned</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span></code>) – Read data. Drives <code class="docutils literal notranslate"><span class="pre">port.r_data</span></code>. See <a class="reference internal" href="reg.html#amaranth_soc.csr.reg.FieldPort" title="amaranth_soc.csr.reg.FieldPort"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldPort</span></code></a>.</p></li>
-<li><p><strong>r_stb</strong> (<code class="code highlight pc python docutils literal highlight-python"><span class="n">unsigned</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></code>) – Read strobe. Driven by <code class="docutils literal notranslate"><span class="pre">port.r_stb</span></code>. See <a class="reference internal" href="reg.html#amaranth_soc.csr.reg.FieldPort" title="amaranth_soc.csr.reg.FieldPort"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldPort</span></code></a>.</p></li>
+<li><p><strong>r_data</strong> (<a href="#id1"><span class="problematic" id="id2">:pc:`unsigned(shape)`</span></a>) – Read data. Drives <code class="docutils literal notranslate"><span class="pre">port.r_data</span></code>. See <a class="reference internal" href="reg.html#amaranth_soc.csr.reg.FieldPort" title="amaranth_soc.csr.reg.FieldPort"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldPort</span></code></a>.</p></li>
+<li><p><strong>r_stb</strong> (<a href="#id3"><span class="problematic" id="id4">:pc:`unsigned(data)`</span></a>) – Read strobe. Driven by <code class="docutils literal notranslate"><span class="pre">port.r_stb</span></code>. See <a class="reference internal" href="reg.html#amaranth_soc.csr.reg.FieldPort" title="amaranth_soc.csr.reg.FieldPort"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldPort</span></code></a>.</p></li>
 </ul>
 </dd>
 </dl>
@@ -134,11 +134,11 @@
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>shape</strong> (<span class="xref std std-ref">shape-castable</span>) – Shape of the field.</p>
 </dd>
-<dt class="field-even">Variables<span class="colon">:</span></dt>
+<dt class="field-even">Attributes<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>port</strong> (<a class="reference internal" href="reg.html#amaranth_soc.csr.reg.FieldPort" title="amaranth_soc.csr.reg.FieldPort"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldPort</span></code></a>) – Field port.</p></li>
-<li><p><strong>w_data</strong> (<code class="code highlight pc python docutils literal highlight-python"><span class="n">unsigned</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span></code>) – Write data. Driven by <code class="docutils literal notranslate"><span class="pre">port.w_data</span></code>. See <a class="reference internal" href="reg.html#amaranth_soc.csr.reg.FieldPort" title="amaranth_soc.csr.reg.FieldPort"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldPort</span></code></a>.</p></li>
-<li><p><strong>w_stb</strong> (<code class="code highlight pc python docutils literal highlight-python"><span class="n">unsigned</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span></code>) – Write strobe. Driven by <code class="docutils literal notranslate"><span class="pre">port.w_stb</span></code>. See <a class="reference internal" href="reg.html#amaranth_soc.csr.reg.FieldPort" title="amaranth_soc.csr.reg.FieldPort"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldPort</span></code></a>.</p></li>
+<li><p><strong>w_data</strong> (<a href="#id5"><span class="problematic" id="id6">:pc:`unsigned(shape)`</span></a>) – Write data. Driven by <code class="docutils literal notranslate"><span class="pre">port.w_data</span></code>. See <a class="reference internal" href="reg.html#amaranth_soc.csr.reg.FieldPort" title="amaranth_soc.csr.reg.FieldPort"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldPort</span></code></a>.</p></li>
+<li><p><strong>w_stb</strong> (<a href="#id7"><span class="problematic" id="id8">:pc:`unsigned(shape)`</span></a>) – Write strobe. Driven by <code class="docutils literal notranslate"><span class="pre">port.w_stb</span></code>. See <a class="reference internal" href="reg.html#amaranth_soc.csr.reg.FieldPort" title="amaranth_soc.csr.reg.FieldPort"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldPort</span></code></a>.</p></li>
 </ul>
 </dd>
 </dl>
@@ -157,10 +157,10 @@ asserted.</p>
 <li><p><strong>init</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) – Storage initial value.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Variables<span class="colon">:</span></dt>
+<dt class="field-even">Attributes<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>port</strong> (<a class="reference internal" href="reg.html#amaranth_soc.csr.reg.FieldPort" title="amaranth_soc.csr.reg.FieldPort"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldPort</span></code></a>) – Field port.</p></li>
-<li><p><strong>data</strong> (<code class="code highlight pc python docutils literal highlight-python"><span class="n">unsigned</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span></code>) – Storage output.</p></li>
+<li><p><strong>data</strong> (<a href="#id9"><span class="problematic" id="id10">:pc:`unsigned(shape)`</span></a>) – Storage output.</p></li>
 </ul>
 </dd>
 </dl>
@@ -196,11 +196,11 @@ asserted.</p>
 <li><p><strong>init</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) – Storage initial value.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Variables<span class="colon">:</span></dt>
+<dt class="field-even">Attributes<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>port</strong> (<a class="reference internal" href="reg.html#amaranth_soc.csr.reg.FieldPort" title="amaranth_soc.csr.reg.FieldPort"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldPort</span></code></a>) – Field port.</p></li>
-<li><p><strong>data</strong> (<code class="code highlight pc python docutils literal highlight-python"><span class="n">unsigned</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span></code>) – Storage output.</p></li>
-<li><p><strong>set</strong> (<code class="code highlight pc python docutils literal highlight-python"><span class="n">unsigned</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span></code>) – Mask to set storage bits.</p></li>
+<li><p><strong>data</strong> (<a href="#id11"><span class="problematic" id="id12">:pc:`unsigned(shape)`</span></a>) – Storage output.</p></li>
+<li><p><strong>set</strong> (<a href="#id13"><span class="problematic" id="id14">:pc:`unsigned(shape)`</span></a>) – Mask to set storage bits.</p></li>
 </ul>
 </dd>
 </dl>
@@ -236,11 +236,11 @@ asserted.</p>
 <li><p><strong>init</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) – Storage initial value.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Variables<span class="colon">:</span></dt>
+<dt class="field-even">Attributes<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>port</strong> (<a class="reference internal" href="reg.html#amaranth_soc.csr.reg.FieldPort" title="amaranth_soc.csr.reg.FieldPort"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldPort</span></code></a>) – Field port.</p></li>
-<li><p><strong>data</strong> (<code class="code highlight pc python docutils literal highlight-python"><span class="n">unsigned</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span></code>) – Storage output.</p></li>
-<li><p><strong>clear</strong> (<code class="code highlight pc python docutils literal highlight-python"><span class="n">unsigned</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span></code>) – Mask to clear storage bits.</p></li>
+<li><p><strong>data</strong> (<a href="#id15"><span class="problematic" id="id16">:pc:`unsigned(shape)`</span></a>) – Storage output.</p></li>
+<li><p><strong>clear</strong> (<a href="#id17"><span class="problematic" id="id18">:pc:`unsigned(shape)`</span></a>) – Mask to clear storage bits.</p></li>
 </ul>
 </dd>
 </dl>
@@ -265,7 +265,7 @@ asserted.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>shape</strong> (<span class="xref std std-ref">shape-castable</span>) – Shape of the field.</p>
 </dd>
-<dt class="field-even">Variables<span class="colon">:</span></dt>
+<dt class="field-even">Attributes<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>port</strong> (<a class="reference internal" href="reg.html#amaranth_soc.csr.reg.FieldPort" title="amaranth_soc.csr.reg.FieldPort"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldPort</span></code></a>) – Field port.</p>
 </dd>
 </dl>
@@ -279,7 +279,7 @@ asserted.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>shape</strong> (<span class="xref std std-ref">shape-castable</span>) – Shape of the field.</p>
 </dd>
-<dt class="field-even">Variables<span class="colon">:</span></dt>
+<dt class="field-even">Attributes<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>port</strong> (<a class="reference internal" href="reg.html#amaranth_soc.csr.reg.FieldPort" title="amaranth_soc.csr.reg.FieldPort"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldPort</span></code></a>) – Field port.</p>
 </dd>
 </dl>
@@ -293,7 +293,7 @@ asserted.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>shape</strong> (<span class="xref std std-ref">shape-castable</span>) – Shape of the field.</p>
 </dd>
-<dt class="field-even">Variables<span class="colon">:</span></dt>
+<dt class="field-even">Attributes<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>port</strong> (<a class="reference internal" href="reg.html#amaranth_soc.csr.reg.FieldPort" title="amaranth_soc.csr.reg.FieldPort"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldPort</span></code></a>) – Field port.</p>
 </dd>
 </dl>
@@ -307,7 +307,7 @@ asserted.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>shape</strong> (<span class="xref std std-ref">shape-castable</span>) – Shape of the field.</p>
 </dd>
-<dt class="field-even">Variables<span class="colon">:</span></dt>
+<dt class="field-even">Attributes<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>port</strong> (<a class="reference internal" href="reg.html#amaranth_soc.csr.reg.FieldPort" title="amaranth_soc.csr.reg.FieldPort"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldPort</span></code></a>) – Field port.</p>
 </dd>
 </dl>
