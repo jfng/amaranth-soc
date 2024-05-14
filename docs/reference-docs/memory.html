@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Memory maps &mdash; System on Chip toolkit for Amaranth HDL 0.1a1.dev16 documentation</title>
+  <title>Memory maps &mdash; System on Chip toolkit for Amaranth HDL 0.1a1.dev21 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/custom.css" type="text/css" />
@@ -14,7 +14,7 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=88c7cd88"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=ee1e2d89"></script>
         <script src="_static/doctools.js?v=888ff710"></script>
         <script src="_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="_static/js/theme.js"></script>
@@ -37,7 +37,7 @@
               <img src="_static/logo.png" class="logo" alt="Logo"/>
           </a>
               <div class="version">
-                0.1a1.dev16+gc2ed5bf
+                0.1a1.dev21+g37d72c3
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -52,29 +52,21 @@
 <li class="toctree-l1"><a class="reference external" href="https://amaranth-lang.org/docs/amaranth-stdio/latest/">Standard I/O components</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">System on Chip toolkit</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Memory maps</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#amaranth_soc.memory.MemoryMap"><code class="docutils literal notranslate"><span class="pre">MemoryMap</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#amaranth_soc.memory.MemoryMap.addr_width"><code class="docutils literal notranslate"><span class="pre">MemoryMap.addr_width</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#amaranth_soc.memory.MemoryMap.data_width"><code class="docutils literal notranslate"><span class="pre">MemoryMap.data_width</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#amaranth_soc.memory.MemoryMap.alignment"><code class="docutils literal notranslate"><span class="pre">MemoryMap.alignment</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#amaranth_soc.memory.MemoryMap.name"><code class="docutils literal notranslate"><span class="pre">MemoryMap.name</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#amaranth_soc.memory.MemoryMap.freeze"><code class="docutils literal notranslate"><span class="pre">MemoryMap.freeze()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#amaranth_soc.memory.MemoryMap.align_to"><code class="docutils literal notranslate"><span class="pre">MemoryMap.align_to()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#amaranth_soc.memory.MemoryMap.add_resource"><code class="docutils literal notranslate"><span class="pre">MemoryMap.add_resource()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#amaranth_soc.memory.MemoryMap.resources"><code class="docutils literal notranslate"><span class="pre">MemoryMap.resources()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#amaranth_soc.memory.MemoryMap.add_window"><code class="docutils literal notranslate"><span class="pre">MemoryMap.add_window()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#amaranth_soc.memory.MemoryMap.windows"><code class="docutils literal notranslate"><span class="pre">MemoryMap.windows()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#amaranth_soc.memory.MemoryMap.window_patterns"><code class="docutils literal notranslate"><span class="pre">MemoryMap.window_patterns()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#amaranth_soc.memory.MemoryMap.all_resources"><code class="docutils literal notranslate"><span class="pre">MemoryMap.all_resources()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#amaranth_soc.memory.MemoryMap.find_resource"><code class="docutils literal notranslate"><span class="pre">MemoryMap.find_resource()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#amaranth_soc.memory.MemoryMap.decode_address"><code class="docutils literal notranslate"><span class="pre">MemoryMap.decode_address()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#introduction">Introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#resources">Resources</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#adding-resources">Adding resources</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#accessing-resources">Accessing resources</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#amaranth_soc.memory.ResourceInfo"><code class="docutils literal notranslate"><span class="pre">ResourceInfo</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#amaranth_soc.memory.ResourceInfo.resource"><code class="docutils literal notranslate"><span class="pre">ResourceInfo.resource</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#amaranth_soc.memory.ResourceInfo.path"><code class="docutils literal notranslate"><span class="pre">ResourceInfo.path</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#amaranth_soc.memory.ResourceInfo.start"><code class="docutils literal notranslate"><span class="pre">ResourceInfo.start</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#amaranth_soc.memory.ResourceInfo.end"><code class="docutils literal notranslate"><span class="pre">ResourceInfo.end</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#amaranth_soc.memory.ResourceInfo.width"><code class="docutils literal notranslate"><span class="pre">ResourceInfo.width</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#alignment">Alignment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#windows">Windows</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#adding-windows">Adding windows</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#address-translation">Address translation</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#freezing">Freezing</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#amaranth_soc.memory.MemoryMap"><code class="docutils literal notranslate"><span class="pre">MemoryMap</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#amaranth_soc.memory.ResourceInfo"><code class="docutils literal notranslate"><span class="pre">ResourceInfo</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -111,13 +103,185 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="memory-maps">
-<h1>Memory maps<a class="headerlink" href="#memory-maps" title="Permalink to this heading"></a></h1>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>This manual is a work in progress and is seriously incomplete!</p>
+  <section id="module-amaranth_soc.memory">
+<span id="memory-maps"></span><h1>Memory maps<a class="headerlink" href="#module-amaranth_soc.memory" title="Permalink to this heading"></a></h1>
+<p>The <a class="reference internal" href="#module-amaranth_soc.memory" title="amaranth_soc.memory"><code class="xref py py-mod docutils literal notranslate"><span class="pre">amaranth_soc.memory</span></code></a> module provides primitives for organizing the address space of a bus interface.</p>
+<section id="introduction">
+<span id="memory-introduction"></span><h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this heading"></a></h2>
+<p>The purpose of <a class="reference internal" href="#amaranth_soc.memory.MemoryMap" title="amaranth_soc.memory.MemoryMap"><code class="xref py py-class docutils literal notranslate"><span class="pre">MemoryMap</span></code></a> is to provide a hierarchical description of the address space of a System-on-Chip, from its bus interconnect to the registers of its peripherals. It is composed of <a class="reference internal" href="#memory-resources"><span class="std std-ref">resources</span></a> (representing registers, memories, etc) and <a class="reference internal" href="#memory-windows"><span class="std std-ref">windows</span></a> (representing bus bridges), and may be <a class="reference internal" href="#memory-accessing-windows"><span class="std std-ref">queried</span></a> afterwards in order to enumerate its contents, or determine the address of a resource.</p>
+</section>
+<section id="resources">
+<span id="memory-resources"></span><h2>Resources<a class="headerlink" href="#resources" title="Permalink to this heading"></a></h2>
+<p>A <em>resource</em> is a <a class="reference external" href="https://amaranth-lang.org/docs/amaranth/latest/stdlib/wiring.html#amaranth.lib.wiring.Component" title="(in Amaranth language &amp; toolchain v0.5.0.dev294)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></a> previously added to a <a class="reference internal" href="#amaranth_soc.memory.MemoryMap" title="amaranth_soc.memory.MemoryMap"><code class="xref py py-class docutils literal notranslate"><span class="pre">MemoryMap</span></code></a>. Each resource occupies an unique range of addresses within the memory map, and represents a device that is a target for bus transactions.</p>
+<section id="adding-resources">
+<h3>Adding resources<a class="headerlink" href="#adding-resources" title="Permalink to this heading"></a></h3>
+<p>Resources are added with <a class="reference internal" href="#amaranth_soc.memory.MemoryMap.add_resource" title="amaranth_soc.memory.MemoryMap.add_resource"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MemoryMap.add_resource()</span></code></a>, which returns a <code class="docutils literal notranslate"><span class="pre">(start,</span> <span class="pre">end)</span></code> tuple describing their address range:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">memory_map</span> <span class="o">=</span> <span class="n">MemoryMap</span><span class="p">(</span><span class="n">addr_width</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">data_width</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+
+<span class="n">reg_ctrl</span> <span class="o">=</span> <span class="n">csr</span><span class="o">.</span><span class="n">Register</span><span class="p">(</span><span class="n">csr</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">csr</span><span class="o">.</span><span class="n">action</span><span class="o">.</span><span class="n">RW</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span> <span class="s2">&quot;rw&quot;</span><span class="p">)</span>
+<span class="n">reg_data</span> <span class="o">=</span> <span class="n">csr</span><span class="o">.</span><span class="n">Register</span><span class="p">(</span><span class="n">csr</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">csr</span><span class="o">.</span><span class="n">action</span><span class="o">.</span><span class="n">RW</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span> <span class="s2">&quot;rw&quot;</span><span class="p">)</span>
+</pre></div>
 </div>
-<span class="target" id="module-amaranth_soc.memory"></span><p>The <a class="reference internal" href="#module-amaranth_soc.memory" title="amaranth_soc.memory"><code class="xref py py-mod docutils literal notranslate"><span class="pre">amaranth_soc.memory</span></code></a> module provides primitives for organizing the address space of a bus interface.</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">memory_map</span><span class="o">.</span><span class="n">add_resource</span><span class="p">(</span><span class="n">reg_ctrl</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">addr</span><span class="o">=</span><span class="mh">0x0</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;ctrl&quot;</span><span class="p">,))</span>
+<span class="go">(0, 4)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">memory_map</span><span class="o">.</span><span class="n">add_resource</span><span class="p">(</span><span class="n">reg_data</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">addr</span><span class="o">=</span><span class="mh">0x4</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">,))</span>
+<span class="go">(4, 8)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">addr</span></code> parameter of <a class="reference internal" href="#amaranth_soc.memory.MemoryMap.add_resource" title="amaranth_soc.memory.MemoryMap.add_resource"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MemoryMap.add_resource()</span></code></a> and <a class="reference internal" href="#amaranth_soc.memory.MemoryMap.add_window" title="amaranth_soc.memory.MemoryMap.add_window"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MemoryMap.add_window()</span></code></a> is optional.</p>
+<p>To simplify address assignment, each <a class="reference internal" href="#amaranth_soc.memory.MemoryMap" title="amaranth_soc.memory.MemoryMap"><code class="xref py py-class docutils literal notranslate"><span class="pre">MemoryMap</span></code></a> has an <em>implicit next address</em>, starting at 0. If a resource or a window is added without an explicit address, the implicit next address is used. In any case, the implicit next address is set to the address immediately following the newly added resource or window.</p>
+</div>
+</section>
+<section id="accessing-resources">
+<h3>Accessing resources<a class="headerlink" href="#accessing-resources" title="Permalink to this heading"></a></h3>
+<p>Memory map resources can be iterated with <a class="reference internal" href="#amaranth_soc.memory.MemoryMap.resources" title="amaranth_soc.memory.MemoryMap.resources"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MemoryMap.resources()</span></code></a>:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">resource</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span> <span class="ow">in</span> <span class="n">memory_map</span><span class="o">.</span><span class="n">resources</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;name=</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">, start=</span><span class="si">{</span><span class="n">start</span><span class="si">:</span><span class="s2">#x</span><span class="si">}</span><span class="s2">, end=</span><span class="si">{</span><span class="n">end</span><span class="si">:</span><span class="s2">#x</span><span class="si">}</span><span class="s2">, resource=</span><span class="si">{</span><span class="n">resource</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="go">name=(&#39;ctrl&#39;,), start=0x0, end=0x4, resource=&lt;...&gt;</span>
+<span class="go">name=(&#39;data&#39;,), start=0x4, end=0x8, resource=&lt;...&gt;</span>
+</pre></div>
+</div>
+<p>A memory map can be queried with <a class="reference internal" href="#amaranth_soc.memory.MemoryMap.find_resource" title="amaranth_soc.memory.MemoryMap.find_resource"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MemoryMap.find_resource()</span></code></a> to get the name and address range of a given resource:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">memory_map</span><span class="o">.</span><span class="n">find_resource</span><span class="p">(</span><span class="n">reg_ctrl</span><span class="p">)</span>
+<span class="go">ResourceInfo(path=(&#39;ctrl&#39;,), start=0x0, end=0x4, width=8)</span>
+</pre></div>
+</div>
+<p>The resource located at a given address can be retrieved with <a class="reference internal" href="#amaranth_soc.memory.MemoryMap.decode_address" title="amaranth_soc.memory.MemoryMap.decode_address"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MemoryMap.decode_address()</span></code></a>:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">memory_map</span><span class="o">.</span><span class="n">decode_address</span><span class="p">(</span><span class="mh">0x4</span><span class="p">)</span> <span class="ow">is</span> <span class="n">reg_data</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="alignment">
+<h2>Alignment<a class="headerlink" href="#alignment" title="Permalink to this heading"></a></h2>
+<p>The value of <a class="reference internal" href="#amaranth_soc.memory.MemoryMap.alignment" title="amaranth_soc.memory.MemoryMap.alignment"><code class="xref py py-attr docutils literal notranslate"><span class="pre">MemoryMap.alignment</span></code></a> constrains the layout of a memory map. If unspecified, it defaults to 0.</p>
+<p>Each resource or window added to a memory map is placed at an address that is a multiple of <code class="docutils literal notranslate"><span class="pre">2</span> <span class="pre">**</span> <span class="pre">alignment</span></code>, and its size is rounded up to a multiple of <code class="docutils literal notranslate"><span class="pre">2</span> <span class="pre">**</span> <span class="pre">alignment</span></code>.</p>
+<p>For example, the resources of this memory map are 64-bit aligned:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">memory_map</span> <span class="o">=</span> <span class="n">MemoryMap</span><span class="p">(</span><span class="n">addr_width</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">data_width</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">alignment</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+
+<span class="n">reg_foo</span> <span class="o">=</span> <span class="n">csr</span><span class="o">.</span><span class="n">Register</span><span class="p">(</span><span class="n">csr</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">csr</span><span class="o">.</span><span class="n">action</span><span class="o">.</span><span class="n">RW</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span> <span class="s2">&quot;rw&quot;</span><span class="p">)</span>
+<span class="n">reg_bar</span> <span class="o">=</span> <span class="n">csr</span><span class="o">.</span><span class="n">Register</span><span class="p">(</span><span class="n">csr</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">csr</span><span class="o">.</span><span class="n">action</span><span class="o">.</span><span class="n">RW</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span> <span class="s2">&quot;rw&quot;</span><span class="p">)</span>
+<span class="n">reg_baz</span> <span class="o">=</span> <span class="n">csr</span><span class="o">.</span><span class="n">Register</span><span class="p">(</span><span class="n">csr</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">csr</span><span class="o">.</span><span class="n">action</span><span class="o">.</span><span class="n">RW</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span> <span class="s2">&quot;rw&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">memory_map</span><span class="o">.</span><span class="n">add_resource</span><span class="p">(</span><span class="n">reg_foo</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">,))</span>
+<span class="go">(0, 8)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">memory_map</span><span class="o">.</span><span class="n">add_resource</span><span class="p">(</span><span class="n">reg_bar</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;bar&quot;</span><span class="p">,),</span> <span class="n">addr</span><span class="o">=</span><span class="mh">0x9</span><span class="p">)</span>
+<span class="go">ValueError</span>
+</pre></div>
+</div>
+<p><a class="reference internal" href="#amaranth_soc.memory.MemoryMap.add_resource" title="amaranth_soc.memory.MemoryMap.add_resource"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MemoryMap.add_resource()</span></code></a> takes an optional <code class="docutils literal notranslate"><span class="pre">alignment</span></code> parameter. If a value greater than <a class="reference internal" href="#amaranth_soc.memory.MemoryMap.alignment" title="amaranth_soc.memory.MemoryMap.alignment"><code class="xref py py-attr docutils literal notranslate"><span class="pre">MemoryMap.alignment</span></code></a> is given, it becomes the alignment of this resource:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">memory_map</span><span class="o">.</span><span class="n">add_resource</span><span class="p">(</span><span class="n">reg_bar</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;bar&quot;</span><span class="p">,),</span> <span class="n">alignment</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="go">(16, 32)</span>
+</pre></div>
+</div>
+<p><a class="reference internal" href="#amaranth_soc.memory.MemoryMap.align_to" title="amaranth_soc.memory.MemoryMap.align_to"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MemoryMap.align_to()</span></code></a> can be used to align the implicit next address. Its alignment is modified if a value greater than <a class="reference internal" href="#amaranth_soc.memory.MemoryMap.alignment" title="amaranth_soc.memory.MemoryMap.alignment"><code class="xref py py-attr docutils literal notranslate"><span class="pre">MemoryMap.alignment</span></code></a> is given.</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">memory_map</span><span class="o">.</span><span class="n">align_to</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+<span class="go">64</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">memory_map</span><span class="o">.</span><span class="n">add_resource</span><span class="p">(</span><span class="n">reg_baz</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;baz&quot;</span><span class="p">,))</span>
+<span class="go">(64, 72)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="#amaranth_soc.memory.MemoryMap.align_to" title="amaranth_soc.memory.MemoryMap.align_to"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MemoryMap.align_to()</span></code></a> has no effect on the size of the next resource or window.</p>
+</div>
+</section>
+<section id="windows">
+<span id="memory-windows"></span><h2>Windows<a class="headerlink" href="#windows" title="Permalink to this heading"></a></h2>
+<p>A <em>window</em> is a <a class="reference internal" href="#amaranth_soc.memory.MemoryMap" title="amaranth_soc.memory.MemoryMap"><code class="xref py py-class docutils literal notranslate"><span class="pre">MemoryMap</span></code></a> nested inside another memory map. Each window occupies an unique range of addresses within the memory map, and represents a bridge to a subordinate bus.</p>
+<section id="adding-windows">
+<h3>Adding windows<a class="headerlink" href="#adding-windows" title="Permalink to this heading"></a></h3>
+<p>Windows are added with <a class="reference internal" href="#amaranth_soc.memory.MemoryMap.add_window" title="amaranth_soc.memory.MemoryMap.add_window"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MemoryMap.add_window()</span></code></a>, which returns a <code class="docutils literal notranslate"><span class="pre">(start,</span> <span class="pre">end,</span> <span class="pre">ratio)</span></code> tuple describing their address range:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">reg_ctrl</span>    <span class="o">=</span> <span class="n">csr</span><span class="o">.</span><span class="n">Register</span><span class="p">(</span><span class="n">csr</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">csr</span><span class="o">.</span><span class="n">action</span><span class="o">.</span><span class="n">RW</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span> <span class="s2">&quot;rw&quot;</span><span class="p">)</span>
+<span class="n">reg_rx_data</span> <span class="o">=</span> <span class="n">csr</span><span class="o">.</span><span class="n">Register</span><span class="p">(</span><span class="n">csr</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">csr</span><span class="o">.</span><span class="n">action</span><span class="o">.</span><span class="n">RW</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span> <span class="s2">&quot;rw&quot;</span><span class="p">)</span>
+<span class="n">reg_tx_data</span> <span class="o">=</span> <span class="n">csr</span><span class="o">.</span><span class="n">Register</span><span class="p">(</span><span class="n">csr</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">csr</span><span class="o">.</span><span class="n">action</span><span class="o">.</span><span class="n">RW</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span> <span class="s2">&quot;rw&quot;</span><span class="p">)</span>
+
+<span class="n">memory_map</span> <span class="o">=</span> <span class="n">MemoryMap</span><span class="p">(</span><span class="n">addr_width</span><span class="o">=</span><span class="mi">14</span><span class="p">,</span> <span class="n">data_width</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
+<span class="n">rx_window</span>  <span class="o">=</span> <span class="n">MemoryMap</span><span class="p">(</span><span class="n">addr_width</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">data_width</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;rx&quot;</span><span class="p">)</span>
+<span class="n">tx_window</span>  <span class="o">=</span> <span class="n">MemoryMap</span><span class="p">(</span><span class="n">addr_width</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">data_width</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;tx&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">memory_map</span><span class="o">.</span><span class="n">add_resource</span><span class="p">(</span><span class="n">reg_ctrl</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;ctrl&quot;</span><span class="p">,))</span>
+<span class="go">(0, 1)</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rx_window</span><span class="o">.</span><span class="n">add_resource</span><span class="p">(</span><span class="n">reg_rx_data</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">,))</span>
+<span class="go">(0, 1)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">memory_map</span><span class="o">.</span><span class="n">add_window</span><span class="p">(</span><span class="n">rx_window</span><span class="p">)</span>
+<span class="go">(4096, 8192, 1)</span>
+</pre></div>
+</div>
+<p>The third value returned by <a class="reference internal" href="#amaranth_soc.memory.MemoryMap.add_window" title="amaranth_soc.memory.MemoryMap.add_window"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MemoryMap.add_window()</span></code></a> represents the number of addresses that are accessed in the bus described by <code class="docutils literal notranslate"><span class="pre">rx_window</span></code> for one transaction in the bus described by <code class="docutils literal notranslate"><span class="pre">memory_map</span></code>. It is 1 in this case, as both busses have the same width.</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tx_window</span><span class="o">.</span><span class="n">add_resource</span><span class="p">(</span><span class="n">reg_tx_data</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">,))</span>
+<span class="go">(0, 1)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">memory_map</span><span class="o">.</span><span class="n">add_window</span><span class="p">(</span><span class="n">tx_window</span><span class="p">)</span>
+<span class="go">(8192, 12288, 1)</span>
+</pre></div>
+</div>
+<section id="accessing-windows">
+<span id="memory-accessing-windows"></span><h4>Accessing windows<a class="headerlink" href="#accessing-windows" title="Permalink to this heading"></a></h4>
+<p>Memory map windows can be iterated with <a class="reference internal" href="#amaranth_soc.memory.MemoryMap.windows" title="amaranth_soc.memory.MemoryMap.windows"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MemoryMap.windows()</span></code></a>:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">window</span><span class="p">,</span> <span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">ratio</span><span class="p">)</span> <span class="ow">in</span> <span class="n">memory_map</span><span class="o">.</span><span class="n">windows</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">window</span><span class="si">}</span><span class="s2">, start=</span><span class="si">{</span><span class="n">start</span><span class="si">:</span><span class="s2">#x</span><span class="si">}</span><span class="s2">, end=</span><span class="si">{</span><span class="n">end</span><span class="si">:</span><span class="s2">#x</span><span class="si">}</span><span class="s2">, ratio=</span><span class="si">{</span><span class="n">ratio</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="go">MemoryMap(name=&#39;rx&#39;), start=0x1000, end=0x2000, ratio=1</span>
+<span class="go">MemoryMap(name=&#39;tx&#39;), start=0x2000, end=0x3000, ratio=1</span>
+</pre></div>
+</div>
+<p>Windows can also be iterated with <a class="reference internal" href="#amaranth_soc.memory.MemoryMap.window_patterns" title="amaranth_soc.memory.MemoryMap.window_patterns"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MemoryMap.window_patterns()</span></code></a>, which encodes their address ranges as bit patterns compatible with the <a class="reference external" href="https://amaranth-lang.org/docs/amaranth/latest/guide.html#lang-matchop" title="(in Amaranth language &amp; toolchain v0.5.0.dev294)"><span class="xref std std-ref">match operator</span></a> and the <a class="reference external" href="https://amaranth-lang.org/docs/amaranth/latest/guide.html#lang-switch" title="(in Amaranth language &amp; toolchain v0.5.0.dev294)"><span class="xref std std-ref">Case block</span></a>:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">window</span><span class="p">,</span> <span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">ratio</span><span class="p">)</span> <span class="ow">in</span> <span class="n">memory_map</span><span class="o">.</span><span class="n">window_patterns</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">window</span><span class="si">}</span><span class="s2">, pattern=</span><span class="si">{</span><span class="n">pattern</span><span class="si">}</span><span class="s2">, ratio=</span><span class="si">{</span><span class="n">ratio</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="go">MemoryMap(name=&#39;rx&#39;), pattern=&#39;01------------&#39;, ratio=1</span>
+<span class="go">MemoryMap(name=&#39;tx&#39;), pattern=&#39;10------------&#39;, ratio=1</span>
+</pre></div>
+</div>
+<p>Memory map resources can be recursively iterated with <a class="reference internal" href="#amaranth_soc.memory.MemoryMap.all_resources" title="amaranth_soc.memory.MemoryMap.all_resources"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MemoryMap.all_resources()</span></code></a>, which yields instances of <a class="reference internal" href="#amaranth_soc.memory.ResourceInfo" title="amaranth_soc.memory.ResourceInfo"><code class="xref py py-class docutils literal notranslate"><span class="pre">ResourceInfo</span></code></a>:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">res_info</span> <span class="ow">in</span> <span class="n">memory_map</span><span class="o">.</span><span class="n">all_resources</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">res_info</span><span class="p">)</span>
+<span class="go">ResourceInfo(path=((&#39;ctrl&#39;,),), start=0x0, end=0x1, width=32)</span>
+<span class="go">ResourceInfo(path=(&#39;rx&#39;, (&#39;data&#39;,)), start=0x1000, end=0x1001, width=32)</span>
+<span class="go">ResourceInfo(path=(&#39;tx&#39;, (&#39;data&#39;,)), start=0x2000, end=0x2001, width=32)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="address-translation">
+<h3>Address translation<a class="headerlink" href="#address-translation" title="Permalink to this heading"></a></h3>
+<p>When a memory map resource is accessed through a window, address translation may happen in three different modes.</p>
+<section id="transparent-mode">
+<h4>Transparent mode<a class="headerlink" href="#transparent-mode" title="Permalink to this heading"></a></h4>
+<p>In <em>transparent mode</em>, each transaction on the primary bus results in one transaction on the subordinate bus without loss of data. This mode is selected when <a class="reference internal" href="#amaranth_soc.memory.MemoryMap.add_window" title="amaranth_soc.memory.MemoryMap.add_window"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MemoryMap.add_window()</span></code></a> is given <code class="docutils literal notranslate"><span class="pre">sparse=None</span></code>, which will fail if the window and the memory map have a different data widths.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In practice, transparent mode is identical to other modes; it can only be used with equal data widths, which results in the same behavior regardless of the translation mode. However, it allows <a class="reference internal" href="#amaranth_soc.memory.MemoryMap.add_window" title="amaranth_soc.memory.MemoryMap.add_window"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MemoryMap.add_window()</span></code></a> to fail if the data widths are different.</p>
+</div>
+</section>
+<section id="sparse-mode">
+<h4>Sparse mode<a class="headerlink" href="#sparse-mode" title="Permalink to this heading"></a></h4>
+<p>In <em>sparse mode</em>, each transaction on the wide primary bus results in one transaction on the narrow subordinate bus. High data bits on the primary bus are ignored, and any contiguous resource on the subordinate bus becomes discontiguous on the primary bus. This mode is selected when <a class="reference internal" href="#amaranth_soc.memory.MemoryMap.add_window" title="amaranth_soc.memory.MemoryMap.add_window"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MemoryMap.add_window()</span></code></a> is given <code class="docutils literal notranslate"><span class="pre">sparse=True</span></code>.</p>
+</section>
+<section id="dense-mode">
+<h4>Dense mode<a class="headerlink" href="#dense-mode" title="Permalink to this heading"></a></h4>
+<p>In <em>dense mode</em>, each transaction on the wide primary bus results in several transactions on the narrow subordinate bus, and any contiguous resource on the subordinate bus stays contiguous on the primary bus. This mode is selected when <a class="reference internal" href="#amaranth_soc.memory.MemoryMap.add_window" title="amaranth_soc.memory.MemoryMap.add_window"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MemoryMap.add_window()</span></code></a> is given <code class="docutils literal notranslate"><span class="pre">sparse=False</span></code>.</p>
+</section>
+</section>
+</section>
+<section id="freezing">
+<h2>Freezing<a class="headerlink" href="#freezing" title="Permalink to this heading"></a></h2>
+<p>The visible state of a memory map can become immutable by calling <a class="reference internal" href="#amaranth_soc.memory.MemoryMap.freeze" title="amaranth_soc.memory.MemoryMap.freeze"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MemoryMap.freeze()</span></code></a>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">memory_map</span> <span class="o">=</span> <span class="n">MemoryMap</span><span class="p">(</span><span class="n">addr_width</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">data_width</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+
+<span class="n">reg_ctrl</span> <span class="o">=</span> <span class="n">csr</span><span class="o">.</span><span class="n">Register</span><span class="p">(</span><span class="n">csr</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">csr</span><span class="o">.</span><span class="n">action</span><span class="o">.</span><span class="n">RW</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span> <span class="s2">&quot;rw&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">memory_map</span><span class="o">.</span><span class="n">freeze</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">memory_map</span><span class="o">.</span><span class="n">add_resource</span><span class="p">(</span><span class="n">reg_ctrl</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">addr</span><span class="o">=</span><span class="mh">0x0</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;ctrl&quot;</span><span class="p">,))</span>
+<span class="go">ValueError</span>
+</pre></div>
+</div>
+<p>It is recommended to freeze a memory map before passing it to external logic, as a preventive measure against TOCTTOU bugs.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="amaranth_soc.memory.MemoryMap">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">amaranth_soc.memory.</span></span><span class="sig-name descname"><span class="pre">MemoryMap</span></span><a class="headerlink" href="#amaranth_soc.memory.MemoryMap" title="Permalink to this definition"></a></dt>
@@ -127,13 +291,6 @@ structure of address decoders of peripherals as well as bus bridges.</p>
 <p>It is built by adding resources (range allocations for registers, memory, etc) and windows
 (range allocations for bus bridges), and can be queried later to determine the address of
 any given resource from a specific vantage point in the design.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>To simplify address assignment, each <a class="reference internal" href="#amaranth_soc.memory.MemoryMap" title="amaranth_soc.memory.MemoryMap"><code class="xref py py-class docutils literal notranslate"><span class="pre">MemoryMap</span></code></a> has an implicit next address,
-starting at 0. If a resource or a window is added without specifying an address explicitly,
-the implicit next address is used. In any case, the implicit next address is set to the
-address immediately following the newly added resource or window.</p>
-</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -225,7 +382,7 @@ a register or a memory block.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>resource</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">wiring.Component</span></code>) – The resource to be added.</p></li>
+<li><p><strong>resource</strong> (<a class="reference external" href="https://amaranth-lang.org/docs/amaranth/latest/stdlib/wiring.html#amaranth.lib.wiring.Component" title="(in Amaranth language &amp; toolchain v0.5.0.dev294)"><code class="xref py py-class docutils literal notranslate"><span class="pre">amaranth.lib.wiring.Component</span></code></a>) – The resource to be added.</p></li>
 <li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a> of (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>)) – Name of the resource. It must not conflict with the name of other resources or windows
 present in this memory map.</p></li>
 <li><p><strong>addr</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – Address of the resource. Optional. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, the implicit next address will be used.
@@ -245,7 +402,6 @@ Otherwise, the exact specified address (which must be a multiple of
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.12)"><strong>ValueError</strong></a> – If the <a class="reference internal" href="#amaranth_soc.memory.MemoryMap" title="amaranth_soc.memory.MemoryMap"><code class="xref py py-class docutils literal notranslate"><span class="pre">MemoryMap</span></code></a> is frozen.</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.12)"><strong>TypeError</strong></a> – If the resource is not a <code class="xref py py-class docutils literal notranslate"><span class="pre">wiring.Component</span></code>.</p></li>
 <li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.12)"><strong>ValueError</strong></a> – If the requested address and size, after alignment, would overlap with any resources or
     windows that have already been added, or would be out of bounds.</p></li>
 <li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.12)"><strong>ValueError</strong></a> – If the resource has already been added to this <a class="reference internal" href="#amaranth_soc.memory.MemoryMap" title="amaranth_soc.memory.MemoryMap"><code class="xref py py-class docutils literal notranslate"><span class="pre">MemoryMap</span></code></a>.</p></li>
@@ -263,7 +419,7 @@ Otherwise, the exact specified address (which must be a multiple of
 <p>Non-recursively iterate resources in ascending order of their address.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Yields<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a> of (<code class="xref py py-class docutils literal notranslate"><span class="pre">wiring.Component</span></code>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a> of         (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>)) – A tuple <code class="docutils literal notranslate"><span class="pre">resource,</span> <span class="pre">name,</span> <span class="pre">(start,</span> <span class="pre">end)</span></code> describing the address range assigned to the
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a> of (<a class="reference external" href="https://amaranth-lang.org/docs/amaranth/latest/stdlib/wiring.html#amaranth.lib.wiring.Component" title="(in Amaranth language &amp; toolchain v0.5.0.dev294)"><code class="xref py py-class docutils literal notranslate"><span class="pre">amaranth.lib.wiring.Component</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a>         of (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>)) – A tuple <code class="docutils literal notranslate"><span class="pre">resource,</span> <span class="pre">name,</span> <span class="pre">(start,</span> <span class="pre">end)</span></code> describing the address range assigned to the
 resource.</p>
 </dd>
 </dl>
@@ -277,17 +433,6 @@ resource.</p>
 It performs address translation, such that the devices on a subordinate bus have different
 addresses; the memory map reflects this address translation when resources are looked up
 through the window.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>If a narrow bus is bridged to a wide bus, the bridge can perform <em>sparse</em> or <em>dense</em>
-address translation.</p>
-<p>In the sparse case, each transaction on the wide bus results in one transaction on the
-narrow bus; high data bits on the wide bus are ignored, and any contiguous resource on
-the narrow bus becomes discontiguous on the wide bus.</p>
-<p>In the dense case, each transaction on the wide bus results in several transactions on
-the narrow bus, and any contiguous resource on the narrow bus stays contiguous on the
-wide bus.</p>
-</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -311,17 +456,22 @@ Otherwise, it is always 1.</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.12)"><strong>ValueError</strong></a> – If the <a class="reference internal" href="#amaranth_soc.memory.MemoryMap" title="amaranth_soc.memory.MemoryMap"><code class="xref py py-class docutils literal notranslate"><span class="pre">MemoryMap</span></code></a> is frozen.</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.12)"><strong>TypeError</strong></a> – If the added memory map is not a <a class="reference internal" href="#amaranth_soc.memory.MemoryMap" title="amaranth_soc.memory.MemoryMap"><code class="xref py py-class docutils literal notranslate"><span class="pre">MemoryMap</span></code></a>.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.12)"><strong>ValueError</strong></a> – If the memory map is frozen.</p></li>
 <li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.12)"><strong>ValueError</strong></a> – If the requested address and size, after alignment, would overlap with any resources or
     windows that have already been added, or would be out of bounds.</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.12)"><strong>ValueError</strong></a> – If the added <a class="reference internal" href="#amaranth_soc.memory.MemoryMap" title="amaranth_soc.memory.MemoryMap"><code class="xref py py-class docutils literal notranslate"><span class="pre">MemoryMap</span></code></a> has a wider datapath than this memory map.</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.12)"><strong>ValueError</strong></a> – If dense address translation is used and the datapath width of this <a class="reference internal" href="#amaranth_soc.memory.MemoryMap" title="amaranth_soc.memory.MemoryMap"><code class="xref py py-class docutils literal notranslate"><span class="pre">MemoryMap</span></code></a>
-    is not an integer multiple of the datapath of the added memory map.</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.12)"><strong>ValueError</strong></a> – If the name of the added <a class="reference internal" href="#amaranth_soc.memory.MemoryMap" title="amaranth_soc.memory.MemoryMap"><code class="xref py py-class docutils literal notranslate"><span class="pre">MemoryMap</span></code></a> conflicts with the name of other resources
-    or windows present in this memory map.</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.12)"><strong>ValueError</strong></a> – If the added <a class="reference internal" href="#amaranth_soc.memory.MemoryMap" title="amaranth_soc.memory.MemoryMap"><code class="xref py py-class docutils literal notranslate"><span class="pre">MemoryMap</span></code></a> has no name, and the name of one of its resources or
-    windows conflicts with the name of others present in this memory map.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.12)"><strong>ValueError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">window.data_width</span></code> is wider than <a class="reference internal" href="#amaranth_soc.memory.MemoryMap.data_width" title="amaranth_soc.memory.MemoryMap.data_width"><code class="xref py py-attr docutils literal notranslate"><span class="pre">data_width</span></code></a>.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.12)"><strong>ValueError</strong></a> – If the address translation mode is unspecified and <code class="docutils literal notranslate"><span class="pre">window.data_width</span></code> is different
+    than <a class="reference internal" href="#amaranth_soc.memory.MemoryMap.data_width" title="amaranth_soc.memory.MemoryMap.data_width"><code class="xref py py-attr docutils literal notranslate"><span class="pre">data_width</span></code></a>.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.12)"><strong>ValueError</strong></a> – If dense address translation is used and <a class="reference internal" href="#amaranth_soc.memory.MemoryMap.data_width" title="amaranth_soc.memory.MemoryMap.data_width"><code class="xref py py-attr docutils literal notranslate"><span class="pre">data_width</span></code></a> is not an integer multiple
+    of <code class="docutils literal notranslate"><span class="pre">window.data_width</span></code>.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.12)"><strong>ValueError</strong></a> – If dense address translation is used and the ratio of <a class="reference internal" href="#amaranth_soc.memory.MemoryMap.data_width" title="amaranth_soc.memory.MemoryMap.data_width"><code class="xref py py-attr docutils literal notranslate"><span class="pre">data_width</span></code></a> to
+    <code class="docutils literal notranslate"><span class="pre">window.data_width</span></code> is not a power of 2.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.12)"><strong>ValueError</strong></a> – If dense address translation is used and the ratio of <a class="reference internal" href="#amaranth_soc.memory.MemoryMap.data_width" title="amaranth_soc.memory.MemoryMap.data_width"><code class="xref py py-attr docutils literal notranslate"><span class="pre">data_width</span></code></a> to
+    <code class="docutils literal notranslate"><span class="pre">window.data_width</span></code> is lesser than 2 raised to the power of <a class="reference internal" href="#amaranth_soc.memory.MemoryMap.alignment" title="amaranth_soc.memory.MemoryMap.alignment"><code class="xref py py-attr docutils literal notranslate"><span class="pre">alignment</span></code></a>.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.12)"><strong>ValueError</strong></a> – If the requested name would conflict with the name of other resources or windows that
+    have already been added.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.12)"><strong>ValueError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">window</span></code> is anonymous and the name of one of its resources or windows would
+    conflict with the name of any resources or windows that have already been added.</p></li>
 </ul>
 </dd>
 </dl>
@@ -380,7 +530,7 @@ translation for resources that are located behind a window.</p>
 resources that are located behind a window.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>resource</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">wiring.Component</span></code>) – Resource previously added to this <a class="reference internal" href="#amaranth_soc.memory.MemoryMap" title="amaranth_soc.memory.MemoryMap"><code class="xref py py-class docutils literal notranslate"><span class="pre">MemoryMap</span></code></a> or one of its windows.</p>
+<dd class="field-odd"><p><strong>resource</strong> (<a class="reference external" href="https://amaranth-lang.org/docs/amaranth/latest/stdlib/wiring.html#amaranth.lib.wiring.Component" title="(in Amaranth language &amp; toolchain v0.5.0.dev294)"><code class="xref py py-class docutils literal notranslate"><span class="pre">amaranth.lib.wiring.Component</span></code></a>) – Resource previously added to this <a class="reference internal" href="#amaranth_soc.memory.MemoryMap" title="amaranth_soc.memory.MemoryMap"><code class="xref py py-class docutils literal notranslate"><span class="pre">MemoryMap</span></code></a> or one of its windows.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A description of the resource and its address range.</p>
@@ -406,7 +556,7 @@ resources that are located behind a window.</p>
 <dd class="field-even"><p>A resource mapped to the provided address, or <code class="docutils literal notranslate"><span class="pre">None</span></code> if there is no such resource.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">wiring.Component</span></code> or <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+<dd class="field-odd"><p><a class="reference external" href="https://amaranth-lang.org/docs/amaranth/latest/stdlib/wiring.html#amaranth.lib.wiring.Component" title="(in Amaranth language &amp; toolchain v0.5.0.dev294)"><code class="xref py py-class docutils literal notranslate"><span class="pre">amaranth.lib.wiring.Component</span></code></a> or <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -421,7 +571,7 @@ resources that are located behind a window.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>resource</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">wiring.Component</span></code>) – A resource located in the <a class="reference internal" href="#amaranth_soc.memory.MemoryMap" title="amaranth_soc.memory.MemoryMap"><code class="xref py py-class docutils literal notranslate"><span class="pre">MemoryMap</span></code></a>. See <a class="reference internal" href="#amaranth_soc.memory.MemoryMap.add_resource" title="amaranth_soc.memory.MemoryMap.add_resource"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MemoryMap.add_resource()</span></code></a> for
+<li><p><strong>resource</strong> (<a class="reference external" href="https://amaranth-lang.org/docs/amaranth/latest/stdlib/wiring.html#amaranth.lib.wiring.Component" title="(in Amaranth language &amp; toolchain v0.5.0.dev294)"><code class="xref py py-class docutils literal notranslate"><span class="pre">amaranth.lib.wiring.Component</span></code></a>) – A resource located in the <a class="reference internal" href="#amaranth_soc.memory.MemoryMap" title="amaranth_soc.memory.MemoryMap"><code class="xref py py-class docutils literal notranslate"><span class="pre">MemoryMap</span></code></a>. See <a class="reference internal" href="#amaranth_soc.memory.MemoryMap.add_resource" title="amaranth_soc.memory.MemoryMap.add_resource"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MemoryMap.add_resource()</span></code></a> for
 details.</p></li>
 <li><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a> of (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> or (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>))) – Path of the resource. It is composed of the names of each window sitting between
 the resource and the <a class="reference internal" href="#amaranth_soc.memory.MemoryMap" title="amaranth_soc.memory.MemoryMap"><code class="xref py py-class docutils literal notranslate"><span class="pre">MemoryMap</span></code></a> from which this <a class="reference internal" href="#amaranth_soc.memory.ResourceInfo" title="amaranth_soc.memory.ResourceInfo"><code class="xref py py-class docutils literal notranslate"><span class="pre">ResourceInfo</span></code></a> was obtained.
@@ -440,7 +590,7 @@ resource is located behind a window that uses sparse addressing.</p></li>
 <dd><p>The resource described by this <a class="reference internal" href="#amaranth_soc.memory.ResourceInfo" title="amaranth_soc.memory.ResourceInfo"><code class="xref py py-class docutils literal notranslate"><span class="pre">ResourceInfo</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">wiring.Component</span></code></p>
+<dd class="field-odd"><p><a class="reference external" href="https://amaranth-lang.org/docs/amaranth/latest/stdlib/wiring.html#amaranth.lib.wiring.Component" title="(in Amaranth language &amp; toolchain v0.5.0.dev294)"><code class="xref py py-class docutils literal notranslate"><span class="pre">amaranth.lib.wiring.Component</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -491,6 +641,7 @@ resource is located behind a window that uses sparse addressing.</p></li>
 
 </dd></dl>
 
+</section>
 </section>
 
 
