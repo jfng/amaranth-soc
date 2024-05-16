@@ -9,7 +9,7 @@ The :mod:`amaranth_soc.memory` module provides primitives for organizing the add
 
    from amaranth import *
 
-   from amaramtn_soc import csr
+   from amaranth_soc import csr
    from amaranth_soc.memory import *
 
 .. _memory-introduction:
@@ -68,7 +68,7 @@ A memory map can be queried with :meth:`MemoryMap.find_resource` to get the name
 .. doctest::
 
    >>> memory_map.find_resource(reg_ctrl)
-   ResourceInfo(path=('ctrl',), start=0x0, end=0x4, width=8)
+   ResourceInfo(path=(('ctrl',),), start=0x0, end=0x4, width=8)
 
 The resource located at a given address can be retrieved with :meth:`MemoryMap.decode_address`:
 
@@ -99,7 +99,9 @@ For example, the resources of this memory map are 64-bit aligned:
    >>> memory_map.add_resource(reg_foo, size=4, name=("foo",))
    (0, 8)
    >>> memory_map.add_resource(reg_bar, size=4, name=("bar",), addr=0x9)
-   ValueError
+   Traceback (most recent call last):
+   ...
+   ValueError: Explicitly specified address 0x9 must be a multiple of 0x8 bytes
 
 :meth:`MemoryMap.add_resource` takes an optional ``alignment`` parameter. If a value greater than :attr:`MemoryMap.alignment` is given, it becomes the alignment of this resource:
 
@@ -179,7 +181,7 @@ Windows can also be iterated with :meth:`MemoryMap.window_patterns`, which encod
 .. doctest::
 
    >>> for window, (pattern, ratio) in memory_map.window_patterns():
-   ...     print(f"{window}, pattern={pattern}, ratio={ratio}")
+   ...     print(f"{window}, pattern='{pattern}', ratio={ratio}")
    MemoryMap(name='rx'), pattern='01------------', ratio=1
    MemoryMap(name='tx'), pattern='10------------', ratio=1
 
@@ -232,7 +234,9 @@ The visible state of a memory map can become immutable by calling :meth:`MemoryM
 
    >>> memory_map.freeze()
    >>> memory_map.add_resource(reg_ctrl, size=4, addr=0x0, name=("ctrl",))
-   ValueError
+   Traceback (most recent call last):
+   ...
+   ValueError: Memory map has been frozen. Cannot add resource <...>
 
 It is recommended to freeze a memory map before passing it to external logic, as a preventive measure against TOCTTOU bugs.
 
