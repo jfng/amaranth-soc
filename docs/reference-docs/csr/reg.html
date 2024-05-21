@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CSR registers &mdash; System on Chip toolkit for Amaranth HDL 0.1a1.dev22 documentation</title>
+  <title>CSR registers &mdash; System on Chip toolkit for Amaranth HDL 0.1a1.dev18 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
@@ -14,14 +14,14 @@
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=d9e6a7e3"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=c4a5ea53"></script>
         <script src="../_static/doctools.js?v=888ff710"></script>
         <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="CSR field actions" href="action.html" />
-    <link rel="prev" title="CSR bus primitives" href="bus.html" /> 
+    <link rel="prev" title="CSR bus" href="bus.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -37,7 +37,7 @@
               <img src="../_static/logo.png" class="logo" alt="Logo"/>
           </a>
               <div class="version">
-                0.1a1.dev22+g384a458
+                0.1a1.dev18+ga0efbbb
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -54,7 +54,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../memory.html">Memory maps</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../wishbone.html">Wishbone</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../csr.html">CSR</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="bus.html">CSR bus primitives</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bus.html">CSR bus</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">CSR registers</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#amaranth_soc.csr.reg.FieldPort.Access"><code class="docutils literal notranslate"><span class="pre">FieldPort.Access</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#amaranth_soc.csr.reg.FieldPort.Signature"><code class="docutils literal notranslate"><span class="pre">FieldPort.Signature</span></code></a></li>
@@ -168,26 +168,20 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">FieldPort.</span></span><span class="sig-name descname"><span class="pre">Signature</span></span><a class="headerlink" href="#amaranth_soc.csr.reg.FieldPort.Signature" title="Permalink to this definition"></a></dt>
 <dd><p>CSR register field port signature.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>shape</strong> (<a class="reference external" href="https://amaranth-lang.org/docs/amaranth/latest/guide.html#lang-shapelike" title="(in Amaranth language &amp; toolchain v0.5.0.dev294)"><span class="xref std std-ref">shape-like</span></a>) – Shape of the field.</p></li>
+<li><p><strong>shape</strong> (<a class="reference external" href="https://amaranth-lang.org/docs/amaranth/latest/guide.html#lang-shapelike" title="(in Amaranth language &amp; toolchain v0.5.0.dev298)"><span class="xref std std-ref">shape-like object</span></a>) – Shape of the field.</p></li>
 <li><p><strong>access</strong> (<a class="reference internal" href="#amaranth_soc.csr.reg.FieldPort.Access" title="amaranth_soc.csr.reg.FieldPort.Access"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldPort.Access</span></code></a>) – Field access mode.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Members<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>r_data</strong> (<code class="code highlight py python docutils literal highlight-python"><span class="n">unsigned</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span></code>) – Read data. Must always be valid, and is sampled when <code class="docutils literal notranslate"><span class="pre">r_stb</span></code> is asserted.</p></li>
-<li><p><strong>r_stb</strong> (<code class="code highlight py python docutils literal highlight-python"><span class="n">unsigned</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></code>) – Read strobe. Fields with read side effects should perform them when this strobe is
+<li><p><strong>r_data</strong> (<code class="code highlight py python docutils literal highlight-python"><span class="n">In</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span></code>) – Read data. Must always be valid, and is sampled when <code class="docutils literal notranslate"><span class="pre">r_stb</span></code> is asserted.</p></li>
+<li><p><strong>r_stb</strong> (<code class="code highlight py python docutils literal highlight-python"><span class="n">Out</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></code>) – Read strobe. Fields with read side effects should perform them when this strobe is
 asserted.</p></li>
-<li><p><strong>w_data</strong> (<code class="code highlight py python docutils literal highlight-python"><span class="n">unsigned</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span></code>) – Write data. Valid only when <code class="docutils literal notranslate"><span class="pre">w_stb</span></code> is asserted.</p></li>
-<li><p><strong>w_stb</strong> (<code class="code highlight py python docutils literal highlight-python"><span class="n">unsigned</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></code>) – Write strobe. Fields should update their value or perform the write side effect when
+<li><p><strong>w_data</strong> (<code class="code highlight py python docutils literal highlight-python"><span class="n">Out</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span></code>) – Write data. Valid only when <code class="docutils literal notranslate"><span class="pre">w_stb</span></code> is asserted.</p></li>
+<li><p><strong>w_stb</strong> (<code class="code highlight py python docutils literal highlight-python"><span class="n">Out</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></code>) – Write strobe. Fields should update their value or perform the write side effect when
 this strobe is asserted.</p></li>
-</ul>
-</dd>
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.12)"><strong>TypeError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">shape</span></code> is not a shape-like object.</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.12)"><strong>ValueError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">access</span></code> is not a member of <a class="reference internal" href="#amaranth_soc.csr.reg.FieldPort.Access" title="amaranth_soc.csr.reg.FieldPort.Access"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldPort.Access</span></code></a>.</p></li>
 </ul>
 </dd>
 </dl>
@@ -197,7 +191,7 @@ this strobe is asserted.</p></li>
 <dd><p>Field shape.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Shape</span></code></p>
+<dd class="field-odd"><p><a class="reference external" href="https://amaranth-lang.org/docs/amaranth/latest/reference.html#amaranth.hdl.Shape" title="(in Amaranth language &amp; toolchain v0.5.0.dev298)"><code class="xref py py-class docutils literal notranslate"><span class="pre">amaranth.hdl.Shape</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -217,7 +211,7 @@ this strobe is asserted.</p></li>
 <dt class="sig sig-object py" id="amaranth_soc.csr.reg.FieldPort.Signature.create">
 <span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">src_loc_at</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#amaranth_soc.csr.reg.FieldPort.Signature.create" title="Permalink to this definition"></a></dt>
 <dd><p>Create a compatible interface.</p>
-<p>See <a class="reference external" href="https://amaranth-lang.org/docs/amaranth/latest/stdlib/wiring.html#amaranth.lib.wiring.Signature.create" title="(in Amaranth language &amp; toolchain v0.5.0.dev294)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">amaranth.lib.wiring.Signature.create()</span></code></a> for details.</p>
+<p>See <a class="reference external" href="https://amaranth-lang.org/docs/amaranth/latest/stdlib/wiring.html#amaranth.lib.wiring.Signature.create" title="(in Amaranth language &amp; toolchain v0.5.0.dev298)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">amaranth.lib.wiring.Signature.create()</span></code></a> for details.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#amaranth_soc.csr.reg.FieldPort" title="amaranth_soc.csr.reg.FieldPort"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldPort</span></code></a></p>
@@ -240,20 +234,11 @@ this strobe is asserted.</p></li>
 <dd><p>CSR register field port.</p>
 <p>An interface between a <a class="reference internal" href="#amaranth_soc.csr.reg.Register" title="amaranth_soc.csr.reg.Register"><code class="xref py py-class docutils literal notranslate"><span class="pre">Register</span></code></a> and one of its fields.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>signature</strong> (<a class="reference internal" href="#amaranth_soc.csr.reg.FieldPort.Signature" title="amaranth_soc.csr.reg.FieldPort.Signature"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldPort.Signature</span></code></a>) – Field port signature.</p></li>
-<li><p><strong>path</strong> (iterable of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – Path to the field port. Optional. See <a class="reference external" href="https://amaranth-lang.org/docs/amaranth/latest/stdlib/wiring.html#amaranth.lib.wiring.PureInterface" title="(in Amaranth language &amp; toolchain v0.5.0.dev294)"><code class="xref py py-class docutils literal notranslate"><span class="pre">amaranth.lib.wiring.PureInterface</span></code></a>.</p></li>
+<li><p><strong>path</strong> (iterable of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – Path to the field port. Optional. See <a class="reference external" href="https://amaranth-lang.org/docs/amaranth/latest/stdlib/wiring.html#amaranth.lib.wiring.PureInterface" title="(in Amaranth language &amp; toolchain v0.5.0.dev298)"><code class="xref py py-class docutils literal notranslate"><span class="pre">amaranth.lib.wiring.PureInterface</span></code></a>.</p></li>
 </ul>
-</dd>
-<dt class="field-even">Attributes<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>shape</strong> (<a class="reference external" href="https://amaranth-lang.org/docs/amaranth/latest/guide.html#lang-shapelike" title="(in Amaranth language &amp; toolchain v0.5.0.dev294)"><span class="xref std std-ref">shape-like</span></a>) – Shape of the field. See <a class="reference internal" href="#amaranth_soc.csr.reg.FieldPort.Signature" title="amaranth_soc.csr.reg.FieldPort.Signature"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldPort.Signature</span></code></a>.</p></li>
-<li><p><strong>access</strong> (<a class="reference internal" href="#amaranth_soc.csr.reg.FieldPort.Access" title="amaranth_soc.csr.reg.FieldPort.Access"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldPort.Access</span></code></a>) – Field access mode. See <a class="reference internal" href="#amaranth_soc.csr.reg.FieldPort.Signature" title="amaranth_soc.csr.reg.FieldPort.Signature"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldPort.Signature</span></code></a>.</p></li>
-</ul>
-</dd>
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.12)"><strong>TypeError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">signature</span></code> is not a <a class="reference internal" href="#amaranth_soc.csr.reg.FieldPort.Signature" title="amaranth_soc.csr.reg.FieldPort.Signature"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldPort.Signature</span></code></a>.</p>
 </dd>
 </dl>
 <dl class="py attribute">
@@ -262,7 +247,7 @@ this strobe is asserted.</p></li>
 <dd><p>Field shape.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Shape</span></code></p>
+<dd class="field-odd"><p><a class="reference external" href="https://amaranth-lang.org/docs/amaranth/latest/reference.html#amaranth.hdl.Shape" title="(in Amaranth language &amp; toolchain v0.5.0.dev298)"><code class="xref py py-class docutils literal notranslate"><span class="pre">amaranth.hdl.Shape</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -285,15 +270,12 @@ this strobe is asserted.</p></li>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">amaranth_soc.csr.reg.</span></span><span class="sig-name descname"><span class="pre">Field</span></span><a class="headerlink" href="#amaranth_soc.csr.reg.Field" title="Permalink to this definition"></a></dt>
 <dd><p>Description of a CSR register field.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>action_cls</strong> (<a class="reference internal" href="#amaranth_soc.csr.reg.FieldAction" title="amaranth_soc.csr.reg.FieldAction"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldAction</span></code></a> subclass) – The type of field action to be instantiated by <a class="reference internal" href="#amaranth_soc.csr.reg.Field.create" title="amaranth_soc.csr.reg.Field.create"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Field.create()</span></code></a>.</p></li>
 <li><p><strong>*args</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a>) – Positional arguments passed to <code class="docutils literal notranslate"><span class="pre">action_cls.__init__</span></code>.</p></li>
 <li><p><strong>**kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>) – Keyword arguments passed to <code class="docutils literal notranslate"><span class="pre">action_cls.__init__</span></code>.</p></li>
 </ul>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.12)"><strong>TypeError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">action_cls</span></code> is not a subclass of <a class="reference internal" href="#amaranth_soc.csr.reg.FieldAction" title="amaranth_soc.csr.reg.FieldAction"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldAction</span></code></a>.</p>
 </dd>
 </dl>
 <dl class="py method">
@@ -316,19 +298,18 @@ this strobe is asserted.</p></li>
 <dt class="sig sig-object py" id="amaranth_soc.csr.reg.FieldAction">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">amaranth_soc.csr.reg.</span></span><span class="sig-name descname"><span class="pre">FieldAction</span></span><a class="headerlink" href="#amaranth_soc.csr.reg.FieldAction" title="Permalink to this definition"></a></dt>
 <dd><p>CSR register field action.</p>
-<p>A <a class="reference external" href="https://amaranth-lang.org/docs/amaranth/latest/stdlib/wiring.html#amaranth.lib.wiring.Component" title="(in Amaranth language &amp; toolchain v0.5.0.dev294)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></a> mediating access between a CSR bus and a range of
-bits within a <a class="reference internal" href="#amaranth_soc.csr.reg.Register" title="amaranth_soc.csr.reg.Register"><code class="xref py py-class docutils literal notranslate"><span class="pre">Register</span></code></a>.</p>
+<p>A component mediating access between a CSR bus and a range of bits within a <a class="reference internal" href="#amaranth_soc.csr.reg.Register" title="amaranth_soc.csr.reg.Register"><code class="xref py py-class docutils literal notranslate"><span class="pre">Register</span></code></a>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>shape</strong> (<a class="reference external" href="https://amaranth-lang.org/docs/amaranth/latest/guide.html#lang-shapelike" title="(in Amaranth language &amp; toolchain v0.5.0.dev294)"><span class="xref std std-ref">shape-like</span></a>) – Shape of the field. See <a class="reference internal" href="#amaranth_soc.csr.reg.FieldPort.Signature" title="amaranth_soc.csr.reg.FieldPort.Signature"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldPort.Signature</span></code></a>.</p></li>
+<li><p><strong>shape</strong> (<a class="reference external" href="https://amaranth-lang.org/docs/amaranth/latest/guide.html#lang-shapelike" title="(in Amaranth language &amp; toolchain v0.5.0.dev298)"><span class="xref std std-ref">shape-like object</span></a>) – Shape of the field. See <a class="reference internal" href="#amaranth_soc.csr.reg.FieldPort.Signature" title="amaranth_soc.csr.reg.FieldPort.Signature"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldPort.Signature</span></code></a>.</p></li>
 <li><p><strong>access</strong> (<a class="reference internal" href="#amaranth_soc.csr.reg.FieldPort.Access" title="amaranth_soc.csr.reg.FieldPort.Access"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldPort.Access</span></code></a>) – Field access mode. See <a class="reference internal" href="#amaranth_soc.csr.reg.FieldPort.Signature" title="amaranth_soc.csr.reg.FieldPort.Signature"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldPort.Signature</span></code></a>.</p></li>
-<li><p><strong>members</strong> (iterable of (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://amaranth-lang.org/docs/amaranth/latest/stdlib/wiring.html#amaranth.lib.wiring.Member" title="(in Amaranth language &amp; toolchain v0.5.0.dev294)"><code class="xref py py-class docutils literal notranslate"><span class="pre">amaranth.lib.wiring.Member</span></code></a>) key/value pairs) – Signature members. Optional, defaults to <code class="docutils literal notranslate"><span class="pre">()</span></code>. A <a class="reference internal" href="#amaranth_soc.csr.reg.FieldPort.Signature" title="amaranth_soc.csr.reg.FieldPort.Signature"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldPort.Signature</span></code></a> member
+<li><p><strong>members</strong> (iterable of (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://amaranth-lang.org/docs/amaranth/latest/stdlib/wiring.html#amaranth.lib.wiring.Member" title="(in Amaranth language &amp; toolchain v0.5.0.dev298)"><code class="xref py py-class docutils literal notranslate"><span class="pre">amaranth.lib.wiring.Member</span></code></a>) key/value pairs) – Signature members. Optional, defaults to <code class="docutils literal notranslate"><span class="pre">()</span></code>. A <a class="reference internal" href="#amaranth_soc.csr.reg.FieldPort.Signature" title="amaranth_soc.csr.reg.FieldPort.Signature"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldPort.Signature</span></code></a> member
 named ‘port’ and oriented as input is always present in addition to these members.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Members<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>port</strong> (<a class="reference internal" href="#amaranth_soc.csr.reg.FieldPort.Signature" title="amaranth_soc.csr.reg.FieldPort.Signature"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldPort.Signature</span></code></a>) – Field port.</p>
+<dd class="field-even"><p><strong>port</strong> (<code class="code highlight py python docutils literal highlight-python"><span class="n">In</span><span class="p">(</span><span class="n">csr</span><span class="o">.</span><span class="n">reg</span><span class="o">.</span><span class="n">FieldPort</span><span class="o">.</span><span class="n">Signature</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">access</span><span class="p">))</span></code>) – Field port.</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.12)"><strong>ValueError</strong></a> – If the key ‘port’ is used in <code class="docutils literal notranslate"><span class="pre">members</span></code>.</p>
@@ -340,9 +321,10 @@ named ‘port’ and oriented as input is always present in addition to these me
 <dt class="sig sig-object py" id="amaranth_soc.csr.reg.FieldActionMap">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">amaranth_soc.csr.reg.</span></span><span class="sig-name descname"><span class="pre">FieldActionMap</span></span><a class="headerlink" href="#amaranth_soc.csr.reg.FieldActionMap" title="Permalink to this definition"></a></dt>
 <dd><p>A mapping of field actions.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>fields</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> to (<a class="reference internal" href="#amaranth_soc.csr.reg.Field" title="amaranth_soc.csr.reg.Field"><code class="xref py py-class docutils literal notranslate"><span class="pre">Field</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>)) – <p>Register fields. Fields are instantiated according to their type:</p>
+<dl class="field-list">
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>fields</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> to (<a class="reference internal" href="#amaranth_soc.csr.reg.Field" title="amaranth_soc.csr.reg.Field"><code class="xref py py-class docutils literal notranslate"><span class="pre">Field</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>)) –</p>
+<p>Register fields. Fields are instantiated according to their type:</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>a <a class="reference internal" href="#amaranth_soc.csr.reg.Field" title="amaranth_soc.csr.reg.Field"><code class="xref py py-class docutils literal notranslate"><span class="pre">Field</span></code></a> is instantiated as a <a class="reference internal" href="#amaranth_soc.csr.reg.FieldAction" title="amaranth_soc.csr.reg.FieldAction"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldAction</span></code></a> (see <a class="reference internal" href="#amaranth_soc.csr.reg.Field.create" title="amaranth_soc.csr.reg.Field.create"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Field.create()</span></code></a>);</p></li>
@@ -350,15 +332,6 @@ named ‘port’ and oriented as input is always present in addition to these me
 <li><p>a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> is instantiated as a <a class="reference internal" href="#amaranth_soc.csr.reg.FieldActionArray" title="amaranth_soc.csr.reg.FieldActionArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldActionArray</span></code></a>.</p></li>
 </ul>
 </div></blockquote>
-</p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.12)"><strong>TypeError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">fields</span></code> is not a dict, or is empty.</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.12)"><strong>TypeError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">fields</span></code> has a key that is not a string, or is empty.</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.12)"><strong>TypeError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">fields</span></code> has a value that is neither a <a class="reference internal" href="#amaranth_soc.csr.reg.Field" title="amaranth_soc.csr.reg.Field"><code class="xref py py-class docutils literal notranslate"><span class="pre">Field</span></code></a> object, a dict or a list of
-    <a class="reference internal" href="#amaranth_soc.csr.reg.Field" title="amaranth_soc.csr.reg.Field"><code class="xref py py-class docutils literal notranslate"><span class="pre">Field</span></code></a> objects.</p></li>
-</ul>
 </dd>
 </dl>
 <dl class="py method">
@@ -444,9 +417,10 @@ or <a class="reference internal" href="#amaranth_soc.csr.reg.FieldActionArray" t
 <dt class="sig sig-object py" id="amaranth_soc.csr.reg.FieldActionArray">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">amaranth_soc.csr.reg.</span></span><span class="sig-name descname"><span class="pre">FieldActionArray</span></span><a class="headerlink" href="#amaranth_soc.csr.reg.FieldActionArray" title="Permalink to this definition"></a></dt>
 <dd><p>An array of CSR register fields.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>fields</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> of (<a class="reference internal" href="#amaranth_soc.csr.reg.Field" title="amaranth_soc.csr.reg.Field"><code class="xref py py-class docutils literal notranslate"><span class="pre">Field</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>)) – <p>Register fields. Fields are instantiated according to their type:</p>
+<dl class="field-list">
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>fields</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> of (<a class="reference internal" href="#amaranth_soc.csr.reg.Field" title="amaranth_soc.csr.reg.Field"><code class="xref py py-class docutils literal notranslate"><span class="pre">Field</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>)) –</p>
+<p>Register fields. Fields are instantiated according to their type:</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>a <a class="reference internal" href="#amaranth_soc.csr.reg.Field" title="amaranth_soc.csr.reg.Field"><code class="xref py py-class docutils literal notranslate"><span class="pre">Field</span></code></a> is instantiated as a <a class="reference internal" href="#amaranth_soc.csr.reg.FieldAction" title="amaranth_soc.csr.reg.FieldAction"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldAction</span></code></a> (see <a class="reference internal" href="#amaranth_soc.csr.reg.Field.create" title="amaranth_soc.csr.reg.Field.create"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Field.create()</span></code></a>);</p></li>
@@ -454,14 +428,6 @@ or <a class="reference internal" href="#amaranth_soc.csr.reg.FieldActionArray" t
 <li><p>a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> is instantiated as a <a class="reference internal" href="#amaranth_soc.csr.reg.FieldActionArray" title="amaranth_soc.csr.reg.FieldActionArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldActionArray</span></code></a>.</p></li>
 </ul>
 </div></blockquote>
-</p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.12)"><strong>TypeError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">fields</span></code> is not a list, or is empty.</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.12)"><strong>TypeError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">fields</span></code> has an item that is neither a <a class="reference internal" href="#amaranth_soc.csr.reg.Field" title="amaranth_soc.csr.reg.Field"><code class="xref py py-class docutils literal notranslate"><span class="pre">Field</span></code></a> object, a dict or a list of
-    <a class="reference internal" href="#amaranth_soc.csr.reg.Field" title="amaranth_soc.csr.reg.Field"><code class="xref py py-class docutils literal notranslate"><span class="pre">Field</span></code></a> objects.</p></li>
-</ul>
 </dd>
 </dl>
 <dl class="py method">
@@ -514,28 +480,21 @@ or <a class="reference internal" href="#amaranth_soc.csr.reg.FieldActionArray" t
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">amaranth_soc.csr.reg.</span></span><span class="sig-name descname"><span class="pre">Register</span></span><a class="headerlink" href="#amaranth_soc.csr.reg.Register" title="Permalink to this definition"></a></dt>
 <dd><p>A CSR register.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>fields</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> or <a class="reference internal" href="#amaranth_soc.csr.reg.Field" title="amaranth_soc.csr.reg.Field"><code class="xref py py-class docutils literal notranslate"><span class="pre">Field</span></code></a>) – Collection of register fields. If <code class="docutils literal notranslate"><span class="pre">None</span></code> (default), a dict is populated from Python
 <a class="reference external" href="https://docs.python.org/3/glossary.html#term-variable-annotation" title="(in Python v3.12)"><span class="xref std std-term">variable annotations</span></a>. <code class="docutils literal notranslate"><span class="pre">fields</span></code> is used to create
 a <a class="reference internal" href="#amaranth_soc.csr.reg.FieldActionMap" title="amaranth_soc.csr.reg.FieldActionMap"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldActionMap</span></code></a>, <a class="reference internal" href="#amaranth_soc.csr.reg.FieldActionArray" title="amaranth_soc.csr.reg.FieldActionArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldActionArray</span></code></a>, or <a class="reference internal" href="#amaranth_soc.csr.reg.FieldAction" title="amaranth_soc.csr.reg.FieldAction"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldAction</span></code></a>,
 depending on its type (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>, or <a class="reference internal" href="#amaranth_soc.csr.reg.Field" title="amaranth_soc.csr.reg.Field"><code class="xref py py-class docutils literal notranslate"><span class="pre">Field</span></code></a>).</p></li>
-<li><p><strong>access</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Element.Access</span></code>) – Element access mode.</p></li>
+<li><p><strong>access</strong> (<a class="reference internal" href="bus.html#amaranth_soc.csr.bus.Element.Access" title="amaranth_soc.csr.bus.Element.Access"><code class="xref py py-class docutils literal notranslate"><span class="pre">Access</span></code></a>) – Element access mode.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Members<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>element</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Element.Signature</span></code>) – Interface between this <a class="reference internal" href="#amaranth_soc.csr.reg.Register" title="amaranth_soc.csr.reg.Register"><code class="xref py py-class docutils literal notranslate"><span class="pre">Register</span></code></a> and a CSR bus primitive.</p>
+<dd class="field-even"><p><strong>element</strong> (<code class="code highlight py python docutils literal highlight-python"><span class="n">In</span><span class="p">(</span><span class="n">csr</span><span class="o">.</span><span class="n">Element</span><span class="o">.</span><span class="n">Signature</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">access</span><span class="p">))</span></code>) – Interface between this <a class="reference internal" href="#amaranth_soc.csr.reg.Register" title="amaranth_soc.csr.reg.Register"><code class="xref py py-class docutils literal notranslate"><span class="pre">Register</span></code></a> and a CSR bus primitive.</p>
 </dd>
-<dt class="field-odd">Attributes<span class="colon">:</span></dt>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>field</strong> (<a class="reference internal" href="#amaranth_soc.csr.reg.FieldActionMap" title="amaranth_soc.csr.reg.FieldActionMap"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldActionMap</span></code></a> or <a class="reference internal" href="#amaranth_soc.csr.reg.FieldActionArray" title="amaranth_soc.csr.reg.FieldActionArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldActionArray</span></code></a> or <a class="reference internal" href="#amaranth_soc.csr.reg.FieldAction" title="amaranth_soc.csr.reg.FieldAction"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldAction</span></code></a>) – Collection of field instances.</p></li>
-<li><p><strong>f</strong> (<a class="reference internal" href="#amaranth_soc.csr.reg.FieldActionMap" title="amaranth_soc.csr.reg.FieldActionMap"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldActionMap</span></code></a> or <a class="reference internal" href="#amaranth_soc.csr.reg.FieldActionArray" title="amaranth_soc.csr.reg.FieldActionArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldActionArray</span></code></a> or <a class="reference internal" href="#amaranth_soc.csr.reg.FieldAction" title="amaranth_soc.csr.reg.FieldAction"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldAction</span></code></a>) – Shorthand for <a class="reference internal" href="#amaranth_soc.csr.reg.Register.field" title="amaranth_soc.csr.reg.Register.field"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Register.field</span></code></a>.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.12)"><strong>TypeError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">fields</span></code> is neither <code class="docutils literal notranslate"><span class="pre">None</span></code>, a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>, a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>, or a <a class="reference internal" href="#amaranth_soc.csr.reg.Field" title="amaranth_soc.csr.reg.Field"><code class="xref py py-class docutils literal notranslate"><span class="pre">Field</span></code></a>.</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.12)"><strong>ValueError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">fields</span></code> is not <code class="docutils literal notranslate"><span class="pre">None</span></code> and at least one variable annotation is a <a class="reference internal" href="#amaranth_soc.csr.reg.Field" title="amaranth_soc.csr.reg.Field"><code class="xref py py-class docutils literal notranslate"><span class="pre">Field</span></code></a>.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.12)"><strong>ValueError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">fields</span></code> is not <code class="docutils literal notranslate"><span class="pre">None</span></code> and at least one <a class="reference external" href="https://docs.python.org/3/glossary.html#term-variable-annotation" title="(in Python v3.12)"><span class="xref std std-term">variable annotation</span></a> is a <a class="reference internal" href="#amaranth_soc.csr.reg.Field" title="amaranth_soc.csr.reg.Field"><code class="xref py py-class docutils literal notranslate"><span class="pre">Field</span></code></a>.</p></li>
 <li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.12)"><strong>ValueError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">element.access</span></code> is not readable and at least one field is readable.</p></li>
 <li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.12)"><strong>ValueError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">element.access</span></code> is not writable and at least one field is writable.</p></li>
 </ul>
@@ -556,6 +515,11 @@ depending on its type (<a class="reference external" href="https://docs.python.o
 <dt class="sig sig-object py" id="amaranth_soc.csr.reg.Register.f">
 <span class="sig-name descname"><span class="pre">f</span></span><a class="headerlink" href="#amaranth_soc.csr.reg.Register.f" title="Permalink to this definition"></a></dt>
 <dd><p>Shorthand for <a class="reference internal" href="#amaranth_soc.csr.reg.Register.field" title="amaranth_soc.csr.reg.Register.field"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Register.field</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#amaranth_soc.csr.reg.FieldActionMap" title="amaranth_soc.csr.reg.FieldActionMap"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldActionMap</span></code></a> or <a class="reference internal" href="#amaranth_soc.csr.reg.FieldActionArray" title="amaranth_soc.csr.reg.FieldActionArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldActionArray</span></code></a> or <a class="reference internal" href="#amaranth_soc.csr.reg.FieldAction" title="amaranth_soc.csr.reg.FieldAction"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldAction</span></code></a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -579,10 +543,10 @@ or <a class="reference internal" href="#amaranth_soc.csr.reg.FieldActionArray" t
 <dt class="sig sig-object py" id="amaranth_soc.csr.reg.Builder">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">amaranth_soc.csr.reg.</span></span><span class="sig-name descname"><span class="pre">Builder</span></span><a class="headerlink" href="#amaranth_soc.csr.reg.Builder" title="Permalink to this definition"></a></dt>
 <dd><p>CSR builder.</p>
-<p>A CSR builder can organize a group of <a class="reference internal" href="#amaranth_soc.csr.reg.Register" title="amaranth_soc.csr.reg.Register"><code class="xref py py-class docutils literal notranslate"><span class="pre">Register</span></code></a>-s within an address range and convert
-it to a <code class="xref py py-class docutils literal notranslate"><span class="pre">MemoryMap</span></code> for consumption by other SoC primitives.</p>
+<p>A CSR builder can organize a group of <a class="reference internal" href="#amaranth_soc.csr.reg.Register" title="amaranth_soc.csr.reg.Register"><code class="xref py py-class docutils literal notranslate"><span class="pre">Register</span></code></a>s within an address range and convert
+it to a <a class="reference internal" href="../memory.html#amaranth_soc.memory.MemoryMap" title="amaranth_soc.memory.MemoryMap"><code class="xref py py-class docutils literal notranslate"><span class="pre">MemoryMap</span></code></a> for consumption by other SoC primitives.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>addr_width</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) – Address width.</p></li>
 <li><p><strong>data_width</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) – Data width.</p></li>
@@ -591,13 +555,7 @@ it to a <code class="xref py py-class docutils literal notranslate"><span class=
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.12)"><strong>TypeError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">addr_width</span></code> is not a positive integer.</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.12)"><strong>TypeError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">data_width</span></code> is not a positive integer.</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.12)"><strong>TypeError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">granularity</span></code> is not a positive integer.</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.12)"><strong>ValueError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">granularity</span></code> is not a divisor of <code class="docutils literal notranslate"><span class="pre">data_width</span></code></p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.12)"><strong>TypeError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">name</span></code> is not a string, or is empty.</p></li>
-</ul>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.12)"><strong>ValueError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">granularity</span></code> is not a divisor of <code class="docutils literal notranslate"><span class="pre">data_width</span></code></p>
 </dd>
 </dl>
 <dl class="py attribute">
@@ -648,7 +606,7 @@ it to a <code class="xref py py-class docutils literal notranslate"><span class=
 <dt class="sig sig-object py" id="amaranth_soc.csr.reg.Builder.freeze">
 <span class="sig-name descname"><span class="pre">freeze</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#amaranth_soc.csr.reg.Builder.freeze" title="Permalink to this definition"></a></dt>
 <dd><p>Freeze the builder.</p>
-<p>Once the builder is frozen, <a class="reference internal" href="#amaranth_soc.csr.reg.Register" title="amaranth_soc.csr.reg.Register"><code class="xref py py-class docutils literal notranslate"><span class="pre">Register</span></code></a>-s cannot be added anymore.</p>
+<p>Once the builder is frozen, <a class="reference internal" href="#amaranth_soc.csr.reg.Register" title="amaranth_soc.csr.reg.Register"><code class="xref py py-class docutils literal notranslate"><span class="pre">Register</span></code></a>s cannot be added anymore.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -656,7 +614,7 @@ it to a <code class="xref py py-class docutils literal notranslate"><span class=
 <span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reg</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#amaranth_soc.csr.reg.Builder.add" title="Permalink to this definition"></a></dt>
 <dd><p>Add a CSR register.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – Register name.</p></li>
 <li><p><strong>reg</strong> (<a class="reference internal" href="#amaranth_soc.csr.reg.Register" title="amaranth_soc.csr.reg.Register"><code class="xref py py-class docutils literal notranslate"><span class="pre">Register</span></code></a>) – Register.</p></li>
@@ -673,10 +631,7 @@ indices of any parent <a class="reference internal" href="#amaranth_soc.csr.reg.
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.12)"><strong>ValueError</strong></a> – If the builder is frozen.</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.12)"><strong>TypeError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">name</span></code> is not a string, or is empty.</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.12)"><strong>TypeError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">reg</span></code> is not an instance of <a class="reference internal" href="#amaranth_soc.csr.reg.Register" title="amaranth_soc.csr.reg.Register"><code class="xref py py-class docutils literal notranslate"><span class="pre">Register</span></code></a>.</p></li>
 <li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.12)"><strong>ValueError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">reg</span></code> is already added to the builder.</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.12)"><strong>TypeError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">offset</span></code> is not an integer, or is negative.</p></li>
 <li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.12)"><strong>ValueError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">offset</span></code> is not a multiple of <code class="docutils literal notranslate"><span class="pre">self.data_width</span> <span class="pre">//</span> <span class="pre">self.granularity</span></code>.</p></li>
 </ul>
 </dd>
@@ -688,11 +643,8 @@ indices of any parent <a class="reference internal" href="#amaranth_soc.csr.reg.
 <span class="sig-name descname"><span class="pre">Cluster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#amaranth_soc.csr.reg.Builder.Cluster" title="Permalink to this definition"></a></dt>
 <dd><p>Define a cluster.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – Cluster name.</p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.12)"><strong>TypeError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">name</span></code> is not a string, or is empty.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -702,11 +654,8 @@ indices of any parent <a class="reference internal" href="#amaranth_soc.csr.reg.
 <span class="sig-name descname"><span class="pre">Index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#amaranth_soc.csr.reg.Builder.Index" title="Permalink to this definition"></a></dt>
 <dd><p>Define an array index.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>index</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) – Array index.</p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.12)"><strong>TypeError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">index</span></code> is not an integer, or is negative.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -714,7 +663,7 @@ indices of any parent <a class="reference internal" href="#amaranth_soc.csr.reg.
 <dl class="py method">
 <dt class="sig sig-object py" id="amaranth_soc.csr.reg.Builder.as_memory_map">
 <span class="sig-name descname"><span class="pre">as_memory_map</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#amaranth_soc.csr.reg.Builder.as_memory_map" title="Permalink to this definition"></a></dt>
-<dd><p>Build a <a class="reference internal" href="../memory.html#amaranth_soc.memory.MemoryMap" title="amaranth_soc.memory.MemoryMap"><code class="xref py py-class docutils literal notranslate"><span class="pre">MemoryMap</span></code></a>.</p>
+<dd><p>Build a memory map.</p>
 <div class="admonition-todo admonition" id="id1">
 <p class="admonition-title">Todo</p>
 <p>explain address/offset conversions</p>
@@ -737,18 +686,14 @@ indices of any parent <a class="reference internal" href="#amaranth_soc.csr.reg.
 <p>extended summary</p>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>memory_map</strong> (<a class="reference internal" href="../memory.html#amaranth_soc.memory.MemoryMap" title="amaranth_soc.memory.MemoryMap"><code class="xref py py-class docutils literal notranslate"><span class="pre">MemoryMap</span></code></a>) – Memory map of CSR registers.</p>
+<dt class="field-odd">Arguments<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>memory_map</strong> (<a class="reference internal" href="../memory.html#amaranth_soc.memory.MemoryMap" title="amaranth_soc.memory.MemoryMap"><code class="xref py py-class docutils literal notranslate"><span class="pre">MemoryMap</span></code></a>) – Memory map of <a class="reference internal" href="#amaranth_soc.csr.reg.Register" title="amaranth_soc.csr.reg.Register"><code class="xref py py-class docutils literal notranslate"><span class="pre">Register</span></code></a>s.</p>
 </dd>
 <dt class="field-even">Members<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>bus</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bus.Signature</span></code>) – CSR bus providing access to the contents of <code class="docutils literal notranslate"><span class="pre">memory_map</span></code>.</p>
+<dd class="field-even"><p><strong>bus</strong> (<code class="code highlight py python docutils literal highlight-python"><span class="n">In</span><span class="p">(</span><span class="n">csr</span><span class="o">.</span><span class="n">Signature</span><span class="p">(</span><span class="n">memory_map</span><span class="o">.</span><span class="n">addr_width</span><span class="p">,</span> <span class="n">memory_map</span><span class="o">.</span><span class="n">data_width</span><span class="p">))</span></code>) – CSR bus providing access to the contents of <code class="docutils literal notranslate"><span class="pre">memory_map</span></code>.</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.12)"><strong>TypeError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">memory_map</span></code> is not a <a class="reference internal" href="../memory.html#amaranth_soc.memory.MemoryMap" title="amaranth_soc.memory.MemoryMap"><code class="xref py py-class docutils literal notranslate"><span class="pre">MemoryMap</span></code></a> object.</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.12)"><strong>ValueError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">memory_map</span></code> has windows.</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.12)"><strong>TypeError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">memory_map</span></code> has resources that are not <a class="reference internal" href="#amaranth_soc.csr.reg.Register" title="amaranth_soc.csr.reg.Register"><code class="xref py py-class docutils literal notranslate"><span class="pre">Register</span></code></a> objects.</p></li>
-</ul>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.12)"><strong>ValueError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">memory_map</span></code> has windows.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -759,7 +704,7 @@ indices of any parent <a class="reference internal" href="#amaranth_soc.csr.reg.
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="bus.html" class="btn btn-neutral float-left" title="CSR bus primitives" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="bus.html" class="btn btn-neutral float-left" title="CSR bus" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="action.html" class="btn btn-neutral float-right" title="CSR field actions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

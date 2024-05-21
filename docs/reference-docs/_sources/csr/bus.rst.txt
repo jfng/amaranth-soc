@@ -1,13 +1,187 @@
-CSR bus primitives
-------------------
-
-.. warning::
-
-   This manual is a work in progress and is seriously incomplete!
+CSR bus
+-------
 
 .. py:module:: amaranth_soc.csr.bus
 
-The :mod:`amaranth_soc.csr.bus` module provides CSR bus primitives.
+The :mod:`amaranth_soc.csr.bus` module contains primitives to implement and access the registers of peripherals through a bus interface.
+
+.. testsetup::
+
+   from amaranth import *
+
+   from amaranth_soc import csr
+   from amaranth_soc.memory import *
+
+.. _csr-bus-introduction:
+
+Introduction
+============
+
+The CSR Bus API aims to provide unopinionated building blocks for accessing the *Control and Status Registers* of SoC peripherals, with an emphasis on safety and resource efficiency. It is composed of low-level :ref:`register interfaces <csr-bus-element>` suitable for a wide range of implementations, :ref:`register multiplexers <csr-bus-multiplexer>` that provide access to the registers of a peripheral, and :ref:`bus decoders <csr-bus-decoder>` that provide access to the registers of multiple peripherals.
+
+.. _csr-bus-element:
+
+Creating registers
+++++++++++++++++++
+
+A CSR register is a :class:`~amaranth.lib.wiring.Component` with an :class:`Element` member in its interface, oriented as input and named ``"element"``.
+
+For example, this component is a read/write register with a configurable width:
+
+.. testcode::
+
+   class MyRegister(wiring.Component):
+       def __init__(self, width):
+           super().__init__({
+               "element": In(csr.Element.Signature(width, "rw")),
+               "data": Out(width),
+           })
+
+       def elaborate(self, platform):
+           m = Module()
+           storage = Signal.like(self.data)
+
+           with m.If(self.element.w_stb):
+               m.d.sync += storage.eq(self.element.w_data)
+
+           m.d.comb += [
+               self.element.r_data.eq(storage),
+               self.data.eq(storage),
+           ]
+
+           return m
+
+CSR bus transactions go through the :class:`Element` port and always target the entire register. Transactions are completed in one clock cycle, regardless of the register width. A read and a write access can be part of the same transaction.
+
+.. _csr-bus-multiplexer:
+
+Accessing registers
++++++++++++++++++++
+
+A :class:`Multiplexer` can provide access to a group of registers from a CSR bus. Registers must first be added to a :class:`MemoryMap`, before using it to instantiate a CSR multiplexer.
+
+In the following example, a :class:`Multiplexer` provides access to two registers over an 8-bit bus:
+
+.. testcode::
+
+   reg_foo = MyRegister(24)
+   reg_bar = MyRegister(32)
+
+   memory_map = MemoryMap(addr_width=3, data_width=8, alignment=2)
+   memory_map.add_resource(reg_foo, size=3, name=("foo",))
+   memory_map.add_resource(reg_bar, size=4, name=("bar",))
+
+   csr_mux = csr.Multiplexer(memory_map)
+
+.. doctest::
+
+   >>> for res_info in csr_mux.bus.memory_map.all_resources()):
+   ...     print(res_info)
+   ResourceInfo(path=(('foo',),), start=0x0, end=0x4, width=8)
+   ResourceInfo(path=(('bar',),), start=0x4, end=0x8, width=8)
+
+Registers mapped to a CSR bus are accessed atomically, regardless of their size. Each register is split into chunks according to the bus data width. Each chunk is assigned a consecutive address on the bus.
+
+When the first chunk of a register is read, the values of all chunks of the register are captured, and reads from subsequent chunks return the captured values. When any chunk except the last chunk of a register is written, the written value is captured; a write to the last chunk writes all captured values to the register.
+
+.. wavedrom:: csr/bus/example_mux
+
+   {
+       "signal": [
+           {"name": "clk",
+            "wave": "0P......."},
+           [
+               "csr_mux",
+  	           {"name": "bus.addr",
+                "wave": "x====x..|",
+                "data": [0,1,2,3]},
+               {"name": "bus.r_stb",
+                "wave": "01...0..|"},
+  	           {"name": "bus.r_data",
+                "wave": "0.3330..|",
+                "data": ["A", "B", "C"]},
+               {"name": "bus.w_stb",
+                "wave": "01...0..|"},
+  	           {"name": "bus.w_data",
+                "wave": "x4444x..|",
+                "data": ["E", "F", "G", "H"]}
+           ],
+           {},
+           [
+               "reg_foo",
+               {"name": "element.r_stb",
+                "wave": "010.....|"},
+  	           {"name": "element.r_data",
+                "wave": "3.....4.|",
+                "data": ["CBA", "GFE"]},
+               {"name": "element.w_stb",
+                "wave": "0....10.|"},
+  	           {"name": "element.w_data",
+                "wave": "x....4x.|",
+                "data": ["GFE"]}
+           ]
+       ]
+   }
+
+A :class:`Multiplexer` adds a latency of one clock cycle to read and write accesses.
+
+.. important::
+
+   To safely access registers over the bus interface of a :class:`Multiplexer`:
+        * the bus initiator must have exclusive ownership over the address range of the multiplexer until the register transaction is either completed or aborted.
+        * the bus initiator must access a register in ascending order of addresses, but it may abort the transaction after any bus cycle.
+
+.. note::
+
+   Because the CSR bus conserves logic and routing resources, it is common to e.g. bridge a CSR bus with a narrow *N*-bit datapath to a CPU with a wider *W*-bit datapath (*W>N*) in cases where CSR access latency is less important than resource usage.
+
+   In this case, two strategies are possible for connecting the CSR bus to the CPU:
+
+       * The CPU could access the CSR bus directly (with no intervening logic other than simple translation of control signals). The register alignment should be set to 1 (i.e. ``memory_map.alignment`` should be 0), and each *R*-bit register would occupy *ceil(R/N)* addresses from the CPU perspective, requiring the same amount of memory instructions to access.
+       * The CPU could access the CSR bus through a width down-converter, which would issue *W/N* CSR accesses for each CPU access. The register alignment should be set to *W/N*, and each *R*-bit register would occupy *ceil(R/K)* addresses from the CPU perspective, requiring the same amount of memory instructions to access.
+
+   If the register alignment is greater than 1, it affects which CSR bus write is considered a write to the last register chunk. For example, if a 24-bit register is accessed through an 8-bit CSR bus and a CPU with a 32-bit datapath, a write to this register requires 4 CSR bus writes to complete, and the last write is the one that actually writes the value to the register. This allows determining write latency solely from the amount of addresses occupied by the register in the CPU address space, and the CSR bus data width.
+
+.. _csr-bus-decoder:
+
+Accessing a hierarchy of registers
+++++++++++++++++++++++++++++++++++
+
+A :class:`Decoder` can provide access to group of :class:`Multiplexer`\ s and subordinate :class:`Decoder`\ s, forming a hierarchical address space of CSR registers.
+
+In the following example, a :class:`Decoder` provides access to the registers of two peripherals:
+
+.. testcode::
+
+   reg_foo = MyRegister(24)
+   reg_bar = MyRegister(32)
+
+   uart_memory_map = MemoryMap(addr_width=2, data_width=8, alignment=2, name="uart")
+   uart_memory_map.add_resource(reg_foo, size=3, name=("foo",))
+   uart_csr_mux = csr.Multiplexer(uart_memory_map)
+
+   gpio_memory_map = MemoryMap(addr_width=2, data_width=8, alignment=2, name="gpio")
+   gpio_memory_map.add_resource(reg_bar, size=4, name=("bar",))
+   gpio_csr_mux = csr.Multiplexer(gpio_memory_map)
+
+   csr_dec = csr.Decoder(addr_width=16, data_width=8)
+   csr_dec.add(uart_csr_mux.bus, addr=0x0000)
+   csr_dec.add(gpio_csr_mux.bus, addr=0x1000)
+
+.. doctest::
+
+   >>> for res_info in csr_dec.bus.memory_map.all_resources()):
+   ...     print(res_info)
+   ResourceInfo(path=('uart', ('foo',)), start=0x0, end=0x4, width=8)
+   ResourceInfo(path=('gpio', ('bar',)), start=0x1000, end=0x1004, width=8)
+
+Although there is no functional difference between adding a group of registers directly to a
+:class:`Multiplexer` and adding them to multiple :class:`Multiplexer`\ s that are aggregated with a :class:`Decoder`, hierarchical CSR buses are useful for organizing a hierarchical design.
+
+If many peripherals are directly served by a single :class:`Multiplexer`, a very large amount of ports will connect the peripheral registers to the multiplexer, and the cost of decoding logic would not be attributed to specific peripherals. With a :class:`Decoder`, only five signals per peripheral will be used, and the logic could be kept together with the peripheral.
+
+Register interface
+==================
 
 .. autoclass:: amaranth_soc.csr.bus::Element.Access()
    :no-members:
@@ -32,20 +206,22 @@ The :mod:`amaranth_soc.csr.bus` module provides CSR bus primitives.
    .. autoattribute:: width
    .. autoattribute:: access
 
+Bus interface
+=============
+
 .. autoclass:: Signature()
    :no-members:
 
-   .. autoattribute:: addr_width
-   .. autoattribute:: data_width
    .. automethod:: create
    .. automethod:: __eq__
 
 .. autoclass:: Interface()
    :no-members:
 
-   .. autoattribute:: addr_width
-   .. autoattribute:: data_width
    .. autoattribute:: memory_map
+
+Bus primitives
+==============
 
 .. autoclass:: Multiplexer()
    :no-members:

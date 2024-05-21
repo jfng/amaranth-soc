@@ -45,6 +45,8 @@ Resources are added with :meth:`MemoryMap.add_resource`, which returns a ``(star
    >>> memory_map.add_resource(reg_data, size=4, addr=0x4, name=("data",))
    (4, 8)
 
+.. _memory-implicit-next-address:
+
 .. note::
 
    The ``addr`` parameter of :meth:`MemoryMap.add_resource` and :meth:`MemoryMap.add_window` is optional.
@@ -110,7 +112,7 @@ For example, the resources of this memory map are 64-bit aligned:
    >>> memory_map.add_resource(reg_bar, size=4, name=("bar",), alignment=4)
    (16, 32)
 
-:meth:`MemoryMap.align_to` can be used to align the implicit next address. Its alignment is modified if a value greater than :attr:`MemoryMap.alignment` is given.
+:meth:`MemoryMap.align_to` can be used to align the :ref:`implicit next address <memory-implicit-next-address>`. Its alignment is modified if a value greater than :attr:`MemoryMap.alignment` is given.
 
 .. doctest::
 
@@ -207,7 +209,7 @@ In *transparent mode*, each transaction on the primary bus results in one transa
 
 .. note::
 
-   In practice, transparent mode is identical to other modes; it can only be used with equal data widths, which results in the same behavior regardless of the translation mode. However, it allows :meth:`MemoryMap.add_window` to fail if the data widths are different.
+   In practice, transparent mode is identical to other modes; it can only be used with equal data widths, which results in the same behavior regardless of the translation mode. However, it causes :meth:`MemoryMap.add_window` to fail if the data widths are different.
 
 Sparse mode
 -----------
@@ -222,7 +224,7 @@ In *dense mode*, each transaction on the wide primary bus results in several tra
 Freezing
 ========
 
-The visible state of a memory map can become immutable by calling :meth:`MemoryMap.freeze`:
+The state of a memory map can become immutable by calling :meth:`MemoryMap.freeze`:
 
 .. testcode::
 
@@ -243,10 +245,6 @@ It is recommended to freeze a memory map before passing it to external logic, as
 .. autoclass:: MemoryMap()
    :no-members:
 
-   .. autoattribute:: addr_width
-   .. autoattribute:: data_width
-   .. autoattribute:: alignment
-   .. autoattribute:: name
    .. automethod:: freeze
    .. automethod:: align_to
    .. automethod:: add_resource
@@ -259,3 +257,4 @@ It is recommended to freeze a memory map before passing it to external logic, as
    .. automethod:: decode_address
 
 .. autoclass:: ResourceInfo()
+   :no-members:
