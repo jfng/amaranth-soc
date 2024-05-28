@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CSR bus &mdash; System on Chip toolkit for Amaranth HDL 0.1a1.dev18 documentation</title>
+  <title>CSR bus &mdash; System on Chip toolkit for Amaranth HDL 0.1a1.dev19 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
@@ -14,7 +14,7 @@
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=c4a5ea53"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=60dd6e4a"></script>
         <script src="../_static/doctools.js?v=888ff710"></script>
         <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../_static/js/theme.js"></script>
@@ -37,7 +37,7 @@
               <img src="../_static/logo.png" class="logo" alt="Logo"/>
           </a>
               <div class="version">
-                0.1a1.dev18+ga0efbbb
+                0.1a1.dev19+g286e3fc
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -101,10 +101,10 @@
 <p>The <a class="reference internal" href="#module-amaranth_soc.csr.bus" title="amaranth_soc.csr.bus"><code class="xref py py-mod docutils literal notranslate"><span class="pre">amaranth_soc.csr.bus</span></code></a> module contains primitives to implement and access the registers of peripherals through a bus interface.</p>
 <section id="introduction">
 <span id="csr-bus-introduction"></span><h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this heading"></a></h2>
-<p>The CSR Bus API aims to provide unopinionated building blocks for accessing the <em>Control and Status Registers</em> of SoC peripherals, with an emphasis on safety and resource efficiency. It is composed of low-level <a class="reference internal" href="#csr-bus-element"><span class="std std-ref">register interfaces</span></a> suitable for a wide range of implementations, <a class="reference internal" href="#csr-bus-multiplexer"><span class="std std-ref">register multiplexers</span></a> that provide access to the registers of a peripheral, and <a class="reference internal" href="#csr-bus-decoder"><span class="std std-ref">bus decoders</span></a> that provide access to the registers of multiple peripherals.</p>
-<section id="creating-registers">
-<span id="csr-bus-element"></span><h3>Creating registers<a class="headerlink" href="#creating-registers" title="Permalink to this heading"></a></h3>
-<p>A CSR register is a <a class="reference external" href="https://amaranth-lang.org/docs/amaranth/latest/stdlib/wiring.html#amaranth.lib.wiring.Component" title="(in Amaranth language &amp; toolchain v0.5.0.dev298)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></a> with an <a class="reference internal" href="#amaranth_soc.csr.bus.Element" title="amaranth_soc.csr.bus.Element"><code class="xref py py-class docutils literal notranslate"><span class="pre">Element</span></code></a> member in its interface, oriented as input and named <code class="docutils literal notranslate"><span class="pre">&quot;element&quot;</span></code>.</p>
+<p>The CSR bus API provides unopinionated primitives for defining and connecting the <em>Control and Status Registers</em> of SoC peripherals, with an emphasis on safety and resource efficiency. It is composed of low-level <a class="reference internal" href="#csr-bus-element"><span class="std std-ref">register interfaces</span></a>, <a class="reference internal" href="#csr-bus-multiplexer"><span class="std std-ref">register multiplexers</span></a> that provide access to the registers of a peripheral, and <a class="reference internal" href="#csr-bus-decoder"><span class="std std-ref">bus decoders</span></a> that provide access to the registers of multiple peripherals.</p>
+<section id="defining-registers">
+<span id="csr-bus-element"></span><h3>Defining registers<a class="headerlink" href="#defining-registers" title="Permalink to this heading"></a></h3>
+<p>A CSR register is a <a class="reference external" href="https://amaranth-lang.org/docs/amaranth/latest/stdlib/wiring.html#amaranth.lib.wiring.Component" title="(in Amaranth language &amp; toolchain v0.5.0.dev304)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></a> with an <a class="reference internal" href="#amaranth_soc.csr.bus.Element" title="amaranth_soc.csr.bus.Element"><code class="xref py py-class docutils literal notranslate"><span class="pre">Element</span></code></a> member in its interface, oriented as input and named <code class="docutils literal notranslate"><span class="pre">&quot;element&quot;</span></code>.</p>
 <p>For example, this component is a read/write register with a configurable width:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyRegister</span><span class="p">(</span><span class="n">wiring</span><span class="o">.</span><span class="n">Component</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">width</span><span class="p">):</span>
@@ -132,78 +132,121 @@
 </section>
 <section id="accessing-registers">
 <span id="csr-bus-multiplexer"></span><h3>Accessing registers<a class="headerlink" href="#accessing-registers" title="Permalink to this heading"></a></h3>
-<p>A <a class="reference internal" href="#amaranth_soc.csr.bus.Multiplexer" title="amaranth_soc.csr.bus.Multiplexer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Multiplexer</span></code></a> can provide access to a group of registers from a CSR bus. Registers must first be added to a <code class="xref py py-class docutils literal notranslate"><span class="pre">MemoryMap</span></code>, before using it to instantiate a CSR multiplexer.</p>
-<p>In the following example, a <a class="reference internal" href="#amaranth_soc.csr.bus.Multiplexer" title="amaranth_soc.csr.bus.Multiplexer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Multiplexer</span></code></a> provides access to two registers over an 8-bit bus:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">reg_foo</span> <span class="o">=</span> <span class="n">MyRegister</span><span class="p">(</span><span class="mi">24</span><span class="p">)</span>
-<span class="n">reg_bar</span> <span class="o">=</span> <span class="n">MyRegister</span><span class="p">(</span><span class="mi">32</span><span class="p">)</span>
+<p>A <a class="reference internal" href="#amaranth_soc.csr.bus.Multiplexer" title="amaranth_soc.csr.bus.Multiplexer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Multiplexer</span></code></a> can provide access to the registers of a peripheral through a CSR bus <a class="reference internal" href="#amaranth_soc.csr.bus.Interface" title="amaranth_soc.csr.bus.Interface"><code class="xref py py-class docutils literal notranslate"><span class="pre">Interface</span></code></a>. Registers must first be added to a <code class="xref py py-class docutils literal notranslate"><span class="pre">MemoryMap</span></code>, which is used to instantiate the multiplexer.</p>
+<p>The following example shows a very basic timer peripheral with an 8-bit CSR bus and two 24-bit registers, <code class="docutils literal notranslate"><span class="pre">Cnt</span></code> and <code class="docutils literal notranslate"><span class="pre">Rst</span></code>. The value of <code class="docutils literal notranslate"><span class="pre">Cnt</span></code> is incremented every clock cycle, and can be reset by a CSR bus write to <code class="docutils literal notranslate"><span class="pre">Rst</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">BasicTimer</span><span class="p">(</span><span class="n">wiring</span><span class="o">.</span><span class="n">Component</span><span class="p">):</span>
+    <span class="k">class</span> <span class="nc">Cnt</span><span class="p">(</span><span class="n">wiring</span><span class="o">.</span><span class="n">Component</span><span class="p">):</span>
+        <span class="n">element</span><span class="p">:</span> <span class="n">In</span><span class="p">(</span><span class="n">csr</span><span class="o">.</span><span class="n">Element</span><span class="o">.</span><span class="n">Signature</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">24</span><span class="p">,</span> <span class="n">access</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">))</span>
+        <span class="n">r_stb</span><span class="p">:</span>   <span class="n">Out</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">r_data</span><span class="p">:</span>  <span class="n">In</span><span class="p">(</span><span class="n">unsigned</span><span class="p">(</span><span class="mi">24</span><span class="p">))</span>
 
-<span class="n">memory_map</span> <span class="o">=</span> <span class="n">MemoryMap</span><span class="p">(</span><span class="n">addr_width</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">data_width</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">alignment</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-<span class="n">memory_map</span><span class="o">.</span><span class="n">add_resource</span><span class="p">(</span><span class="n">reg_foo</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">,))</span>
-<span class="n">memory_map</span><span class="o">.</span><span class="n">add_resource</span><span class="p">(</span><span class="n">reg_bar</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;bar&quot;</span><span class="p">,))</span>
+        <span class="k">def</span> <span class="nf">elaborate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">platform</span><span class="p">):</span>
+            <span class="n">m</span> <span class="o">=</span> <span class="n">Module</span><span class="p">()</span>
+            <span class="n">m</span><span class="o">.</span><span class="n">d</span><span class="o">.</span><span class="n">comb</span> <span class="o">+=</span> <span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">r_stb</span><span class="o">.</span><span class="n">eq</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">element</span><span class="o">.</span><span class="n">r_stb</span><span class="p">),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">element</span><span class="o">.</span><span class="n">r_data</span><span class="o">.</span><span class="n">eq</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">r_data</span><span class="p">),</span>
+            <span class="p">]</span>
+            <span class="k">return</span> <span class="n">m</span>
 
-<span class="n">csr_mux</span> <span class="o">=</span> <span class="n">csr</span><span class="o">.</span><span class="n">Multiplexer</span><span class="p">(</span><span class="n">memory_map</span><span class="p">)</span>
+    <span class="k">class</span> <span class="nc">Rst</span><span class="p">(</span><span class="n">wiring</span><span class="o">.</span><span class="n">Component</span><span class="p">):</span>
+        <span class="n">element</span><span class="p">:</span> <span class="n">In</span><span class="p">(</span><span class="n">csr</span><span class="o">.</span><span class="n">Element</span><span class="o">.</span><span class="n">Signature</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">24</span><span class="p">,</span> <span class="n">access</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">))</span>
+        <span class="n">w_stb</span><span class="p">:</span>   <span class="n">Out</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">w_data</span><span class="p">:</span>  <span class="n">Out</span><span class="p">(</span><span class="n">unsigned</span><span class="p">(</span><span class="mi">24</span><span class="p">))</span>
+
+        <span class="k">def</span> <span class="nf">elaborate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">platform</span><span class="p">):</span>
+            <span class="n">m</span> <span class="o">=</span> <span class="n">Module</span><span class="p">()</span>
+            <span class="n">m</span><span class="o">.</span><span class="n">d</span><span class="o">.</span><span class="n">comb</span> <span class="o">+=</span> <span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">w_stb</span><span class="o">.</span><span class="n">eq</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">element</span><span class="o">.</span><span class="n">w_stb</span><span class="p">),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">w_data</span><span class="o">.</span><span class="n">eq</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">element</span><span class="o">.</span><span class="n">w_data</span><span class="p">),</span>
+            <span class="p">]</span>
+            <span class="k">return</span> <span class="n">m</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;timer&quot;</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">({</span>
+            <span class="s2">&quot;csr_bus&quot;</span><span class="p">:</span> <span class="n">In</span><span class="p">(</span><span class="n">csr</span><span class="o">.</span><span class="n">Signature</span><span class="p">(</span><span class="n">addr_width</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">data_width</span><span class="o">=</span><span class="mi">8</span><span class="p">)),</span>
+        <span class="p">})</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reg_cnt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Cnt</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reg_rst</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Rst</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">csr_bus</span><span class="o">.</span><span class="n">memory_map</span> <span class="o">=</span> <span class="n">MemoryMap</span><span class="p">(</span><span class="n">addr_width</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">data_width</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">alignment</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                                            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">csr_bus</span><span class="o">.</span><span class="n">memory_map</span><span class="o">.</span><span class="n">add_resource</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_reg_cnt</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;cnt&quot;</span><span class="p">,))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">csr_bus</span><span class="o">.</span><span class="n">memory_map</span><span class="o">.</span><span class="n">add_resource</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_reg_rst</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;rst&quot;</span><span class="p">,))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_csr_mux</span> <span class="o">=</span> <span class="n">csr</span><span class="o">.</span><span class="n">Multiplexer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">csr_bus</span><span class="o">.</span><span class="n">memory_map</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">elaborate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">platform</span><span class="p">):</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">Module</span><span class="p">()</span>
+        <span class="n">m</span><span class="o">.</span><span class="n">submodules</span><span class="o">.</span><span class="n">reg_cnt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reg_cnt</span>
+        <span class="n">m</span><span class="o">.</span><span class="n">submodules</span><span class="o">.</span><span class="n">reg_rst</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reg_rst</span>
+        <span class="n">m</span><span class="o">.</span><span class="n">submodules</span><span class="o">.</span><span class="n">csr_mux</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_csr_mux</span>
+
+        <span class="n">connect</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">flipped</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">csr_bus</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_csr_mux</span><span class="o">.</span><span class="n">bus</span><span class="p">)</span>
+
+        <span class="n">count</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="n">unsigned</span><span class="p">(</span><span class="mi">24</span><span class="p">))</span>
+
+        <span class="n">m</span><span class="o">.</span><span class="n">d</span><span class="o">.</span><span class="n">comb</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reg_cnt</span><span class="o">.</span><span class="n">r_data</span><span class="o">.</span><span class="n">eq</span><span class="p">(</span><span class="n">count</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">m</span><span class="o">.</span><span class="n">If</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_reg_rst</span><span class="o">.</span><span class="n">w_stb</span><span class="p">):</span>
+            <span class="n">m</span><span class="o">.</span><span class="n">d</span><span class="o">.</span><span class="n">sync</span> <span class="o">+=</span> <span class="n">count</span><span class="o">.</span><span class="n">eq</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_reg_rst</span><span class="o">.</span><span class="n">w_data</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">m</span><span class="o">.</span><span class="n">Else</span><span class="p">():</span>
+            <span class="n">m</span><span class="o">.</span><span class="n">d</span><span class="o">.</span><span class="n">sync</span> <span class="o">+=</span> <span class="n">count</span><span class="o">.</span><span class="n">eq</span><span class="p">(</span><span class="n">count</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">m</span>
 </pre></div>
 </div>
-<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">res_info</span> <span class="ow">in</span> <span class="n">csr_mux</span><span class="o">.</span><span class="n">bus</span><span class="o">.</span><span class="n">memory_map</span><span class="o">.</span><span class="n">all_resources</span><span class="p">()):</span>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">timer</span> <span class="o">=</span> <span class="n">BasicTimer</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">res_info</span> <span class="ow">in</span> <span class="n">timer</span><span class="o">.</span><span class="n">csr_bus</span><span class="o">.</span><span class="n">memory_map</span><span class="o">.</span><span class="n">all_resources</span><span class="p">():</span>
 <span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">res_info</span><span class="p">)</span>
-<span class="go">ResourceInfo(path=((&#39;foo&#39;,),), start=0x0, end=0x4, width=8)</span>
-<span class="go">ResourceInfo(path=((&#39;bar&#39;,),), start=0x4, end=0x8, width=8)</span>
+<span class="go">ResourceInfo(path=((&#39;cnt&#39;,),), start=0x0, end=0x4, width=8)</span>
+<span class="go">ResourceInfo(path=((&#39;rst&#39;,),), start=0x4, end=0x8, width=8)</span>
 </pre></div>
 </div>
-<p>Registers mapped to a CSR bus are accessed atomically, regardless of their size. Each register is split into chunks according to the bus data width. Each chunk is assigned a consecutive address on the bus.</p>
-<p>When the first chunk of a register is read, the values of all chunks of the register are captured, and reads from subsequent chunks return the captured values. When any chunk except the last chunk of a register is written, the written value is captured; a write to the last chunk writes all captured values to the register.</p>
-<img src="_images/csr/bus/example_mux.svg" class="wavedrom wavedrom-signal" alt="{'signal': [{'name': 'clk', 'wave': '0P.......'}, ['csr_mux', {'name': 'bus.addr', 'wave': 'x====x..|', 'data': [0, 1, 2, 3]}, {'name': 'bus.r_stb', 'wave': '01...0..|'}, {'name': 'bus.r_data', 'wave': '0.3330..|', 'data': ['A', 'B', 'C']}, {'name': 'bus.w_stb', 'wave': '01...0..|'}, {'name': 'bus.w_data', 'wave': 'x4444x..|', 'data': ['E', 'F', 'G', 'H']}], {}, ['reg_foo', {'name': 'element.r_stb', 'wave': '010.....|'}, {'name': 'element.r_data', 'wave': '3.....4.|', 'data': ['CBA', 'GFE']}, {'name': 'element.w_stb', 'wave': '0....10.|'}, {'name': 'element.w_data', 'wave': 'x....4x.|', 'data': ['GFE']}]], 'config': {'skin': 'default'}}"><p>A <a class="reference internal" href="#amaranth_soc.csr.bus.Multiplexer" title="amaranth_soc.csr.bus.Multiplexer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Multiplexer</span></code></a> adds a latency of one clock cycle to read and write accesses.</p>
-<div class="admonition important">
-<p class="admonition-title">Important</p>
-<dl class="simple">
-<dt>To safely access registers over the bus interface of a <a class="reference internal" href="#amaranth_soc.csr.bus.Multiplexer" title="amaranth_soc.csr.bus.Multiplexer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Multiplexer</span></code></a>:</dt><dd><ul class="simple">
+<p>Registers are always accessed atomically, regardless of their size. Each register is split into chunks according to the CSR bus data width, and each chunk is assigned a consecutive address on the bus.</p>
+<p>In this example, the sizes of <code class="docutils literal notranslate"><span class="pre">Cnt</span></code> and <code class="docutils literal notranslate"><span class="pre">Rst</span></code> are extended from 24 to 32 bits, because they were added to <code class="docutils literal notranslate"><span class="pre">csr_bus.memory_map</span></code> with an <a class="reference internal" href="../memory.html#memory-alignment"><span class="std std-ref">alignment</span></a> of 32 bits.</p>
+<p>The following diagram shows a read transaction from the <code class="docutils literal notranslate"><span class="pre">Cnt</span></code> register:</p>
+<img src="_images/csr/bus/example_mux_read.svg" class="wavedrom wavedrom-signal" alt="{'head': {'tick': 0}, 'signal': [{'name': 'clk', 'wave': 'p......'}, {'node': '.AB...C'}, ['csr_bus', {'name': 'addr', 'wave': 'x====x.', 'data': [0, 1, 2, 3]}, {'name': 'r_stb', 'wave': '01...0.'}, {'name': 'r_data', 'wave': '0.45670', 'node': '..1234.', 'data': ['0x01', '0x00', '0xa5', '0x00']}], {}, ['csr_mux', {'name': 'r_shadow', 'wave': 'x.3...x', 'node': '..b....', 'data': ['0xa50001']}], {}, ['reg_cnt', {'name': 'r_stb', 'wave': '010....'}, {'name': 'r_data', 'wave': '=3=====', 'node': '.a.....', 'data': ['0xa50000', '0xa50001', '0xa50002', '0xa50003', '0xa50004', '0xa50005', '0xa50006']}]], 'edge': ['A+B t1', 'a-~&gt;b', 'B+C t2', 'b~&gt;1'], 'config': {'hscale': 2, 'skin': 'default'}}"><p>The <a class="reference internal" href="#amaranth_soc.csr.bus.Multiplexer" title="amaranth_soc.csr.bus.Multiplexer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Multiplexer</span></code></a> adds a delay of 1 clock cycle to CSR bus reads (represented by <em>t1</em>) between the time of assertion of <code class="docutils literal notranslate"><span class="pre">csr_bus.r_stb</span></code> and the time the first chunk is transmitted to <code class="docutils literal notranslate"><span class="pre">csr_bus.r_data</span></code>.</p>
+<p>A read transaction targeting <code class="docutils literal notranslate"><span class="pre">Cnt</span></code> requires 4 bus reads to complete and has a latency of 4 clock cycles (represented by <em>t2</em>).</p>
+<p>When the first chunk of <code class="docutils literal notranslate"><span class="pre">Cnt</span></code> is read, the value of all of its chunks (at point labelled <em>a</em>) is captured by a shadow register internal to the multiplexer (at point labelled <em>b</em>). Reads from any chunk return the captured values (at points labelled <em>1</em>, <em>2</em>, <em>3</em>, <em>4</em>).</p>
+<p>The following diagram shows a write transaction to the <code class="docutils literal notranslate"><span class="pre">Rst</span></code> register, which resets the value of the <code class="docutils literal notranslate"><span class="pre">Cnt</span></code> register as a side-effect:</p>
+<img src="_images/csr/bus/example_mux_write.svg" class="wavedrom wavedrom-signal" alt="{'head': {'tick': 0}, 'signal': [{'name': 'clk', 'wave': 'p......'}, {'node': '.A...BC'}, ['csr_bus', {'name': 'addr', 'wave': 'x====x.', 'data': [4, 5, 6, 7]}, {'name': 'w_stb', 'wave': '01...0.'}, {'name': 'w_data', 'wave': 'x4567x.', 'node': '.1234..', 'data': ['0x44', '0x55', '0x66', '0x00']}], {}, ['csr_mux', {'name': 'w_shadow', 'wave': 'x.===3x', 'node': '..a..b', 'data': ['0x000044', '0x005544', '0x665544', '0x665544']}], {}, ['reg_rst', {'name': 'w_stb', 'wave': '0....10'}, {'name': 'w_data', 'wave': 'x....3x', 'node': '.....c.', 'data': ['0x665544']}], {}, ['reg_cnt', {'name': 'r_data', 'wave': '======3', 'node': '......d', 'data': ['0xa50007', '0xa50008', '0xa50009', '0xa5000a', '0xa5000b', '0xa5000c', '0x665544']}], {}], 'edge': ['A+B t1', '1~-&gt;a', 'B+C t2', 'b~-&gt;c', 'c~-&gt;d'], 'config': {'hscale': 2, 'skin': 'default'}}"><p>A write transaction targeting <code class="docutils literal notranslate"><span class="pre">Rst</span></code> requires 4 bus writes to complete and has a latency of 4 clock cycles (represented by <em>t1</em>).</p>
+<p>When a chunk of <code class="docutils literal notranslate"><span class="pre">Rst</span></code> is written (at point labelled <em>1</em>), the written value is captured by a shadow register internal to the multiplexer (at point labelled <em>a</em>). A write to the last chunk (at point labelled <em>4</em>) causes all captured values to be written to the register (at point labelled <em>c</em>).</p>
+<p>The <a class="reference internal" href="#amaranth_soc.csr.bus.Multiplexer" title="amaranth_soc.csr.bus.Multiplexer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Multiplexer</span></code></a> adds a delay of 1 clock cycle to CSR bus writes (represented by <em>t2</em>) between the time of assertion of <code class="docutils literal notranslate"><span class="pre">csr_bus.w_stb</span></code> and the time of assertion of <code class="docutils literal notranslate"><span class="pre">reg_rst.w_stb</span></code>.</p>
+<p>As a side-effect of the transaction, the next value of <code class="docutils literal notranslate"><span class="pre">Cnt</span></code> becomes the value that was written to <code class="docutils literal notranslate"><span class="pre">Rst</span></code> (at point labelled <em>d</em>).</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>To safely access registers over the bus interface of a <a class="reference internal" href="#amaranth_soc.csr.bus.Multiplexer" title="amaranth_soc.csr.bus.Multiplexer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Multiplexer</span></code></a>, the following
+rules apply:</p>
+<blockquote>
+<div><ol class="arabic simple">
 <li><p>the bus initiator must have exclusive ownership over the address range of the multiplexer until the register transaction is either completed or aborted.</p></li>
 <li><p>the bus initiator must access a register in ascending order of addresses, but it may abort the transaction after any bus cycle.</p></li>
-</ul>
-</dd>
-</dl>
-</div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Because the CSR bus conserves logic and routing resources, it is common to e.g. bridge a CSR bus with a narrow <em>N</em>-bit datapath to a CPU with a wider <em>W</em>-bit datapath (<em>W&gt;N</em>) in cases where CSR access latency is less important than resource usage.</p>
-<p>In this case, two strategies are possible for connecting the CSR bus to the CPU:</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>The CPU could access the CSR bus directly (with no intervening logic other than simple translation of control signals). The register alignment should be set to 1 (i.e. <code class="docutils literal notranslate"><span class="pre">memory_map.alignment</span></code> should be 0), and each <em>R</em>-bit register would occupy <em>ceil(R/N)</em> addresses from the CPU perspective, requiring the same amount of memory instructions to access.</p></li>
-<li><p>The CPU could access the CSR bus through a width down-converter, which would issue <em>W/N</em> CSR accesses for each CPU access. The register alignment should be set to <em>W/N</em>, and each <em>R</em>-bit register would occupy <em>ceil(R/K)</em> addresses from the CPU perspective, requiring the same amount of memory instructions to access.</p></li>
-</ul>
+</ol>
 </div></blockquote>
-<p>If the register alignment is greater than 1, it affects which CSR bus write is considered a write to the last register chunk. For example, if a 24-bit register is accessed through an 8-bit CSR bus and a CPU with a 32-bit datapath, a write to this register requires 4 CSR bus writes to complete, and the last write is the one that actually writes the value to the register. This allows determining write latency solely from the amount of addresses occupied by the register in the CPU address space, and the CSR bus data width.</p>
 </div>
 </section>
 <section id="accessing-a-hierarchy-of-registers">
 <span id="csr-bus-decoder"></span><h3>Accessing a hierarchy of registers<a class="headerlink" href="#accessing-a-hierarchy-of-registers" title="Permalink to this heading"></a></h3>
 <p>A <a class="reference internal" href="#amaranth_soc.csr.bus.Decoder" title="amaranth_soc.csr.bus.Decoder"><code class="xref py py-class docutils literal notranslate"><span class="pre">Decoder</span></code></a> can provide access to group of <a class="reference internal" href="#amaranth_soc.csr.bus.Multiplexer" title="amaranth_soc.csr.bus.Multiplexer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Multiplexer</span></code></a>s and subordinate <a class="reference internal" href="#amaranth_soc.csr.bus.Decoder" title="amaranth_soc.csr.bus.Decoder"><code class="xref py py-class docutils literal notranslate"><span class="pre">Decoder</span></code></a>s, forming a hierarchical address space of CSR registers.</p>
-<p>In the following example, a <a class="reference internal" href="#amaranth_soc.csr.bus.Decoder" title="amaranth_soc.csr.bus.Decoder"><code class="xref py py-class docutils literal notranslate"><span class="pre">Decoder</span></code></a> provides access to the registers of two peripherals:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">reg_foo</span> <span class="o">=</span> <span class="n">MyRegister</span><span class="p">(</span><span class="mi">24</span><span class="p">)</span>
-<span class="n">reg_bar</span> <span class="o">=</span> <span class="n">MyRegister</span><span class="p">(</span><span class="mi">32</span><span class="p">)</span>
-
-<span class="n">uart_memory_map</span> <span class="o">=</span> <span class="n">MemoryMap</span><span class="p">(</span><span class="n">addr_width</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">data_width</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">alignment</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;uart&quot;</span><span class="p">)</span>
-<span class="n">uart_memory_map</span><span class="o">.</span><span class="n">add_resource</span><span class="p">(</span><span class="n">reg_foo</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">,))</span>
-<span class="n">uart_csr_mux</span> <span class="o">=</span> <span class="n">csr</span><span class="o">.</span><span class="n">Multiplexer</span><span class="p">(</span><span class="n">uart_memory_map</span><span class="p">)</span>
-
-<span class="n">gpio_memory_map</span> <span class="o">=</span> <span class="n">MemoryMap</span><span class="p">(</span><span class="n">addr_width</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">data_width</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">alignment</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;gpio&quot;</span><span class="p">)</span>
-<span class="n">gpio_memory_map</span><span class="o">.</span><span class="n">add_resource</span><span class="p">(</span><span class="n">reg_bar</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;bar&quot;</span><span class="p">,))</span>
-<span class="n">gpio_csr_mux</span> <span class="o">=</span> <span class="n">csr</span><span class="o">.</span><span class="n">Multiplexer</span><span class="p">(</span><span class="n">gpio_memory_map</span><span class="p">)</span>
+<p>In the following example, a CSR decoder provides access to the registers of two peripherals:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">timer0</span> <span class="o">=</span> <span class="n">BasicTimer</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;timer0&quot;</span><span class="p">)</span>
+<span class="n">timer1</span> <span class="o">=</span> <span class="n">BasicTimer</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;timer1&quot;</span><span class="p">)</span>
 
 <span class="n">csr_dec</span> <span class="o">=</span> <span class="n">csr</span><span class="o">.</span><span class="n">Decoder</span><span class="p">(</span><span class="n">addr_width</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">data_width</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
-<span class="n">csr_dec</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uart_csr_mux</span><span class="o">.</span><span class="n">bus</span><span class="p">,</span> <span class="n">addr</span><span class="o">=</span><span class="mh">0x0000</span><span class="p">)</span>
-<span class="n">csr_dec</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">gpio_csr_mux</span><span class="o">.</span><span class="n">bus</span><span class="p">,</span> <span class="n">addr</span><span class="o">=</span><span class="mh">0x1000</span><span class="p">)</span>
+<span class="n">csr_dec</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">timer0</span><span class="o">.</span><span class="n">csr_bus</span><span class="p">,</span> <span class="n">addr</span><span class="o">=</span><span class="mh">0x0000</span><span class="p">)</span>
+<span class="n">csr_dec</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">timer1</span><span class="o">.</span><span class="n">csr_bus</span><span class="p">,</span> <span class="n">addr</span><span class="o">=</span><span class="mh">0x1000</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">res_info</span> <span class="ow">in</span> <span class="n">csr_dec</span><span class="o">.</span><span class="n">bus</span><span class="o">.</span><span class="n">memory_map</span><span class="o">.</span><span class="n">all_resources</span><span class="p">()):</span>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">res_info</span> <span class="ow">in</span> <span class="n">csr_dec</span><span class="o">.</span><span class="n">bus</span><span class="o">.</span><span class="n">memory_map</span><span class="o">.</span><span class="n">all_resources</span><span class="p">():</span>
 <span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">res_info</span><span class="p">)</span>
-<span class="go">ResourceInfo(path=(&#39;uart&#39;, (&#39;foo&#39;,)), start=0x0, end=0x4, width=8)</span>
-<span class="go">ResourceInfo(path=(&#39;gpio&#39;, (&#39;bar&#39;,)), start=0x1000, end=0x1004, width=8)</span>
+<span class="go">ResourceInfo(path=(&#39;timer0&#39;, (&#39;cnt&#39;,)), start=0x0, end=0x4, width=8)</span>
+<span class="go">ResourceInfo(path=(&#39;timer0&#39;, (&#39;rst&#39;,)), start=0x4, end=0x8, width=8)</span>
+<span class="go">ResourceInfo(path=(&#39;timer1&#39;, (&#39;cnt&#39;,)), start=0x1000, end=0x1004, width=8)</span>
+<span class="go">ResourceInfo(path=(&#39;timer1&#39;, (&#39;rst&#39;,)), start=0x1004, end=0x1008, width=8)</span>
 </pre></div>
 </div>
-<p>Although there is no functional difference between adding a group of registers directly to a
-<a class="reference internal" href="#amaranth_soc.csr.bus.Multiplexer" title="amaranth_soc.csr.bus.Multiplexer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Multiplexer</span></code></a> and adding them to multiple <a class="reference internal" href="#amaranth_soc.csr.bus.Multiplexer" title="amaranth_soc.csr.bus.Multiplexer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Multiplexer</span></code></a>s that are aggregated with a <a class="reference internal" href="#amaranth_soc.csr.bus.Decoder" title="amaranth_soc.csr.bus.Decoder"><code class="xref py py-class docutils literal notranslate"><span class="pre">Decoder</span></code></a>, hierarchical CSR buses are useful for organizing a hierarchical design.</p>
+<p>Although there is no functional difference between adding a group of registers directly to a <a class="reference internal" href="#amaranth_soc.csr.bus.Multiplexer" title="amaranth_soc.csr.bus.Multiplexer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Multiplexer</span></code></a> and adding them to multiple <a class="reference internal" href="#amaranth_soc.csr.bus.Multiplexer" title="amaranth_soc.csr.bus.Multiplexer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Multiplexer</span></code></a>s that are aggregated with a <a class="reference internal" href="#amaranth_soc.csr.bus.Decoder" title="amaranth_soc.csr.bus.Decoder"><code class="xref py py-class docutils literal notranslate"><span class="pre">Decoder</span></code></a>, hierarchical CSR buses are useful for organizing a hierarchical design.</p>
 <p>If many peripherals are directly served by a single <a class="reference internal" href="#amaranth_soc.csr.bus.Multiplexer" title="amaranth_soc.csr.bus.Multiplexer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Multiplexer</span></code></a>, a very large amount of ports will connect the peripheral registers to the multiplexer, and the cost of decoding logic would not be attributed to specific peripherals. With a <a class="reference internal" href="#amaranth_soc.csr.bus.Decoder" title="amaranth_soc.csr.bus.Decoder"><code class="xref py py-class docutils literal notranslate"><span class="pre">Decoder</span></code></a>, only five signals per peripheral will be used, and the logic could be kept together with the peripheral.</p>
 </section>
 </section>
@@ -218,17 +261,20 @@ access mode, e.g. R/O fields can be a part of an R/W register.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="amaranth_soc.csr.bus.Element.Access.R">
 <span class="sig-name descname"><span class="pre">R</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'r'</span></em><a class="headerlink" href="#amaranth_soc.csr.bus.Element.Access.R" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Read-only mode.</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="amaranth_soc.csr.bus.Element.Access.W">
 <span class="sig-name descname"><span class="pre">W</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'w'</span></em><a class="headerlink" href="#amaranth_soc.csr.bus.Element.Access.W" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Write-only mode.</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="amaranth_soc.csr.bus.Element.Access.RW">
 <span class="sig-name descname"><span class="pre">RW</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'rw'</span></em><a class="headerlink" href="#amaranth_soc.csr.bus.Element.Access.RW" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Read/write mode.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="amaranth_soc.csr.bus.Element.Access.readable">
@@ -236,7 +282,7 @@ access mode, e.g. R/O fields can be a part of an R/W register.</p>
 <dd><p>Readable access mode.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if <cite>self</cite> is equal to <a class="reference internal" href="#amaranth_soc.csr.bus.Element.Access.R" title="amaranth_soc.csr.bus.Element.Access.R"><code class="xref py py-attr docutils literal notranslate"><span class="pre">R</span></code></a> or <a class="reference internal" href="#amaranth_soc.csr.bus.Element.Access.RW" title="amaranth_soc.csr.bus.Element.Access.RW"><code class="xref py py-attr docutils literal notranslate"><span class="pre">RW</span></code></a>.</p>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if equal to <a class="reference internal" href="#amaranth_soc.csr.bus.Element.Access.R" title="amaranth_soc.csr.bus.Element.Access.R"><code class="xref py py-attr docutils literal notranslate"><span class="pre">R</span></code></a> or <a class="reference internal" href="#amaranth_soc.csr.bus.Element.Access.RW" title="amaranth_soc.csr.bus.Element.Access.RW"><code class="xref py py-attr docutils literal notranslate"><span class="pre">RW</span></code></a>.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></p>
@@ -250,7 +296,7 @@ access mode, e.g. R/O fields can be a part of an R/W register.</p>
 <dd><p>Writable access mode.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if <cite>self</cite> is equal to <a class="reference internal" href="#amaranth_soc.csr.bus.Element.Access.W" title="amaranth_soc.csr.bus.Element.Access.W"><code class="xref py py-attr docutils literal notranslate"><span class="pre">W</span></code></a> or <a class="reference internal" href="#amaranth_soc.csr.bus.Element.Access.RW" title="amaranth_soc.csr.bus.Element.Access.RW"><code class="xref py py-attr docutils literal notranslate"><span class="pre">RW</span></code></a>.</p>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if equal to <a class="reference internal" href="#amaranth_soc.csr.bus.Element.Access.W" title="amaranth_soc.csr.bus.Element.Access.W"><code class="xref py py-attr docutils literal notranslate"><span class="pre">W</span></code></a> or <a class="reference internal" href="#amaranth_soc.csr.bus.Element.Access.RW" title="amaranth_soc.csr.bus.Element.Access.RW"><code class="xref py py-attr docutils literal notranslate"><span class="pre">RW</span></code></a>.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></p>
@@ -282,33 +328,11 @@ this strobe is asserted.</p></li>
 </ul>
 </dd>
 </dl>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="amaranth_soc.csr.bus.Element.Signature.width">
-<span class="sig-name descname"><span class="pre">width</span></span><a class="headerlink" href="#amaranth_soc.csr.bus.Element.Signature.width" title="Permalink to this definition"></a></dt>
-<dd><p>Width of the register.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="amaranth_soc.csr.bus.Element.Signature.access">
-<span class="sig-name descname"><span class="pre">access</span></span><a class="headerlink" href="#amaranth_soc.csr.bus.Element.Signature.access" title="Permalink to this definition"></a></dt>
-<dd><p>Register access mode.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#amaranth_soc.csr.bus.Element.Access" title="amaranth_soc.csr.bus.Element.Access"><code class="xref py py-class docutils literal notranslate"><span class="pre">Element.Access</span></code></a></p>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="py method">
 <dt class="sig sig-object py" id="amaranth_soc.csr.bus.Element.Signature.create">
 <span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">src_loc_at</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#amaranth_soc.csr.bus.Element.Signature.create" title="Permalink to this definition"></a></dt>
 <dd><p>Create a compatible interface.</p>
-<p>See <a class="reference external" href="https://amaranth-lang.org/docs/amaranth/latest/stdlib/wiring.html#amaranth.lib.wiring.Signature.create" title="(in Amaranth language &amp; toolchain v0.5.0.dev298)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">amaranth.lib.wiring.Signature.create()</span></code></a> for details.</p>
+<p>See <a class="reference external" href="https://amaranth-lang.org/docs/amaranth/latest/stdlib/wiring.html#amaranth.lib.wiring.Signature.create" title="(in Amaranth language &amp; toolchain v0.5.0.dev304)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">amaranth.lib.wiring.Signature.create()</span></code></a> for details.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#amaranth_soc.csr.bus.Element" title="amaranth_soc.csr.bus.Element"><code class="xref py py-class docutils literal notranslate"><span class="pre">Element</span></code></a>.</p>
@@ -337,37 +361,15 @@ always succeed and complete in one cycle.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>width</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) – Width of the register.</p></li>
 <li><p><strong>access</strong> (<a class="reference internal" href="#amaranth_soc.csr.bus.Element.Access" title="amaranth_soc.csr.bus.Element.Access"><code class="xref py py-class docutils literal notranslate"><span class="pre">Element.Access</span></code></a>) – Register access mode.</p></li>
-<li><p><strong>path</strong> (iterable of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – Path to this interface. Optional. See <a class="reference external" href="https://amaranth-lang.org/docs/amaranth/latest/stdlib/wiring.html#amaranth.lib.wiring.PureInterface" title="(in Amaranth language &amp; toolchain v0.5.0.dev298)"><code class="xref py py-class docutils literal notranslate"><span class="pre">amaranth.lib.wiring.PureInterface</span></code></a>.</p></li>
+<li><p><strong>path</strong> (iterable of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – Path to this interface. Optional. See <a class="reference external" href="https://amaranth-lang.org/docs/amaranth/latest/stdlib/wiring.html#amaranth.lib.wiring.PureInterface" title="(in Amaranth language &amp; toolchain v0.5.0.dev304)"><code class="xref py py-class docutils literal notranslate"><span class="pre">amaranth.lib.wiring.PureInterface</span></code></a>.</p></li>
 </ul>
 </dd>
 </dl>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="amaranth_soc.csr.bus.Element.width">
-<span class="sig-name descname"><span class="pre">width</span></span><a class="headerlink" href="#amaranth_soc.csr.bus.Element.width" title="Permalink to this definition"></a></dt>
-<dd><p>Width of the register.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="amaranth_soc.csr.bus.Element.access">
-<span class="sig-name descname"><span class="pre">access</span></span><a class="headerlink" href="#amaranth_soc.csr.bus.Element.access" title="Permalink to this definition"></a></dt>
-<dd><p>Register access mode.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#amaranth_soc.csr.bus.Element.Access" title="amaranth_soc.csr.bus.Element.Access"><code class="xref py py-class docutils literal notranslate"><span class="pre">Element.Access</span></code></a></p>
-</dd>
-</dl>
-</dd></dl>
-
 </dd></dl>
 
 </section>
 <section id="bus-interface">
-<h2>Bus interface<a class="headerlink" href="#bus-interface" title="Permalink to this heading"></a></h2>
+<span id="csr-bus-interface"></span><h2>Bus interface<a class="headerlink" href="#bus-interface" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="amaranth_soc.csr.bus.Signature">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">amaranth_soc.csr.bus.</span></span><span class="sig-name descname"><span class="pre">Signature</span></span><a class="headerlink" href="#amaranth_soc.csr.bus.Signature" title="Permalink to this definition"></a></dt>
@@ -400,7 +402,7 @@ nothing.</p></li>
 <dt class="sig sig-object py" id="amaranth_soc.csr.bus.Signature.create">
 <span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">src_loc_at</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#amaranth_soc.csr.bus.Signature.create" title="Permalink to this definition"></a></dt>
 <dd><p>Create a compatible interface.</p>
-<p>See <a class="reference external" href="https://amaranth-lang.org/docs/amaranth/latest/stdlib/wiring.html#amaranth.lib.wiring.Signature.create" title="(in Amaranth language &amp; toolchain v0.5.0.dev298)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">amaranth.lib.wiring.Signature.create()</span></code></a> for details.</p>
+<p>See <a class="reference external" href="https://amaranth-lang.org/docs/amaranth/latest/stdlib/wiring.html#amaranth.lib.wiring.Signature.create" title="(in Amaranth language &amp; toolchain v0.5.0.dev304)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">amaranth.lib.wiring.Signature.create()</span></code></a> for details.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#amaranth_soc.csr.bus.Interface" title="amaranth_soc.csr.bus.Interface"><code class="xref py py-class docutils literal notranslate"><span class="pre">Interface</span></code></a></p>
@@ -427,7 +429,7 @@ nothing.</p></li>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>addr_width</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) – Address width. See <a class="reference internal" href="#amaranth_soc.csr.bus.Signature" title="amaranth_soc.csr.bus.Signature"><code class="xref py py-class docutils literal notranslate"><span class="pre">Signature</span></code></a>.</p></li>
 <li><p><strong>data_width</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) – Data width. See <a class="reference internal" href="#amaranth_soc.csr.bus.Signature" title="amaranth_soc.csr.bus.Signature"><code class="xref py py-class docutils literal notranslate"><span class="pre">Signature</span></code></a>.</p></li>
-<li><p><strong>path</strong> (iterable of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – Path to this CSR interface. Optional. See <a class="reference external" href="https://amaranth-lang.org/docs/amaranth/latest/stdlib/wiring.html#amaranth.lib.wiring.PureInterface" title="(in Amaranth language &amp; toolchain v0.5.0.dev298)"><code class="xref py py-class docutils literal notranslate"><span class="pre">amaranth.lib.wiring.PureInterface</span></code></a>.</p></li>
+<li><p><strong>path</strong> (iterable of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – Path to this CSR interface. Optional. See <a class="reference external" href="https://amaranth-lang.org/docs/amaranth/latest/stdlib/wiring.html#amaranth.lib.wiring.PureInterface" title="(in Amaranth language &amp; toolchain v0.5.0.dev304)"><code class="xref py py-class docutils literal notranslate"><span class="pre">amaranth.lib.wiring.PureInterface</span></code></a>.</p></li>
 </ul>
 </dd>
 </dl>
@@ -456,16 +458,33 @@ nothing.</p></li>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">amaranth_soc.csr.bus.</span></span><span class="sig-name descname"><span class="pre">Multiplexer</span></span><a class="headerlink" href="#amaranth_soc.csr.bus.Multiplexer" title="Permalink to this definition"></a></dt>
 <dd><p>CSR register multiplexer.</p>
 <p>An address-based multiplexer for CSR registers implementing atomic updates.</p>
-<p>This implementation assumes the following from the CSR bus:</p>
+<p>Writes are registered, and are performed 1 cycle after <code class="docutils literal notranslate"><span class="pre">w_stb</span></code> is asserted.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Because the CSR bus conserves logic and routing resources, it is common to e.g. bridge a CSR
+bus with a narrow <em>N</em>-bit datapath to a CPU with a wider <em>W</em>-bit datapath (<em>W&gt;N</em>) in cases
+where CSR access latency is less important than resource usage.</p>
+<p>In this case, two strategies are possible for connecting the CSR bus to the CPU:</p>
 <blockquote>
 <div><ul class="simple">
-<li><p>an initiator must have exclusive ownership over the multiplexer for the full duration of
-a register transaction;</p></li>
-<li><p>an initiator must access a register in ascending order of addresses, but it may abort a
-transaction after any bus cycle.</p></li>
+<li><p>The CPU could access the CSR bus directly (with no intervening logic other than simple
+translation of control signals). The register alignment should be set to 1 (i.e.
+<code class="docutils literal notranslate"><span class="pre">memory_map.alignment</span></code> should be 0), and each <em>R</em>-bit register would occupy
+<em>ceil(R/N)</em> addresses from the CPU perspective, requiring the same amount of memory
+instructions to access.</p></li>
+<li><p>The CPU could access the CSR bus through a width down-converter, which would issue
+<em>W/N</em> CSR accesses for each CPU access. The register alignment should be set to <em>W/N</em>,
+and each <em>R</em>-bit register would occupy <em>ceil(R/K)</em> addresses from the CPU perspective,
+requiring the same amount of memory instructions to access.</p></li>
 </ul>
 </div></blockquote>
-<p>Writes are registered, and are performed 1 cycle after <code class="docutils literal notranslate"><span class="pre">w_stb</span></code> is asserted.</p>
+<p>If the register alignment is greater than 1, it affects which CSR bus write is considered a
+write to the last register chunk. For example, if a 24-bit register is accessed through an
+8-bit CSR bus and a CPU with a 32-bit datapath, a write to this register requires 4 CSR bus
+writes to complete, and the last write is the one that actually writes the value to the
+register. This allows determining write latency solely from the amount of addresses occupied
+by the register in the CPU address space, and the CSR bus data width.</p>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
