@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CSR bus &mdash; System on Chip toolkit for Amaranth HDL 0.1a1.dev19 documentation</title>
+  <title>CSR bus &mdash; System on Chip toolkit for Amaranth HDL 0.1a1.dev27 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
@@ -14,7 +14,7 @@
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=60dd6e4a"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=81ef395d"></script>
         <script src="../_static/doctools.js?v=888ff710"></script>
         <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../_static/js/theme.js"></script>
@@ -37,7 +37,7 @@
               <img src="../_static/logo.png" class="logo" alt="Logo"/>
           </a>
               <div class="version">
-                0.1a1.dev19+g286e3fc
+                0.1a1.dev27+gcfdd0ab
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -56,13 +56,14 @@
 <li class="toctree-l2 current"><a class="reference internal" href="../csr.html">CSR</a><ul class="current">
 <li class="toctree-l3 current"><a class="current reference internal" href="#">CSR bus</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#introduction">Introduction</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#register-interface">Register interface</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#bus-interface">Bus interface</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#examples">Examples</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#register-interfaces">Register interfaces</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#bus-interfaces">Bus interfaces</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#bus-primitives">Bus primitives</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="reg.html">CSR registers</a></li>
-<li class="toctree-l3"><a class="reference internal" href="action.html">CSR field actions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="action.html">CSR fields</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../gpio.html">GPIO</a></li>
@@ -101,10 +102,18 @@
 <p>The <a class="reference internal" href="#module-amaranth_soc.csr.bus" title="amaranth_soc.csr.bus"><code class="xref py py-mod docutils literal notranslate"><span class="pre">amaranth_soc.csr.bus</span></code></a> module contains primitives to implement and access the registers of peripherals through a bus interface.</p>
 <section id="introduction">
 <span id="csr-bus-introduction"></span><h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this heading"></a></h2>
-<p>The CSR bus API provides unopinionated primitives for defining and connecting the <em>Control and Status Registers</em> of SoC peripherals, with an emphasis on safety and resource efficiency. It is composed of low-level <a class="reference internal" href="#csr-bus-element"><span class="std std-ref">register interfaces</span></a>, <a class="reference internal" href="#csr-bus-multiplexer"><span class="std std-ref">register multiplexers</span></a> that provide access to the registers of a peripheral, and <a class="reference internal" href="#csr-bus-decoder"><span class="std std-ref">bus decoders</span></a> that provide access to the registers of multiple peripherals.</p>
+<section id="overview">
+<h3>Overview<a class="headerlink" href="#overview" title="Permalink to this heading"></a></h3>
+<p>The CSR bus API provides unopinionated primitives for defining and connecting the <em>Control and Status Registers</em> of SoC peripherals, with an emphasis on safety and resource efficiency. It is composed of low-level <a class="reference internal" href="#csr-bus-element"><span class="std std-ref">register interfaces</span></a>, <a class="reference internal" href="#csr-bus-multiplexer"><span class="std std-ref">multiplexers</span></a> that provide access to the registers of a peripheral, and <a class="reference internal" href="#csr-bus-decoder"><span class="std std-ref">bus decoders</span></a> that provide access to subordinate bus interfaces.</p>
+<p>This diagram shows a CSR bus decoder being used to provide access to the registers of two peripherals:</p>
+<img alt="../_images/csr-bus.png" src="../_images/csr-bus.png" />
+</section>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading"></a></h2>
 <section id="defining-registers">
 <span id="csr-bus-element"></span><h3>Defining registers<a class="headerlink" href="#defining-registers" title="Permalink to this heading"></a></h3>
-<p>A CSR register is a <a class="reference external" href="https://amaranth-lang.org/docs/amaranth/latest/stdlib/wiring.html#amaranth.lib.wiring.Component" title="(in Amaranth language &amp; toolchain v0.5.0.dev304)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></a> with an <a class="reference internal" href="#amaranth_soc.csr.bus.Element" title="amaranth_soc.csr.bus.Element"><code class="xref py py-class docutils literal notranslate"><span class="pre">Element</span></code></a> member in its interface, oriented as input and named <code class="docutils literal notranslate"><span class="pre">&quot;element&quot;</span></code>.</p>
+<p>A CSR register is a <a class="reference external" href="https://amaranth-lang.org/docs/amaranth/latest/stdlib/wiring.html#amaranth.lib.wiring.Component" title="(in Amaranth language &amp; toolchain v0.6.0.dev51)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></a> with an <a class="reference internal" href="#amaranth_soc.csr.bus.Element" title="amaranth_soc.csr.bus.Element"><code class="xref py py-class docutils literal notranslate"><span class="pre">Element</span></code></a> member in its interface, oriented as input and named <code class="docutils literal notranslate"><span class="pre">&quot;element&quot;</span></code>.</p>
 <p>For example, this component is a read/write register with a configurable width:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyRegister</span><span class="p">(</span><span class="n">wiring</span><span class="o">.</span><span class="n">Component</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">width</span><span class="p">):</span>
@@ -161,7 +170,7 @@
             <span class="p">]</span>
             <span class="k">return</span> <span class="n">m</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;timer&quot;</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">({</span>
             <span class="s2">&quot;csr_bus&quot;</span><span class="p">:</span> <span class="n">In</span><span class="p">(</span><span class="n">csr</span><span class="o">.</span><span class="n">Signature</span><span class="p">(</span><span class="n">addr_width</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">data_width</span><span class="o">=</span><span class="mi">8</span><span class="p">)),</span>
         <span class="p">})</span>
@@ -169,8 +178,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_reg_cnt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Cnt</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_reg_rst</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Rst</span><span class="p">()</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">csr_bus</span><span class="o">.</span><span class="n">memory_map</span> <span class="o">=</span> <span class="n">MemoryMap</span><span class="p">(</span><span class="n">addr_width</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">data_width</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">alignment</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-                                            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">csr_bus</span><span class="o">.</span><span class="n">memory_map</span> <span class="o">=</span> <span class="n">MemoryMap</span><span class="p">(</span><span class="n">addr_width</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">data_width</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">alignment</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">csr_bus</span><span class="o">.</span><span class="n">memory_map</span><span class="o">.</span><span class="n">add_resource</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_reg_cnt</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;cnt&quot;</span><span class="p">,))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">csr_bus</span><span class="o">.</span><span class="n">memory_map</span><span class="o">.</span><span class="n">add_resource</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_reg_rst</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;rst&quot;</span><span class="p">,))</span>
 
@@ -199,8 +207,8 @@
 <div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">timer</span> <span class="o">=</span> <span class="n">BasicTimer</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">res_info</span> <span class="ow">in</span> <span class="n">timer</span><span class="o">.</span><span class="n">csr_bus</span><span class="o">.</span><span class="n">memory_map</span><span class="o">.</span><span class="n">all_resources</span><span class="p">():</span>
 <span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">res_info</span><span class="p">)</span>
-<span class="go">ResourceInfo(path=((&#39;cnt&#39;,),), start=0x0, end=0x4, width=8)</span>
-<span class="go">ResourceInfo(path=((&#39;rst&#39;,),), start=0x4, end=0x8, width=8)</span>
+<span class="go">ResourceInfo(path=(Name(&#39;cnt&#39;),), start=0x0, end=0x4, width=8)</span>
+<span class="go">ResourceInfo(path=(Name(&#39;rst&#39;),), start=0x4, end=0x8, width=8)</span>
 </pre></div>
 </div>
 <p>Registers are always accessed atomically, regardless of their size. Each register is split into chunks according to the CSR bus data width, and each chunk is assigned a consecutive address on the bus.</p>
@@ -230,28 +238,28 @@ rules apply:</p>
 <span id="csr-bus-decoder"></span><h3>Accessing a hierarchy of registers<a class="headerlink" href="#accessing-a-hierarchy-of-registers" title="Permalink to this heading"></a></h3>
 <p>A <a class="reference internal" href="#amaranth_soc.csr.bus.Decoder" title="amaranth_soc.csr.bus.Decoder"><code class="xref py py-class docutils literal notranslate"><span class="pre">Decoder</span></code></a> can provide access to group of <a class="reference internal" href="#amaranth_soc.csr.bus.Multiplexer" title="amaranth_soc.csr.bus.Multiplexer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Multiplexer</span></code></a>s and subordinate <a class="reference internal" href="#amaranth_soc.csr.bus.Decoder" title="amaranth_soc.csr.bus.Decoder"><code class="xref py py-class docutils literal notranslate"><span class="pre">Decoder</span></code></a>s, forming a hierarchical address space of CSR registers.</p>
 <p>In the following example, a CSR decoder provides access to the registers of two peripherals:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">timer0</span> <span class="o">=</span> <span class="n">BasicTimer</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;timer0&quot;</span><span class="p">)</span>
-<span class="n">timer1</span> <span class="o">=</span> <span class="n">BasicTimer</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;timer1&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">timer0</span> <span class="o">=</span> <span class="n">BasicTimer</span><span class="p">()</span>
+<span class="n">timer1</span> <span class="o">=</span> <span class="n">BasicTimer</span><span class="p">()</span>
 
 <span class="n">csr_dec</span> <span class="o">=</span> <span class="n">csr</span><span class="o">.</span><span class="n">Decoder</span><span class="p">(</span><span class="n">addr_width</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">data_width</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
-<span class="n">csr_dec</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">timer0</span><span class="o">.</span><span class="n">csr_bus</span><span class="p">,</span> <span class="n">addr</span><span class="o">=</span><span class="mh">0x0000</span><span class="p">)</span>
-<span class="n">csr_dec</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">timer1</span><span class="o">.</span><span class="n">csr_bus</span><span class="p">,</span> <span class="n">addr</span><span class="o">=</span><span class="mh">0x1000</span><span class="p">)</span>
+<span class="n">csr_dec</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">timer0</span><span class="o">.</span><span class="n">csr_bus</span><span class="p">,</span> <span class="n">addr</span><span class="o">=</span><span class="mh">0x0000</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;timer0&quot;</span><span class="p">)</span>
+<span class="n">csr_dec</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">timer1</span><span class="o">.</span><span class="n">csr_bus</span><span class="p">,</span> <span class="n">addr</span><span class="o">=</span><span class="mh">0x1000</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;timer1&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">res_info</span> <span class="ow">in</span> <span class="n">csr_dec</span><span class="o">.</span><span class="n">bus</span><span class="o">.</span><span class="n">memory_map</span><span class="o">.</span><span class="n">all_resources</span><span class="p">():</span>
 <span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">res_info</span><span class="p">)</span>
-<span class="go">ResourceInfo(path=(&#39;timer0&#39;, (&#39;cnt&#39;,)), start=0x0, end=0x4, width=8)</span>
-<span class="go">ResourceInfo(path=(&#39;timer0&#39;, (&#39;rst&#39;,)), start=0x4, end=0x8, width=8)</span>
-<span class="go">ResourceInfo(path=(&#39;timer1&#39;, (&#39;cnt&#39;,)), start=0x1000, end=0x1004, width=8)</span>
-<span class="go">ResourceInfo(path=(&#39;timer1&#39;, (&#39;rst&#39;,)), start=0x1004, end=0x1008, width=8)</span>
+<span class="go">ResourceInfo(path=(Name(&#39;timer0&#39;), Name(&#39;cnt&#39;)), start=0x0, end=0x4, width=8)</span>
+<span class="go">ResourceInfo(path=(Name(&#39;timer0&#39;), Name(&#39;rst&#39;)), start=0x4, end=0x8, width=8)</span>
+<span class="go">ResourceInfo(path=(Name(&#39;timer1&#39;), Name(&#39;cnt&#39;)), start=0x1000, end=0x1004, width=8)</span>
+<span class="go">ResourceInfo(path=(Name(&#39;timer1&#39;), Name(&#39;rst&#39;)), start=0x1004, end=0x1008, width=8)</span>
 </pre></div>
 </div>
 <p>Although there is no functional difference between adding a group of registers directly to a <a class="reference internal" href="#amaranth_soc.csr.bus.Multiplexer" title="amaranth_soc.csr.bus.Multiplexer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Multiplexer</span></code></a> and adding them to multiple <a class="reference internal" href="#amaranth_soc.csr.bus.Multiplexer" title="amaranth_soc.csr.bus.Multiplexer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Multiplexer</span></code></a>s that are aggregated with a <a class="reference internal" href="#amaranth_soc.csr.bus.Decoder" title="amaranth_soc.csr.bus.Decoder"><code class="xref py py-class docutils literal notranslate"><span class="pre">Decoder</span></code></a>, hierarchical CSR buses are useful for organizing a hierarchical design.</p>
 <p>If many peripherals are directly served by a single <a class="reference internal" href="#amaranth_soc.csr.bus.Multiplexer" title="amaranth_soc.csr.bus.Multiplexer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Multiplexer</span></code></a>, a very large amount of ports will connect the peripheral registers to the multiplexer, and the cost of decoding logic would not be attributed to specific peripherals. With a <a class="reference internal" href="#amaranth_soc.csr.bus.Decoder" title="amaranth_soc.csr.bus.Decoder"><code class="xref py py-class docutils literal notranslate"><span class="pre">Decoder</span></code></a>, only five signals per peripheral will be used, and the logic could be kept together with the peripheral.</p>
 </section>
 </section>
-<section id="register-interface">
-<h2>Register interface<a class="headerlink" href="#register-interface" title="Permalink to this heading"></a></h2>
+<section id="register-interfaces">
+<h2>Register interfaces<a class="headerlink" href="#register-interfaces" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="amaranth_soc.csr.bus.Element.Access">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Element.</span></span><span class="sig-name descname"><span class="pre">Access</span></span><a class="headerlink" href="#amaranth_soc.csr.bus.Element.Access" title="Permalink to this definition"></a></dt>
@@ -332,7 +340,7 @@ this strobe is asserted.</p></li>
 <dt class="sig sig-object py" id="amaranth_soc.csr.bus.Element.Signature.create">
 <span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">src_loc_at</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#amaranth_soc.csr.bus.Element.Signature.create" title="Permalink to this definition"></a></dt>
 <dd><p>Create a compatible interface.</p>
-<p>See <a class="reference external" href="https://amaranth-lang.org/docs/amaranth/latest/stdlib/wiring.html#amaranth.lib.wiring.Signature.create" title="(in Amaranth language &amp; toolchain v0.5.0.dev304)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">amaranth.lib.wiring.Signature.create()</span></code></a> for details.</p>
+<p>See <a class="reference external" href="https://amaranth-lang.org/docs/amaranth/latest/stdlib/wiring.html#amaranth.lib.wiring.Signature.create" title="(in Amaranth language &amp; toolchain v0.6.0.dev51)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">amaranth.lib.wiring.Signature.create()</span></code></a> for details.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#amaranth_soc.csr.bus.Element" title="amaranth_soc.csr.bus.Element"><code class="xref py py-class docutils literal notranslate"><span class="pre">Element</span></code></a>.</p>
@@ -361,15 +369,15 @@ always succeed and complete in one cycle.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>width</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) – Width of the register.</p></li>
 <li><p><strong>access</strong> (<a class="reference internal" href="#amaranth_soc.csr.bus.Element.Access" title="amaranth_soc.csr.bus.Element.Access"><code class="xref py py-class docutils literal notranslate"><span class="pre">Element.Access</span></code></a>) – Register access mode.</p></li>
-<li><p><strong>path</strong> (iterable of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – Path to this interface. Optional. See <a class="reference external" href="https://amaranth-lang.org/docs/amaranth/latest/stdlib/wiring.html#amaranth.lib.wiring.PureInterface" title="(in Amaranth language &amp; toolchain v0.5.0.dev304)"><code class="xref py py-class docutils literal notranslate"><span class="pre">amaranth.lib.wiring.PureInterface</span></code></a>.</p></li>
+<li><p><strong>path</strong> (iterable of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – Path to this interface. Optional. See <a class="reference external" href="https://amaranth-lang.org/docs/amaranth/latest/stdlib/wiring.html#amaranth.lib.wiring.PureInterface" title="(in Amaranth language &amp; toolchain v0.6.0.dev51)"><code class="xref py py-class docutils literal notranslate"><span class="pre">amaranth.lib.wiring.PureInterface</span></code></a>.</p></li>
 </ul>
 </dd>
 </dl>
 </dd></dl>
 
 </section>
-<section id="bus-interface">
-<span id="csr-bus-interface"></span><h2>Bus interface<a class="headerlink" href="#bus-interface" title="Permalink to this heading"></a></h2>
+<section id="bus-interfaces">
+<span id="csr-bus-interface"></span><h2>Bus interfaces<a class="headerlink" href="#bus-interfaces" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="amaranth_soc.csr.bus.Signature">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">amaranth_soc.csr.bus.</span></span><span class="sig-name descname"><span class="pre">Signature</span></span><a class="headerlink" href="#amaranth_soc.csr.bus.Signature" title="Permalink to this definition"></a></dt>
@@ -402,7 +410,7 @@ nothing.</p></li>
 <dt class="sig sig-object py" id="amaranth_soc.csr.bus.Signature.create">
 <span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">src_loc_at</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#amaranth_soc.csr.bus.Signature.create" title="Permalink to this definition"></a></dt>
 <dd><p>Create a compatible interface.</p>
-<p>See <a class="reference external" href="https://amaranth-lang.org/docs/amaranth/latest/stdlib/wiring.html#amaranth.lib.wiring.Signature.create" title="(in Amaranth language &amp; toolchain v0.5.0.dev304)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">amaranth.lib.wiring.Signature.create()</span></code></a> for details.</p>
+<p>See <a class="reference external" href="https://amaranth-lang.org/docs/amaranth/latest/stdlib/wiring.html#amaranth.lib.wiring.Signature.create" title="(in Amaranth language &amp; toolchain v0.6.0.dev51)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">amaranth.lib.wiring.Signature.create()</span></code></a> for details.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#amaranth_soc.csr.bus.Interface" title="amaranth_soc.csr.bus.Interface"><code class="xref py py-class docutils literal notranslate"><span class="pre">Interface</span></code></a></p>
@@ -429,7 +437,7 @@ nothing.</p></li>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>addr_width</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) – Address width. See <a class="reference internal" href="#amaranth_soc.csr.bus.Signature" title="amaranth_soc.csr.bus.Signature"><code class="xref py py-class docutils literal notranslate"><span class="pre">Signature</span></code></a>.</p></li>
 <li><p><strong>data_width</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) – Data width. See <a class="reference internal" href="#amaranth_soc.csr.bus.Signature" title="amaranth_soc.csr.bus.Signature"><code class="xref py py-class docutils literal notranslate"><span class="pre">Signature</span></code></a>.</p></li>
-<li><p><strong>path</strong> (iterable of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – Path to this CSR interface. Optional. See <a class="reference external" href="https://amaranth-lang.org/docs/amaranth/latest/stdlib/wiring.html#amaranth.lib.wiring.PureInterface" title="(in Amaranth language &amp; toolchain v0.5.0.dev304)"><code class="xref py py-class docutils literal notranslate"><span class="pre">amaranth.lib.wiring.PureInterface</span></code></a>.</p></li>
+<li><p><strong>path</strong> (iterable of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – Path to this CSR interface. Optional. See <a class="reference external" href="https://amaranth-lang.org/docs/amaranth/latest/stdlib/wiring.html#amaranth.lib.wiring.PureInterface" title="(in Amaranth language &amp; toolchain v0.6.0.dev51)"><code class="xref py py-class docutils literal notranslate"><span class="pre">amaranth.lib.wiring.PureInterface</span></code></a>.</p></li>
 </ul>
 </dd>
 </dl>
@@ -510,7 +518,6 @@ Optional. If <code class="docutils literal notranslate"><span class="pre">None</
 <li><p><strong>addr_width</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) – Address width. See <a class="reference internal" href="#amaranth_soc.csr.bus.Interface" title="amaranth_soc.csr.bus.Interface"><code class="xref py py-class docutils literal notranslate"><span class="pre">Interface</span></code></a>.</p></li>
 <li><p><strong>data_width</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) – Data width. See <a class="reference internal" href="#amaranth_soc.csr.bus.Interface" title="amaranth_soc.csr.bus.Interface"><code class="xref py py-class docutils literal notranslate"><span class="pre">Interface</span></code></a>.</p></li>
 <li><p><strong>alignment</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>, power-of-2 exponent) – Window alignment. See <a class="reference internal" href="../memory.html#amaranth_soc.memory.MemoryMap" title="amaranth_soc.memory.MemoryMap"><code class="xref py py-class docutils literal notranslate"><span class="pre">MemoryMap</span></code></a>.</p></li>
-<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – Window name. Optional. See <a class="reference internal" href="../memory.html#amaranth_soc.memory.MemoryMap" title="amaranth_soc.memory.MemoryMap"><code class="xref py py-class docutils literal notranslate"><span class="pre">MemoryMap</span></code></a>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Members<span class="colon">:</span></dt>
@@ -534,7 +541,7 @@ Optional. If <code class="docutils literal notranslate"><span class="pre">None</
 
 <dl class="py method">
 <dt class="sig sig-object py" id="amaranth_soc.csr.bus.Decoder.add">
-<span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sub_bus</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">addr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#amaranth_soc.csr.bus.Decoder.add" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sub_bus</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">addr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#amaranth_soc.csr.bus.Decoder.add" title="Permalink to this definition"></a></dt>
 <dd><p>Add a window to a subordinate bus.</p>
 <p>See <a class="reference internal" href="../memory.html#amaranth_soc.memory.MemoryMap.add_window" title="amaranth_soc.memory.MemoryMap.add_window"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_window()</span></code></a> for details.</p>
 <dl class="field-list simple">

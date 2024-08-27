@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CSR &mdash; System on Chip toolkit for Amaranth HDL 0.1a1.dev19 documentation</title>
+  <title>CSR &mdash; System on Chip toolkit for Amaranth HDL 0.1a1.dev27 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/custom.css" type="text/css" />
@@ -14,7 +14,7 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=60dd6e4a"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=81ef395d"></script>
         <script src="_static/doctools.js?v=888ff710"></script>
         <script src="_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="_static/js/theme.js"></script>
@@ -37,7 +37,7 @@
               <img src="_static/logo.png" class="logo" alt="Logo"/>
           </a>
               <div class="version">
-                0.1a1.dev19+g286e3fc
+                0.1a1.dev27+gcfdd0ab
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -56,7 +56,7 @@
 <li class="toctree-l2 current"><a class="current reference internal" href="#">CSR</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="csr/bus.html">CSR bus</a></li>
 <li class="toctree-l3"><a class="reference internal" href="csr/reg.html">CSR registers</a></li>
-<li class="toctree-l3"><a class="reference internal" href="csr/action.html">CSR field actions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="csr/action.html">CSR fields</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="gpio.html">GPIO</a></li>
@@ -91,42 +91,28 @@
              
   <section id="csr">
 <h1>CSR<a class="headerlink" href="#csr" title="Permalink to this heading"></a></h1>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>This manual is a work in progress and is seriously incomplete!</p>
-</div>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="csr/bus.html">CSR bus</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="csr/bus.html#introduction">Introduction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="csr/bus.html#register-interface">Register interface</a></li>
-<li class="toctree-l2"><a class="reference internal" href="csr/bus.html#bus-interface">Bus interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="csr/bus.html#examples">Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="csr/bus.html#register-interfaces">Register interfaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="csr/bus.html#bus-interfaces">Bus interfaces</a></li>
 <li class="toctree-l2"><a class="reference internal" href="csr/bus.html#bus-primitives">Bus primitives</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="csr/reg.html">CSR registers</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="csr/reg.html#amaranth_soc.csr.reg.FieldPort.Access"><code class="docutils literal notranslate"><span class="pre">FieldPort.Access</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="csr/reg.html#amaranth_soc.csr.reg.FieldPort.Signature"><code class="docutils literal notranslate"><span class="pre">FieldPort.Signature</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="csr/reg.html#amaranth_soc.csr.reg.FieldPort"><code class="docutils literal notranslate"><span class="pre">FieldPort</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="csr/reg.html#amaranth_soc.csr.reg.Field"><code class="docutils literal notranslate"><span class="pre">Field</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="csr/reg.html#amaranth_soc.csr.reg.FieldAction"><code class="docutils literal notranslate"><span class="pre">FieldAction</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="csr/reg.html#amaranth_soc.csr.reg.FieldActionMap"><code class="docutils literal notranslate"><span class="pre">FieldActionMap</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="csr/reg.html#amaranth_soc.csr.reg.FieldActionArray"><code class="docutils literal notranslate"><span class="pre">FieldActionArray</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="csr/reg.html#amaranth_soc.csr.reg.Register"><code class="docutils literal notranslate"><span class="pre">Register</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="csr/reg.html#amaranth_soc.csr.reg.Builder"><code class="docutils literal notranslate"><span class="pre">Builder</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="csr/reg.html#amaranth_soc.csr.reg.Bridge"><code class="docutils literal notranslate"><span class="pre">Bridge</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="csr/reg.html#introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="csr/reg.html#examples">Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="csr/reg.html#fields">Fields</a></li>
+<li class="toctree-l2"><a class="reference internal" href="csr/reg.html#field-actions">Field actions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="csr/reg.html#registers">Registers</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="csr/action.html">CSR field actions</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="csr/action.html#amaranth_soc.csr.action.R"><code class="docutils literal notranslate"><span class="pre">R</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="csr/action.html#amaranth_soc.csr.action.W"><code class="docutils literal notranslate"><span class="pre">W</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="csr/action.html#amaranth_soc.csr.action.RW"><code class="docutils literal notranslate"><span class="pre">RW</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="csr/action.html#amaranth_soc.csr.action.RW1C"><code class="docutils literal notranslate"><span class="pre">RW1C</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="csr/action.html#amaranth_soc.csr.action.RW1S"><code class="docutils literal notranslate"><span class="pre">RW1S</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="csr/action.html#amaranth_soc.csr.action.ResRAW0"><code class="docutils literal notranslate"><span class="pre">ResRAW0</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="csr/action.html#amaranth_soc.csr.action.ResRAWL"><code class="docutils literal notranslate"><span class="pre">ResRAWL</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="csr/action.html#amaranth_soc.csr.action.ResR0WA"><code class="docutils literal notranslate"><span class="pre">ResR0WA</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="csr/action.html#amaranth_soc.csr.action.ResR0W0"><code class="docutils literal notranslate"><span class="pre">ResR0W0</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="csr/action.html">CSR fields</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="csr/action.html#basic-fields">Basic fields</a></li>
+<li class="toctree-l2"><a class="reference internal" href="csr/action.html#flag-fields">Flag fields</a></li>
+<li class="toctree-l2"><a class="reference internal" href="csr/action.html#reserved-fields">Reserved fields</a></li>
 </ul>
 </li>
 </ul>
