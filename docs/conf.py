@@ -17,6 +17,8 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx_rtd_theme",
     "sphinxcontrib.yowasp_wavedrom",
+    "sphinx_markdown_builder",
+    "rst2pdf.pdfbuilder",
 ]
 
 with open(".gitignore") as f:
@@ -57,3 +59,7 @@ rst_prolog = """
 .. role:: py(code)
    :language: python
 """
+
+pdf_documents = [
+    ('index', 'amaranth-soc', project, ' Amaranth project contributors'),
+]

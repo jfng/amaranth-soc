@@ -13,8 +13,9 @@ license = {file = "LICENSE.txt"}
 
 requires-python = "~=3.8"
 dependencies = [
-  # this version requirement needs to be synchronized with the one in .github/workflows/main.yml
-  "amaranth>=0.5,<0.6",
+    # this version requirement needs to be synchronized with the one in .github/workflows/main.yml
+    "amaranth>=0.5,<0.6",
+    "markdown2>=2.5.1",
 ]
 
 [project.urls]
@@ -40,6 +41,8 @@ docs = [
   "sphinxcontrib-yowasp-wavedrom~=1.0",
   "sphinx-rtd-theme~=1.2",
   "sphinx-autobuild",
+  "sphinx-markdown-builder>=0.6.7",
+  "rst2pdf>=0.102",
 ]
 
 [tool.pdm.scripts]
@@ -50,6 +53,16 @@ test-docs.cmd = "sphinx-build -b doctest docs docs/_build"
 
 document.cmd = "sphinx-build docs docs/_build"
 document-live.cmd = "sphinx-autobuild docs docs/_build --watch amaranth_soc"
+document-md.composite = [
+    "sphinx-build -M markdown docs docs/_build",
+    "docs/assemble-md.py docs/_build/markdown/index.md docs/amaranth-soc",
+    "echo Markdown documentation created at docs/amaranth-soc.md"
+    ]
+document-pdf.composite = [
+    "sphinx-build -b pdf docs docs/_build",
+    "cp docs/_build/amaranth-soc.pdf docs",
+    "echo PDF documentation created at docs/amaranth-soc.pdf"
+]
 
 coverage-text.cmd = "python -m coverage report"
 coverage-html.cmd = "python -m coverage html"
